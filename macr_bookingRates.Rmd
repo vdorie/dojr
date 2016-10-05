@@ -1,0 +1,350 @@
+---
+title: "MACR Booking Rates"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+colFmt <- function(x, color) {
+  outputFormat = knitr::opts_knit$get("rmarkdown.pandoc.to")
+  switch(outputFormat, 
+         latex = paste0("\\textcolor{", color, "}{", x, "}"),
+         html  = paste0("<font color='", color, "'>", x, "</font>"),
+         x)
+}
+
+gridRatio <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+gridRatio <- if (is.null(gridRatio) || gridRatio == "html") 1.6 else 8.5 / 11
+```
+
+## Loading Data
+
+This document uses the `macr_clean.Rdata` file to aggregate and display booking rates for felonies and misdemeanors by first removing jurisdictions with anomalous booking rates.
+
+```{r loading}
+load("macr_clean.Rdata") ## defines 'macr' object
+## pull out only the columns that we use later
+macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type",
+                    "offense_level",     "arrest_year",              "age",
+                    "race_or_ethnicity")]
+
+## pull out just the years we need
+macr.sub <- subset(macr.sub, arrest_year >= 2005)
+numYears <- length(unique(macr.sub$arrest_year))
+
+## defines function getNamesForOffenseCodes
+source("offenseCodeNames.R")
+
+## hides some ugly plot stuff
+source("plotFunctions.R")
+```
+
+# Eliminating Jurisdictions
+
+## Sample Size
+
+The first cut we make is to drop jurisdictions that make a small number of arrests overall. By considering the cumulative distribution of the number of arrests, we can set cut points at arbitrary percentages, i.e. including only those jurisdictions responsible for 95% of all arrests.
+
+```{r sample_size}
+numArrestsByJurisdiction <- table(macr.sub$ncic_jurisdiction)
+
+jurisdictionOrder <- order(unname(numArrestsByJurisdiction))
+numArrestsByJurisdiction.pcnt <-
+  cumsum(numArrestsByJurisdiction[jurisdictionOrder]) / sum(numArrestsByJurisdiction)
+
+## keep top 95%
+largeJurisdictionIndices <-
+  jurisdictionOrder[seq.int(which.min(numArrestsByJurisdiction.pcnt <= 0.05),
+                            length(numArrestsByJurisdiction))]
+jurisdictionsToKeep <- names(numArrestsByJurisdiction)[largeJurisdictionIndices]
+
+macr.sub <- subset(macr.sub, ncic_jurisdiction %in% jurisdictionsToKeep)
+macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
+```
+
+```{r echo=FALSE}
+## clean up environment a bit to make sure we don't have accidental name collisions later
+rm(numArrestsByJurisdiction, jurisdictionOrder, numArrestsByJurisdiction.pcnt,
+   largeJurisdictionIndices, jurisdictionsToKeep)
+invisible(gc(FALSE))
+```
+
+## Abnormal Booking Rates
+
+As our goal at this stage is to control for the reliability of jurisdictions in their reporting, we can look for jursidictions that are reporting abornomally high or low rates on crimes with respectively low or high impact. An analysis of booking rates for individual offense codes (not shown) indicates a large amount of variability across years and jursidictions, so we instead consider measures that aggregate arrests *before* computing booking rates. That is, we define rates such as:
+
+$$
+\text{mostly-harmless-booking-rate} = \dfrac{\text{num juveniles booked for selected codes}}{\text{total num juveniles arrested for selected codes}}
+$$
+
+We begin by defining some useful functions:
+
+```{r booking_rate_functions}
+computeBookingRate <- function(x) {
+  if (sum(x) == 0L) return(NA)
+  unname(x["booked"] / sum(x))
+}
+
+getJurisdictionalBookingRatesForOffenseCodes <- function(macr, offenseCodes)
+{
+  ## drop unnecessary columns
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  
+  tab <- table(macr.sub)
+  apply(tab, c(1L, 2L), computeBookingRate)
+}
+getJurisdictionalBookingRatesForOffenseCodesByYear <- function(macr, offenseCodes) {
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "arrest_year",
+                      "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  
+  tab <- table(macr.sub)
+  apply(tab, c(1L, 2L, 3L), computeBookingRate)
+}
+## aggregates by summing all in set
+getJurisdictionalBookingRatesForOffenseCodeSet <- function(macr, offenseCodes) {
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  
+  tab <- table(macr.sub)
+  tab <- apply(tab, c(1L, 3L), sum, na.rm = TRUE)
+  
+  apply(tab, 1L, computeBookingRate)
+}
+getJurisdictionalBookingRatesForOffenseCodeSetByYear <- function(macr, offenseCodes) {
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "arrest_year",
+                      "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  
+  tab <- table(macr.sub)
+  tab <- apply(tab, c(1L, 3L, 4L), sum, na.rm = TRUE)
+  
+  apply(tab, c(1L, 2L), computeBookingRate)
+}
+```
+
+### Mostly-Harmless Misdemeanors
+
+We start by looking at the booking rates for juveniles.
+
+```{r misdemeanor_booking_rates_def}
+macr.juv <- subset(macr.sub, age < 18)
+
+offenseCodes.juv <- c(31, 32, 34, 44, 46)
+offenseCodeNames.juv <- getNamesForOffenseCodes(offenseCodes.juv)
+```
+
+The codes are: `r paste0(paste0(head(offenseCodeNames.juv, -1), collapse = ", "), ", and ", tail(offenseCodeNames.juv, 1))`.
+
+One immediate cause for concern are the number of jursidictions that, for some years, have reported booking rates of 100%.
+
+```{r misdemeanor_booking_rates_1_def}
+br.juv.yearly <-
+  getJurisdictionalBookingRatesForOffenseCodeSetByYear(macr.juv, offenseCodes.juv)
+
+highJurisdictions <-
+  apply(br.juv.yearly, 1L, function(row) sum(row > 0.99, na.rm = TRUE) >= 2L)
+```
+
+There are `r sum(highJurisdictions)` jursidictions that have a booking rate in excess of 0.99 for at least two years.
+
+```{r misdemeanor_booking_rates_1_plot}
+plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
+```
+
+Some of these we can exclude without further consider (those always at 1), but others look like plausible variation due to small sample sizes. Arbitrarily, we proceed by excluding those that hit the max 3 or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, i.e. that we have only one recorded value and the rest are NA. `r colFmt("I'm not super comfortable with this, and think it makes sense to also look at the min/max sample sizes.", "red")`
+
+```{r misdemeanor_booking_rates_1_exclude}
+highJurisdictions <-
+  apply(br.juv.yearly, 1L, function(row) sum(row > 0.99, na.rm = TRUE) >= 3L)
+br.juv.yearly <- br.juv.yearly[!highJurisdictions,]
+
+missingJurisdictions <-
+  apply(br.juv.yearly, 1L, function(row) sum(is.na(row)) >= (numYears - 1L))
+br.juv.yearly <- br.juv.yearly[!missingJurisdictions,]
+
+macr.juv <- subset(macr.juv, ncic_jurisdiction %in% rownames(br.juv.yearly))
+macr.juv$ncic_jurisdiction <- droplevels(macr.juv$ncic_jurisdiction)
+```
+
+Next, we average each jurisdiction's arrests for the misdemeanor set across the years and look at the empirical distribution of arrests.
+
+```{r misdemeanor_booking_rates_yearly_aggregate}
+br.juv.agg <- 
+  getJurisdictionalBookingRatesForOffenseCodeSet(macr.juv, offenseCodes.juv)
+
+par(mfrow = c(1, 2), mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
+hist(br.juv.agg, main = "Histogram Juv Misdemeanors 2005+",
+     xlab = "Booking Rate", breaks = 20)
+plot(density(br.juv.agg), main = "Density Juv Misdemeanors 2005+", xlab = "Booking Rate")
+
+highJurisdictions <- br.juv.agg >= 0.65
+```
+
+There appears to be a plausible cutoff around 0.65, which includes `r sum(highJurisdictions)` jurisdictions. Their yearly booking rates appear as:
+
+```{r misdemeanor_booking_rates_high_plot}
+plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
+```
+
+While some of these may certainly be valid, we again arbitrarily exclude them from further analysis. `r colFmt("Again, I don't feel great about excluding all of these, but with 21 jurisdictions it might be OK to look at them individually.", "red")`
+
+```{r misdemeanor_booking_rates_high_exclude}
+jurisdictionsToKeep <- names(br.juv.agg)[!highJurisdictions]
+```
+
+```{r echo=FALSE}
+rm(highJurisdictions, missingJurisdictions)
+invisible(gc(FALSE))
+```
+
+### Serious Felonies
+
+We repeat the above on the diminished set of jurisdictions while instead looking at arrest rates for serious felonies.
+
+```{r felony_booking_rates_def}
+macr.adult <- subset(macr.sub, age >= 18 & ncic_jurisdiction %in% jurisdictionsToKeep)
+macr.adult$ncic_jurisdiction <- droplevels(macr.adult$ncic_jurisdiction)
+
+offenseCodes.adult <- c(6, 14, 25, 8, 9, 12, 27)
+offenseCodeNames.adult <- getNamesForOffenseCodes(offenseCodes.adult)
+```
+
+The codes correspond to: `r paste0(paste0(head(offenseCodeNames.adult, -1), collapse = ", "), ", and ", tail(offenseCodeNames.adult, 1))`.
+
+Because the rates for these felonies should be high, we highlight any jursidiction that, for two or moreyears, had a booking rate of less than 80%.
+
+```{r felony_booking_rates_80_def}
+br.adult.yearly <-
+  getJurisdictionalBookingRatesForOffenseCodeSetByYear(macr.adult, offenseCodes.adult)
+
+lowJurisdictions <-
+  apply(br.adult.yearly, 1L, function(row) sum(row < 0.8, na.rm = TRUE) >= 2L)
+```
+
+This includes `r sum(lowJurisdictions)` jursidictions:
+
+```{r felony_booking_rates_80_plot}
+plotBookingRateGrid(br.adult.yearly[lowJurisdictions,], gridRatio)
+```
+
+For comparison, the typical jurisdiction has a straight line near 100%. Some of these look categorically low, including the set in the middle which all decline and increase with each other; others seem like the natural variation that might come with small sample sizes. For that reason, we set the threshold at three years.
+
+```{r felony_booking_rates_80_exclude}
+lowJurisdictions <-
+  apply(br.adult.yearly, 1L, function(row) sum(row < 0.8, na.rm = TRUE) >= 3L)
+br.adult.yearly <- br.adult.yearly[!lowJurisdictions,]
+
+macr.adult <- subset(macr.adult, ncic_jurisdiction %in% rownames(br.adult.yearly))
+macr.adult$ncic_jurisdiction <- droplevels(macr.adult$ncic_jurisdiction)
+
+jurisdictionsToKeep <- levels(macr.adult$ncic_jurisdiction)
+```
+
+And again we look at the empirical distribution of the aggregate across years.
+
+```{r felony_booking_rates_yearly_aggregate}
+br.adult.agg <- 
+  getJurisdictionalBookingRatesForOffenseCodeSet(macr.adult, offenseCodes.adult)
+
+par(mfrow = c(1, 2), mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
+hist(br.adult.agg, main = "Histogram Adult Felonies 2005+",
+     xlab = "Booking Rate", breaks = 20)
+plot(density(br.adult.agg), main = "Density Adult Felonies 2005+", xlab = "Booking Rate")
+```
+
+```{r echo=FALSE}
+rm(lowJurisdictions)
+invisible(gc(FALSE))
+```
+
+### Final Visualization
+
+At this point, the `r nrow(br.adult.yearly)` jurisdictions that remain seem to be adequate. Their booking rates for juvenile misdemeanors are:
+
+```{r misdemeanor_booking_rates_plot}
+br.juv.yearly <- br.juv.yearly[rownames(br.juv.yearly) %in% rownames(br.adult.yearly),]
+plotBookingRateGrid(br.juv.yearly, gridRatio)
+```
+
+Their (mostly boring) yearly booking rates for serious felonies are:
+
+```{r felony_booking_rates_plot}
+plotBookingRateGrid(br.adult.yearly, gridRatio)
+```
+
+### Booking Rate Table
+
+This mammoth function goes over whatever data set is given along with a set of jurisdictions and produces two tables of booking rates by offenses, one for felonies and one for misdemeanors.
+
+```{r booking_rate_function, exec = FALSE}
+getOffenseCodeBookingRatesForJurisdictions <- function(macr, jurisdictions)
+{
+  macr.sub <- macr[,c("bcs_summary_offence_code", "status_type",
+                      "race_or_ethnicity", "offense_level")]
+  macr.sub <- subset(macr.sub, macr$ncic_jurisdiction %in% jurisdictions)
+  offense_level <- macr.sub$offense_level
+  macr.sub$offense_level <- NULL
+  
+  macr.fel <- subset(macr.sub, offense_level == "felony")
+  macr.mis <- subset(macr.sub, offense_level == "misdemeanor")
+  
+  tableBookingRates <- function(macr) {
+    getBookingRatesFromTable <- function(tab) {
+      ## change the result here to change what ends up in the big
+      ## table at the end
+      N <- rowSums(tab, na.rm = TRUE)
+      data.frame(N = N,
+                 bkd = tab[,"booked"] / N,
+                 ctd  = tab[,"cited"] / N)
+      #data.frame(bkd = tab[,"booked"],
+      #           ctd  = tab[,"cited"],
+      #           "bkd%" = tab[,"booked"] / rowSums(tab, na.rm = TRUE))
+    }
+    tab <- table(macr)
+    
+    totals <- apply(tab, c(1, 2), sum)
+    
+    br.all   <- getBookingRatesFromTable(apply(tab, c(1, 2), sum))
+    br.white <- getBookingRatesFromTable(tab[,,"White"])
+    br.black <- getBookingRatesFromTable(tab[,,"Black"])
+    br.hisp  <- getBookingRatesFromTable(tab[,,"Hispanic"])
+    
+    result <- cbind(br.all, br.white, br.black, br.hisp)
+    colnames(result) <- c(
+      colnames(br.all), 
+      paste0(colnames(br.white), ".wt"),
+      paste0(colnames(br.black), ".bl"),
+      paste0(colnames(br.hisp), ".hs"))
+    
+    offenseCodes <- as.integer(rownames(result))
+    rownames(result) <- paste0(offenseCodes, "-", getNamesForOffenseCodes(offenseCodes))
+    result
+  }
+  
+  list(felony      = tableBookingRates(macr.fel),
+       misdemeanor = tableBookingRates(macr.mis))
+}
+```
+
+```{r booking_rates, exec = FALSE}
+br <- getOffenseCodeBookingRatesForJurisdictions(macr.sub, jurisdictionsToKeep)
+
+## always sorts using the first column
+br.felony <- br$felony[order(br$felony[,1], decreasing = TRUE),]
+## cuts off the offense code names to a prefix
+rownames(br.felony) <- substr(rownames(br.felony), 1, 12)
+round(br.felony, 2)
+
+br.misdemeanor <- br$misdemeanor[order(br$misdemeanor[,1], decreasing = TRUE),]
+rownames(br.misdemeanor) <- substr(rownames(br.misdemeanor), 1, 12)
+round(br.misdemeanor, 2)
+```
+
+```{r echo=FALSE}
+invisible(gc(FALSE))
+```

@@ -1,12 +1,15 @@
 ---
 title: "MACR Data Inventory"
 output:
-  pdf_document: default
+  pdf_document:
+    includes:
+      in_header: ../common/src/styles.sty
   html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to")
 
 ## This file is written from the assumption that it sits in a folder structure such as:
 ## root \
@@ -48,6 +51,8 @@ objectName <- tolower(datasetName)
 srcPath <- file.path("..", "common", "src")
 
 source(file.path(srcPath, "knitr.R"))
+
+cat(cat(rmarkdown::all_output_formats(knitr::current_input())))
 ```
 
 # `r datasetName`
@@ -57,6 +62,8 @@ source(file.path(srcPath, "knitr.R"))
 ```{r variables, echo=FALSE}
 variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors = FALSE, header = TRUE)
 ```
+
+`r colFmt("red", "This is automated and uses macr.Rdata, but the types are likely to change in the clean version, and some columns are going to be redefined.")`
 
 ```{r variables_table, echo=FALSE, results="asis"}
 names <- variables$variable.name
@@ -85,5 +92,11 @@ colLen.type <- max(nchar(types), nchar("type"))
   for (i in seq_len(colLen.type)) cat("-")
   cat("\n")
   for (i in seq_along(names)) cat(sprintf("%-*s | %-*s\n", colLen.name, names[i], colLen.type, types[i]))
+}
+```
+
+```{r variables_pages, echo=FALSE, results="asis"}
+for (i in seq_len(nrow(variables))) {
+  cat("## ", variables$variable.name[i], "\n", sep = "")
 }
 ```

@@ -1,0 +1,81 @@
+variable name,variable label,question text,values,value labels,summary statistics,missing data,skip patterns,notes
+age,age of individual arrested,"Arrest data for adults (age 18 years and older on the date of arrest) and juveniles (age 17 years or younger on the date of arrest) must be separated. Check the proper box to indicate if the data on the page submitted is adult or juvenile. If an agency has no adult or juvenile arrests for a month, ""no adults to report"" or ""no juveniles to report"" box must be checked.",,,,,,
+arrest_day,arrest day,,,,,,,
+arrest_month,arrest month,,,,,,,
+arrest_year,arrest year,,,,,,,
+bcs_jurisdiction,bcs jurisdiction,The code/ID number assigned to the reporting agency (old). ,,,,,,
+bcs_offense_code,bcs offense code,The code assigned to an offense. This code combines groups of like statutes that are grouped for statistical analysis.,"BCS code listing
+3-digit numeric",,,,,misdemeanor traffic violations (BCS codes 086 and 087) are optional to report on the MACR
+bcs_summary_offense_code,bcs summary offense code,The codes assigned to a BCS code. This code combines like BCS codes for more general statistical analysis.,"Summary code listing
+2-digit numeric",,,,,
+birth_date,date of birth,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,,,,,
+arrest_date,date of arrest,"Use eight-digits: two each for the month, and day, and four for the year. For example, an arrest made on February 9, 2006 should be entered as: 02/09/2006.",,,,,,
+disposition,,"This column is intended for the disposition of the agency reporting the arrest or citation. DO NOT report the district attorney or court disposition in this column. It is intended to reflect the law enforcement agency disposition of the charge, not the person. ENTER ONE DISPOSITION PER LINE ITEM.",Misdemeanor Complaint Sought; Felony Complaint Sought; Released; Turned over to another law enforcement agency; Juvenile court; Handled within department,"Misdemeanor (only for adults):
+* Misdemeanor complaints that are sought by the arresting agency. (not used for juveniles)
+Felony (only for adults):
+* Felony complaints that are sought by the arresting agency. (not used for juveniles)
+Released (only for adults):
+* Each arrest released under 849(B) PC, or other sections, when no further action is planned by the arresting agency.
+* Civil drunk arrest (647 (G) PC) or those individuals placed on other diversion programs by the local law enforcement agency, including those deemed not to be arrested.
+* A new local offense in conjunction with an outside warrant. The level, status, charge, and disposition should be related to the local offense so that statistics on the local charges are captured. If the local offense is released so the out warrant may be acted upon, then the disposition is released.
+* A new local offense in conjunction with a federal offense. The level, status, charge, and disposition should relate to the local offense so that statistics on the local charges are captured. If the local offense is released so the federal out warrant may be acted upon, then the disposition is released.
+* not used for juveniles
+Turned Over:
+* Arrests made on another law enforcement agency's warrant (out warrant), with no local charges, and the subject is being held for the other agency
+* Arrests made for a federal offense with no local charges.
+* Fugitives from justice with no local charges.
+* When a fine is paid to the local agency on a failure to appear traffic warrant issued by an outside jurisdiction and the money is forwarded to the issuing agency.
+Juvenile Court:
+* A juvenile that is referred to juvenile court or turned over to the probation department, welfare agency, other police agency, criminal or adult court or juvenile hall.
+Department (only for juveniles):
+* A situation that has been settled by the arresting agency, no action is to be taken by the juvenile probation department or the court, and the juvenile is released to his/her parents, guardian, or the street with a warning.
+* A juvenile is placed on a local diversion program including, for statistical purposes, any juvenile deemed not arrested or cited.",,,,
+fbi_offense_code,,The FBI’s grouping of California offenses for national comparisons. These do not distinguish between felony and misdemeanor levels.,,,,,,
+gender,,Enter either (1) Male or (2) Female.,"FBI code listing
+2 or 3-digit numeric",,,,,
+name,,"Print legibly or type the last name, middle name or initial (if known), and first name of the arrestee. If name is unknown, use ""John Doe"" or ""Jane Doe.""",,,,,,
+ncic_jurisdiction,police department code. first two digits are the county.,"Enter your agency’s ORI/NCIC number. Agencies should abbreviate the nine-character NCIC code on the MACR report by using the fourth through seventh character of the NCIC code. For example, if your NCIC number is “CA0570100,” report “5701” only.",0-6000,,,,,
+offense_level,The level of the offense the individual was arrested for.,"Select the level (delinquent, misdemeanor or felony) that best describes the most serious offense. Enter only one level per arrest or citation. 1) Delinquent (juvenile-only), 2) Misdemeanor, 3) Felony",status offense; misdemeanor; felony,,,,,
+race_or_ethnicity,individual's race or ethnicity,"Record only one alpha designation that applies. Agencies submitting automated reports must verify that the appropriate codes are being entered. Do not report the race as ""Unknown."" Record the appropriate alpha code for race. Do not use ""other"" for unknown race.",A; B; C; D; F; G; H; I; J; K; L; O; P; S; U; V; W; Z,"A - Other Asian
+B - Black
+C - Chinese
+D - Cambodian
+F - Filipino
+G - Guamanian
+H - Hispanic
+I - American Indian
+J - Japanese
+K - Korean
+L - Laotian
+O - Other
+P - Pacific Islander
+S - Samoan
+U - Hawaiian
+V - Vietnamese
+W - White
+Z - Asian Indian",,,,
+record_type_id,type of arrest record,"Flag that describes the action of the record. Codes 14, 24, and 94 represent arrest records. Codes 21, 32 and 91 represent deleted records or records of no arrest.",,"Arrest Codes:
+14 - Add a record
+24 - Replace a specific record
+94 - Record sent to FBI
+Records of No Arrest Codes:
+21 - Report of no arrest
+91 - Report of no arrest sent to FBI
+Deleted Record Code:
+32 - Specific delete action",,,,
+status_type,status after arrest,"The status column describes the type of apprehension (at the time of initial contact with the arrestee). It determines how many individuals are cited versus those actually delivered to jail.
+The arresting agency is responsible for determining if it is a ""cite,"" ""book"" or ""other."" The arresting agency should report “book” even when the suspect is sent to another law enforcement agency for processing. For example, many police departments send suspects that have been arrested to the county jail to be booked.",Cited; Booked; Other,"Cited:
+* Cited (or summoned) to appear in court as an alternative to being jailed or cited to court and later booked as directed by the court. A cite occurs in the field, when the suspect is not physically arrested by the officer.
+* Informal booking -voluntarily go in and sign a notice to appear later in court.
+* When a juvenile is cited in lieu of being delivered to juvenile authorities.
+Booked:
+* An adult is actually booked into jail for any period of time or booked into jail and later released on a citation.
+* When a juvenile is booked into a juvenile holding facility of any type or any time an arrest report is filled out.
+Other:
+* An adult makes bail on a warrant and is neither cited nor booked.
+* Detained for civil drunk occurrences per 647 (G) PC.
+* When juveniles are neither cited nor booked (e.g., detained only, sent to a diversion program, referred to the probation department, etc.). Use “other” when there was no arrest report filled out.",,,,
+summary_offense_level,bcs summary offense level (used to separate juveniles),The level assigned to the record used to distinguish between juvenile and adult records.,F; J; M,"F - Felony (Adults)
+J - Juvenile
+M - Misdemeanor (Adults)",,,,

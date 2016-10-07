@@ -1,0 +1,89 @@
+---
+title: "MACR Data Inventory"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## This file is written from the assumption that it sits in a folder structure such as:
+## root \
+##   - common \
+##     - data
+##   - projectName \
+##     file.Rmd
+##
+## and will look for a target file in ../common/data, which is to be shared by all projects
+
+datasetName <- "MACR"
+datasetDir  <- tolower(datasetName)
+
+dataPath <- file.path("..", "common", "data")
+dataFileName <- paste0(datasetDir, ".Rdata")
+## if the file has an unusual name, change the above
+dataFile <- file.path(dataPath, dataFileName)
+
+
+imgPath <- file.path(datasetDir, "img")
+txtPath <- file.path(datasetDir, "txt")
+
+dir.create(imgPath, showWarnings = FALSE, recursive = TRUE)
+dir.create(txtPath, showWarnings = FALSE, recursive = TRUE)
+
+dataLoaded <- FALSE
+loadData <- function() {
+  callingEnv <- parent.frame()
+  if (!dataLoaded) load(dataFile, envir = callingEnv)
+  .GlobalEnv$dataLoaded <- TRUE
+  invisible(NULL)
+}
+
+## name of the data object that gets loaded
+objectName <- tolower(datasetName)
+
+
+## load some utilities
+srcPath <- file.path("..", "common", "src")
+
+source(file.path(srcPath, "knitr.R"))
+```
+
+# `r datasetName`
+
+# Variables
+
+```{r variables, echo=FALSE}
+variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors = FALSE, header = TRUE)
+```
+
+```{r variables_table, echo=FALSE, results="asis"}
+names <- variables$variable.name
+
+typesFile <- file.path(txtPath, "variableTypes.csv")
+if (!file.exists(typesFile)) {
+  loadData()
+  type <- sapply(get(objectName), class)
+  type <- type[match(variables$variable.name, names(type))]
+  types <- data.frame(variable.name = variables$variable.name, type = unname(type))
+  write.csv(types, file = typesFile, row.names = FALSE)
+  rm(type)
+} else {
+  types <- read.csv(typesFile, stringsAsFactors = FALSE)
+}
+types <- types[match(variables$variable.name, types$variable.name), "type"]
+types[is.na(types)] <- "NA"
+
+colLen.name <- max(nchar(names), nchar("name"))
+colLen.type <- max(nchar(types), nchar("type"))
+
+{
+  cat(sprintf("%-*s | %-*s\n", colLen.name, "name", colLen.type, "type"))
+  for (i in seq_len(colLen.name)) cat("-")
+  cat(" | ")
+  for (i in seq_len(colLen.type)) cat("-")
+  cat("\n")
+  for (i in seq_along(names)) cat(sprintf("%-*s | %-*s\n", colLen.name, names[i], colLen.type, types[i]))
+}
+```

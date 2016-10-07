@@ -1,0 +1,9 @@
+#!/bin/sh
+
+mkdir -p bin
+sh src/compile.sh
+
+sh src/collate.sh
+
+R --no-save < src/import.R
+rm macr.csv

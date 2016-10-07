@@ -97,6 +97,9 @@ colLen.type <- max(nchar(types), nchar("type"))
 
 ```{r variables_pages, echo=FALSE, results="asis"}
 for (i in seq_len(nrow(variables))) {
-  cat("## ", variables$variable.name[i], "\n", sep = "")
+  if (targetType == "latex" && i > 1L) cat("\n\\newpage\n")
+  variable <- variables[i,]
+  cat("## ", variable[["variable.name"]], "\n", sep = "")
+  if (variable[["question.text"]] != "") cat("### Question\n\n", variable[["question.text"]], "\n\n", sep = "")
 }
 ```

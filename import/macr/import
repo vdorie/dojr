@@ -6,4 +6,5 @@ sh src/compile.sh
 sh src/collate.sh
 
 R --no-save < src/import.R
+mv macr.Rdata ../../common/data
 rm macr.csv

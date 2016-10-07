@@ -37,6 +37,8 @@ macr$disposition <- factor(macr$disposition, labels = c(
 macr$fbi_offense_code[macr$fbi_offense_code %in% c("", "\177\177\177", "\177", "ÿ")] <- NA
 macr$fbi_offense_code <- droplevels(macr$fbi_offense_code)
 
+invisible(gc(FALSE))
+
 macr$name <- readLines("macr_pii_name.txt")
 
 invisible(gc(FALSE))

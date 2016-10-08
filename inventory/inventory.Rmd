@@ -57,9 +57,15 @@ dataSrcPath <- file.path(datasetDir, "src")
 if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))
 ```
 
-# `r datasetName`
+# Abstract
 
-## Variables
+# Introduction
+
+## Tables
+
+Main table, codes, jurisdictions
+
+## Main Table Variables
 
 ```{r variables, echo=FALSE}
 variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors = FALSE, header = TRUE)
@@ -93,6 +99,7 @@ for (i in seq_len(nrow(variables))) {
   variable <- variables[i,]
   cat("### ", variable[["variable.name"]], "\n\n", sep = "")
   if (variable[["values"]] != "") cat("#### Values\n\n", variable[["values"]], "\n\n", sep = "")
+  if (variable[["value.labels"]] != "") cat("#### Labels\n\n", variable[["value.labels"]], "\n\n", sep = "")
   if (variable[["question.text"]] != "") cat("#### Prompt\n\n", variable[["question.text"]], "\n\n", sep = "")
   if (variable[["notes"]] != "") cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
   

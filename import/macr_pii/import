@@ -7,4 +7,4 @@ sh src/collate.sh
 
 R --no-save < src/import.R
 mv macr_pii.Rdata ../../common/data
-rm macr_pii.csv macr_pii_name
+rm macr_pii.csv macr_pii_name.txt

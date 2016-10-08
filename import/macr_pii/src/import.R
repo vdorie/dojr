@@ -1,4 +1,19 @@
+dropBadRows <- FALSE
+
 macr <- read.csv("macr_pii.csv", fileEncoding = "latin1", sep = "|")
+
+"%not_in%" <- function(x, table) match(x, table, nomatch = 0L) <= 0L
+
+badRows <- macr$fbi_offense_code %in% c("\177\177\177", "\177", "ÿ")
+if (dropBadRows) {
+  macr <- macr[!badRows,]
+  macr$fbi_offense_code[macr$fbi_offense_code == ""] <- NA
+} else {
+  macr$fbi_offense_code[macr$fbi_offense_code == "" | badRows] <- NA
+}
+macr$fbi_offense_code <- droplevels(macr$fbi_offense_code)
+
+invisible(gc(FALSE))
 
 macr$record_type_id    <- factor(macr$record_type_id)
 macr$bcs_jurisdiction  <- factor(macr$bcs_jurisdiction)
@@ -24,20 +39,15 @@ raceCategories.old <- c(
 raceCategories <- unique(raceCategories.old)
 raceMap <- match(raceCategories.old, raceCategories)
 
-macr$race <- factor(raceMap[macr$race], labels = raceCategories)
-macr$race[macr$race == ""] <- NA
-macr$race <- droplevels(macr$race)
+macr$race_or_ethnicity <- factor(raceMap[macr$race_or_ethnicity], labels = raceCategories)
+macr$race_or_ethnicity[macr$race_or_ethnicity == ""] <- NA
+macr$race_or_ethnicity <- droplevels(macr$race_or_ethnicity)
 
 macr$gender <- factor(macr$gender, labels = c("male", "female"))
 macr$status_type <- factor(macr$status_type, labels = c("cited", "booked", "other"))
 macr$disposition <- factor(macr$disposition, labels = c(
   "released", "turned over to other agency", "misdemeanor complaint sought",
   "felony complaint sought", "referred to juvenile probation department", "handled within department"))
-
-macr$fbi_offense_code[macr$fbi_offense_code %in% c("", "\177\177\177", "\177", "ÿ")] <- NA
-macr$fbi_offense_code <- droplevels(macr$fbi_offense_code)
-
-invisible(gc(FALSE))
 
 macr$name <- readLines("macr_pii_name.txt")
 

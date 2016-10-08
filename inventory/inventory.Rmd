@@ -9,7 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+targetType <- if (is.null(targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to"))) "latex" else targetType
 
 ## This file is written from the assumption that it sits in a folder structure such as:
 ## root \
@@ -47,14 +47,19 @@ loadData <- function() {
 }
 
 ## load some utilities
-srcPath <- file.path("..", "common", "src")
+commonSrcPath <- file.path("..", "common", "src")
+source(file.path(commonSrcPath, "knitr.R"))
 
-source(file.path(srcPath, "knitr.R"))
+srcPath <- file.path("src")
+source(file.path(srcPath, "variable.R"))
+
+dataSrcPath <- file.path(datasetDir, "src")
+if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))
 ```
 
 # `r datasetName`
 
-# Variables
+## Variables
 
 ```{r variables, echo=FALSE}
 variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors = FALSE, header = TRUE)
@@ -63,8 +68,6 @@ variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors =
 `r colFmt("red", "This is automated and uses macr.Rdata, but the types are likely to change in the clean version, and some columns are going to be redefined.")`
 
 ```{r variables_table, echo=FALSE, results="asis"}
-names <- variables$variable.name
-
 typesFile <- file.path(txtPath, "variableTypes.csv")
 if (!file.exists(typesFile)) {
   loadData()
@@ -76,8 +79,6 @@ if (!file.exists(typesFile)) {
 } else {
   types <- read.csv(typesFile, stringsAsFactors = FALSE)
 }
-#types$type[is.na(types)]
-#types[is.na(types)] <- "NA"
 
 names(types)[1] <- c("name")
 
@@ -85,65 +86,19 @@ cat(rmdFormat(types), sep = "\n")
 ```
 
 ```{r variables_pages, echo=FALSE, results="asis"}
-summarizeVariable <- function(variableName) {
-  cleanVariableName <- gsub("\\.", "_", variableName)
-  summaryFile <- file.path(txtPath, paste0(cleanVariableName, "_summary.txt"))
-  
-  if (file.exists(summaryFile)) return(readLines(summaryFile))
-  
-  data <- loadData()
-  x <- data[[variableName]]
-  
-  if (is.factor(x)) {
-    tab <- table(x, useNA = "ifany")
-    tab <- tab[order(tab, decreasing = TRUE)]
-    if (length(tab) > 50L) {
-      tab <- tab[seq_len(49)]
-      tab <- data.frame(Names = c(names(tab), "..."), Values = c(as.character(tab), ""))
-    }
-    variableSummary <- rmdFormat(tab)
-  } else if (is.integer(x)) {
-    imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
-    if (!file.exists(imgFile)) {
-      pdf(imgFile, width = 4, height = 4)
-      barplot(table(x), main = variableName)
-      dev.off()
-    }
-    
-    summaryStatistics <- summary(x)
-    variableSummary <- c(rmdFormat(summaryStatistics), "", "", paste0("![](", imgFile, ")"), "")
-  } else if (is.numeric(x)) {
-    imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
-    if (!file.exists(imgFile)) {
-      pdf(imgFile, width = 4, height = 4)
-      hist(x, breaks = 20, col = "gray", main = variableName)
-      dev.off()
-    }
-    
-    summaryStatistics <- summary(x)
-    imgText <- paste0(if (targetType == "latex") "\\centering " else "", "![](", imgFile, ")")
-    variableSummary <- c(rmdFormat(summaryStatistics), "", "", imgText, "")
-  } else {
-    variableSummary <- ""
-  }
-  
-  writeLines(variableSummary, summaryFile)
-  variableSummary
-}
-
 if (targetType == "latex") cat("\n\\newpage\n\n")
 
 for (i in seq_len(nrow(variables))) {
   if (targetType == "latex" && i > 1L) cat("\n\\newpage\n\n")
   variable <- variables[i,]
-  cat("## ", variable[["variable.name"]], "\n\n", sep = "")
-  if (variable[["values"]] != "") cat("### Values\n\n", variable[["values"]], "\n\n", sep = "")
-  if (variable[["question.text"]] != "") cat("### Prompt\n\n", variable[["question.text"]], "\n\n", sep = "")
-  if (variable[["notes"]] != "") cat("### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
+  cat("### ", variable[["variable.name"]], "\n\n", sep = "")
+  if (variable[["values"]] != "") cat("#### Values\n\n", variable[["values"]], "\n\n", sep = "")
+  if (variable[["question.text"]] != "") cat("#### Prompt\n\n", variable[["question.text"]], "\n\n", sep = "")
+  if (variable[["notes"]] != "") cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
   
   variableSummary <- summarizeVariable(variable[["variable.name"]])
   if (length(variableSummary) > 1L || variableSummary != "") {
-    cat("### Summary\n\n")
+    cat("#### Summary\n\n")
     cat(variableSummary, sep = "\n")
     cat("\n")
   }

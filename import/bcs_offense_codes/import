@@ -1,0 +1,25 @@
+#!/usr/bin/env Rscript
+
+offenseCodes <- read.csv(file.path("input", "combined-Table 1.csv"), stringsAsFactors = FALSE)
+
+keepCols <- c("offense_code", "summary_code", "summary_offense_type", "offense_category")
+
+uniqueOffenseCodes <- unique(offenseCodes[,keepCols])
+
+uniqueOffenseCodes$new_2013 <- NA
+
+for (i in seq_len(nrow(uniqueOffenseCodes))) {
+  matchingRows <- which(offenseCodes$offense_code == uniqueOffenseCodes$offense_code[i] &
+                        offenseCodes$summary_code == uniqueOffenseCodes$summary_code[i] &
+                        offenseCodes$summary_offense_type == uniqueOffenseCodes$summary_offense_type[i] &
+                        offenseCodes$offense_category == uniqueOffenseCodes$offense_category[i])
+  if (length(matchingRows) == 1L) {
+    uniqueOffenseCodes$new_2013[i] <- offenseCodes$before_2013[matchingRows]
+  } else {
+    uniqueOffenseCodes$new_2013[i] <- 0
+  }
+}
+
+dataPath <- file.path("..", "..", "common", "data")
+
+write.csv(uniqueOffenseCodes, file = file.path(dataPath, "bcs_offense_codes.csv"), row.names = FALSE)

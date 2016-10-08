@@ -10,7 +10,7 @@ colFmt <- function(color, x) {
 
 rmdFormat <- function(x, ...) { UseMethod("rmdFormat", x) }
 
-rmdFormat.data.frame <- function(x, ...)
+rmdFormat.data.frame <- function(x, maxRows = 25L, ...)
 {
   stringResult <- NULL
   stringConnection <- textConnection("stringResult", "w", local = TRUE)
@@ -28,12 +28,22 @@ rmdFormat.data.frame <- function(x, ...)
     for (j in seq_len(lengths[i])) cat("-")
   }
   cat("\n")
-  for (j in seq_len(nrow(x))) {
+  printLimit <- if (nrow(x) > maxRows) maxRows - 1L else nrow(x)
+  for (j in seq_len(printLimit)) {
     for (i in seq_along(x)) {
       if (i > 1L) cat(" | ")
       cat(sprintf("%-*s", lengths[i], x.char[j,i]))
     }
     cat("\n") 
+  }
+  if (printLimit != nrow(x)) {
+    for (i in seq_along(x)) {
+      if (i > 1L) cat(" | ")
+      numDots <- min(lengths[i], 3L)
+      for (j in seq_len(numDots)) cat(".")
+      if (numDots < lengths[i]) for (j in seq.int(numDots + 1L, lengths[i])) cat(" ")
+    }
+    cat("\n")
   }
   sink()
   close(stringConnection)
@@ -41,8 +51,14 @@ rmdFormat.data.frame <- function(x, ...)
   stringResult
 }
 
-rmdFormat.table <- function(x, ...)
+rmdFormat.summaryDefault <- function(x, ...)
 {
   df <- data.frame(Name = names(x), Value = as.numeric(x))
+  rmdFormat(df, ...)
+}
+
+rmdFormat.table <- function(x, ...)
+{
+  df <- data.frame(Name = names(x), Freq = as.numeric(x))
   rmdFormat(df, ...)
 }

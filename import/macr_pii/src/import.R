@@ -18,6 +18,9 @@ invisible(gc(FALSE))
 macr$record_type_id    <- factor(macr$record_type_id)
 macr$bcs_jurisdiction  <- factor(macr$bcs_jurisdiction)
 
+macr$ncic_jurisdiction[macr$ncic_jurisdiction == ""] <- NA
+macr$ncic_jurisdiction <- droplevels(macr$ncic_jurisdiction)
+
 macr$summary_offense_level[macr$summary_offense_level == ""] <- NA
 macr$summary_offense_level <- droplevels(macr$summary_offense_level)
 levels(macr$summary_offense_level) <- c("felony", "juvenile", "misdemeanor")

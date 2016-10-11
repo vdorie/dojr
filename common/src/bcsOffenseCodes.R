@@ -23,13 +23,13 @@ getNameForOffenseCode <- function(x, arrest_year = NULL, bcsOffenseCodes = .Glob
   })
 }
 
-uniqueCodes <- unique(bcsOffenseCodes$summary_code)
+uniqueCodes <- unique(bcsOffenseCodes$summary_offense_code)
 uniqueCodeNames <- sapply(uniqueCodes, function(code) {
-  tab <- with(bcsOffenseCodes, table(summary_offense_type[which(summary_code == code)]))
+  tab <- with(bcsOffenseCodes, table(summary_offense_type[which(summary_offense_code == code)]))
   names(tab)[which.max(tab)]
 })
-bcsSummaryOffenseCodes <- data.frame(summary_code = uniqueCodes, summary_offense_type = uniqueCodeNames, stringsAsFactors = FALSE)
-bcsSummaryOffenseCodes <- bcsSummaryOffenseCodes[order(bcsSummaryOffenseCodes$summary_code),]
+bcsSummaryOffenseCodes <- data.frame(summary_offense_code = uniqueCodes, summary_offense_type = uniqueCodeNames, stringsAsFactors = FALSE)
+bcsSummaryOffenseCodes <- bcsSummaryOffenseCodes[order(bcsSummaryOffenseCodes$summary_offense_code),]
 rownames(bcsSummaryOffenseCodes) <- as.character(seq_len(nrow(bcsSummaryOffenseCodes)))
 
 rm(uniqueCodes, uniqueCodeNames)
@@ -39,5 +39,5 @@ getNameForSummaryOffenseCode <- function(x, bcsSummaryOffenseCodes = .GlobalEnv$
 {
   if (is.null(bcsOffenseCodes)) stop("cannot find 'bcsSummaryOffenseCodes'")
   
-  with(bcsSummaryOffenseCodes, summary_offense_type[match(x, summary_code)])
+  with(bcsSummaryOffenseCodes, summary_offense_type[match(x, summary_offense_code)])
 }

@@ -8,6 +8,10 @@ colFmt <- function(color, x) {
          x)
 }
 
+## appends a ... if the string is too long
+truncateString <- function(x, length)
+  unname(sapply(x, function(x.i) if (nchar(x.i) > length) paste0(substr(x.i, 1L, length - 1L), "...") else x.i))
+
 rmdFormat <- function(x, ...) { UseMethod("rmdFormat", x) }
 
 rmdFormat.data.frame <- function(x, maxRows = 25L, ...)

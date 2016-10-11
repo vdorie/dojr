@@ -21,13 +21,9 @@ targetType <- if (is.null(targetType <- knitr::opts_knit$get("rmarkdown.pandoc.t
 ## and will look for a target file in ../common/data, which is to be shared by all projects
 
 datasetName <- "MACR"
-datasetDir  <- tolower(datasetName)
+datasetDir  <- "macr"
 
 dataPath <- file.path("..", "common", "data")
-dataFileName <- paste0(datasetDir, ".Rdata")
-## if the file has an unusual name, change the above
-dataFile <- file.path(dataPath, dataFileName)
-
 
 imgPath <- file.path(datasetDir, "img")
 txtPath <- file.path(datasetDir, "txt")
@@ -35,24 +31,43 @@ txtPath <- file.path(datasetDir, "txt")
 dir.create(imgPath, showWarnings = FALSE, recursive = TRUE)
 dir.create(txtPath, showWarnings = FALSE, recursive = TRUE)
 
-## name of the data object that gets loaded
-objectName <- tolower(datasetName)
+tables <- read.csv(file.path(datasetDir, "tables.csv"), stringsAsFactors = FALSE)
 
-dataLoaded <- FALSE
-loadData <- function() {
-  if (!dataLoaded) load(dataFile, envir = .GlobalEnv)
-  .GlobalEnv$dataLoaded <- TRUE
+mainTable <- tables$name[which.max(tables$main_table == 1L)]
+
+dataLoaded <- rep(FALSE, nrow(tables))
+names(dataLoaded) <- tables$name
+
+loadData <- function(tableName = mainTable) {
+  tableIndex <- which.max(tables$name == tableName)
+  if (!dataLoaded[[tableName]]) {
+    dataFilePath <- file.path(dataPath, tables$file[tableIndex])
+    if (grepl("\\.csv$", tables$file[tableIndex])) {
+      .GlobalEnv[[tables$object[tableIndex]]] <- read.csv(dataFilePath, stringsAsFactors = FALSE)
+    } else if (grepl("\\.Rdata$", tables$file[tableIndex])) {
+      load(dataFilePath, envir = .GlobalEnv)
+    } else if (grepl("\\.dta$", tables$file[tableIndex])) {
+      require(foreign)
+      .GlobalEnv[[tables$object[tableIndex]]] <- read.dta(dataFilePath)
+    } else {
+      stop("unrecognized file format: '", tables$file[tableIndex], "'")
+    }
+    if (tables$on_load[tableIndex] != "") eval(parse(text = tables$on_load[tableIndex]), .GlobalEnv)
+  }
+  .GlobalEnv$dataLoaded[[tableName]] <- TRUE
   
-  invisible(get(objectName))
+  invisible(get(tables$object[tableIndex]))
 }
 
 ## load some utilities
 commonSrcPath <- file.path("..", "common", "src")
 source(file.path(commonSrcPath, "knitr.R"))
 
+## inventory specific
 srcPath <- file.path("src")
-source(file.path(srcPath, "variable.R"))
+invisible(sapply(list.files(srcPath, "*.R", full.names = TRUE), source))
 
+## data-set specific
 dataSrcPath <- file.path(datasetDir, "src")
 if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))
 ```
@@ -63,47 +78,47 @@ if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath,
 
 ## Tables
 
-Main table, codes, jurisdictions
+```{r tables_summary, echo=FALSE, results="asis"}
+getColumnType <- function(x) { cl <- class(x); if (cl[1L] %in% c("numeric", "integer") && length(unique(x)) == 2L) "binary" else cl }
+getColumnValues <- function(x) {
+  if (is.factor(x)) truncateString(paste0(truncateString(levels(x), 10L), collapse = "/"), 24)
+  else if (is.numeric(x)) paste0(range(x, na.rm = TRUE), collapse = "-")
+  else if (is.character(x)) truncateString(paste0(truncateString(unique(x), 10L), collapse = "/"), 24)
+}
+
+for (i in seq_len(nrow(tables))) {
+  cat("### ", tables$display_name[i], "\n\n", sep = "")
+  if (tables$description[i] != "")
+    cat(tables$description[i], "\n\n", sep = "")
+  
+  firstFive <- formatFirstFiveRows(tables$name[i])
+  if (length(firstFive) != 1L && firstFive != "")
+    cat("#### Sample Rows\n\n", firstFive, "\n", sep = "\n")
+  
+  variablesSummary <- summarizeVariables(tables$name[i])
+  if (length(variablesSummary) != 1L && variablesSummary != "")
+    cat("#### Variable Summary\n\n", rmdFormat(variablesSummary), sep = "\n")
+}
+```
+
+`r if (targetType == "latex") cat("\n\\newpage\n\n")`
 
 ## Main Table Variables
 
 ```{r variables, echo=FALSE}
-variables <- read.csv(file.path(datasetDir, "variables.csv"), stringsAsFactors = FALSE, header = TRUE)
-```
-
-`r colFmt("red", "This is automated and uses macr.Rdata, but the types are likely to change in the clean version, and some columns are going to be redefined.")`
-
-```{r variables_table, echo=FALSE, results="asis"}
-typesFile <- file.path(txtPath, "variableTypes.csv")
-if (!file.exists(typesFile)) {
-  loadData()
-  type <- sapply(get(objectName), class)
-  type <- type[match(variables$variable.name, names(type))]
-  types <- data.frame(variable.name = variables$variable.name, type = unname(type))
-  write.csv(types, file = typesFile, row.names = FALSE)
-  rm(type)
-} else {
-  types <- read.csv(typesFile, stringsAsFactors = FALSE)
-}
-
-names(types)[1] <- c("name")
-
-cat(rmdFormat(types), sep = "\n")
+variables <- read.csv(file.path(datasetDir, "macr_variables.csv"), stringsAsFactors = FALSE, header = TRUE)
 ```
 
 ```{r variables_pages, echo=FALSE, results="asis"}
-if (targetType == "latex") cat("\n\\newpage\n\n")
-
 for (i in seq_len(nrow(variables))) {
   if (targetType == "latex" && i > 1L) cat("\n\\newpage\n\n")
   variable <- variables[i,]
-  cat("### ", variable[["variable.name"]], "\n\n", sep = "")
-  if (variable[["values"]] != "") cat("#### Values\n\n", variable[["values"]], "\n\n", sep = "")
-  if (variable[["value.labels"]] != "") cat("#### Labels\n\n", variable[["value.labels"]], "\n\n", sep = "")
-  if (variable[["question.text"]] != "") cat("#### Prompt\n\n", variable[["question.text"]], "\n\n", sep = "")
+  cat("### ", variable[["name"]], "\n\n", sep = "")
+  if (variable[["value_labels"]] != "") cat("#### Labels\n\n", variable[["value_labels"]], "\n\n", sep = "")
+  if (variable[["question_text"]] != "") cat("#### Prompt\n\n", variable[["question_text"]], "\n\n", sep = "")
   if (variable[["notes"]] != "") cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
   
-  variableSummary <- summarizeVariable(variable[["variable.name"]])
+  variableSummary <- summarizeVariable(variable[["name"]])
   if (length(variableSummary) > 1L || variableSummary != "") {
     cat("#### Summary\n\n")
     cat(variableSummary, sep = "\n")

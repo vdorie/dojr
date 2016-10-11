@@ -1,0 +1,8 @@
+name,display_name,file,object,full_summary,main_table,on_load,description
+macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,"macr$name <- 'pii'","Words
+
+* Words
+* More Words"
+bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,,"Not as many words"
+jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,0,,"Love words, best words"
+

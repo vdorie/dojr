@@ -1,0 +1,10 @@
+name,display_name,short_description
+CntyCode,County Code,
+County,County Name,
+Code,NCIC Jurisdiction Code,
+Agency,Agency Name,
+Start,Start,"if absent, active throughout"
+End,End,
+Contract,Contract,
+CJSC.Notes,CJSC Notes,
+Old.Juris.Code,Old JurisdictionCode,"remove '-' to match MACR"

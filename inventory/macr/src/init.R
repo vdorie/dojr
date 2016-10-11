@@ -1,7 +1,5 @@
-bcsOffenseCodes <- read.csv(file.path(dataPath, "bcs_offense_codes.csv"), stringsAsFactors = FALSE)
+## need this loaded for the offense code mapping code to work
+loadData("bcs_offense_codes")
 
 source(file.path(commonSrcPath, "bcsOffenseCodes.R"))
-
-jurisdictions <- read.csv(file.path(dataPath, "jurisdictions.csv"), stringsAsFactors = FALSE)
-
 source(file.path(commonSrcPath, "jurisdictions.R"))

@@ -1,0 +1,296 @@
+# Data Cleaning
+
+```{r clean, echo=FALSE}
+cleanComplete <- file.exists(file.path(dataPath, "macr_clean_pii.Rdata"))
+```
+
+## Deleted Records
+
+Records with a type id of 32 represent deleted rows, and as they contain no information about the kind of arrest made are deemed unusuable and omitted. A typical example would be:
+
+```{r clean_type_32, echo=FALSE, results = "asis"}
+cleanFile <- file.path("..", txtPath, "clean_type_32.txt")
+if (!file.exists(cleanFile)) {
+  macr <- loadData("macr")
+  badRows <- macr$record_type_id == 32
+  
+  type32 <- rmdDisplayDataFrameHead(macr[which(badRows)[seq_len(4L)],], maxCols = 10L, maxColWidth = 5L)
+  writeLines(type32, cleanFile)
+  
+  macr.clean <- macr[!badRows,]
+  macr.clean$record_type_id <- droplevels(macr.clean$record_type_id)
+  
+  rm(badRows)
+} else {
+  type32 <- readLines(cleanFile)
+}
+cat(type32, sep = "\n")
+rm(type32, cleanFile)
+```
+
+## Arrest Date
+
+```{r clean_arrestdate, echo=FALSE}
+cleanFile <- file.path("..", txtPath, "clean_arrestDate.txt")
+if (!file.exists(cleanFile)) {
+  macr.clean$arrest_date <- with(macr.clean, as.Date(paste(arrest_year, arrest_month, arrest_day, sep = "-"), format = "%F"))
+  macr.clean$arrest_day[macr.clean$arrest_day == 0L] <- NA
+  
+  naRows <- is.na(macr.clean$arrest_date) & !is.na(macr.clean$arrest_day)
+  naIndices <- which(naRows)
+  
+  ## month rolled over into the next accidentially
+  monthSlippedRows <- with(macr.clean, sapply(naIndices, function(index) 
+    index > 1L                                     &&
+    arrest_month[index - 1L] < arrest_month[index] &&
+    arrest_day[index - 1L]  <= arrest_day[index]   &&
+    ncic_jurisdiction[index - 1L] == ncic_jurisdiction[index]
+  ))
+  
+  monthSlipped <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[which.max(monthSlippedRows)],
+                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+  
+  ## if it looks like maybe a day has transposed digits, it'll be the same month as everything
+  ## else but higher than its neighbors
+  dayTransposedRows <- with(macr.clean, sapply(naIndices, function(index)
+    (index == 1L || (arrest_month[index] == arrest_month[index - 1L] &&
+                     arrest_day[index]   >  arrest_day[index - 1L]   &&
+                     ncic_jurisdiction[index] == ncic_jurisdiction[index - 1L]))        &&
+    (index == length(arrest_day) || (arrest_month[index] == arrest_month[index + 1L] &&
+                                     arrest_day[index] > arrest_day[index + 1L]     &&
+                                     ncic_jurisdiction[index] == ncic_jurisdiction[index + 1L]))
+  ))
+  
+  dayTransposedRow <- { for (i in which(dayTransposedRows))
+    if (macr.clean$arrest_day[naIndices[i]] == 31L && all(macr.clean$arrest_day[naIndices[i] + c(-1L, 1L)] == 13L)) break ; i }
+  dayTransposed <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[dayTransposedRow],
+                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+  
+  ## looks like someone just extended february
+  dayAddedRows <- with(macr.clean, sapply(naIndices, function(index)
+    index > 1L && index < length(arrest_day)               &&
+    length(unique(arrest_month[index + -1L:1L])) == 1L     &&
+    length(unique(ncic_jurisdiction[index + 1L:1L])) == 1L &&
+    all(arrest_day[index + 0L:1L] == (arrest_day[index - 1L] + 1L), na.rm = TRUE)
+  ))
+  
+  dayAdded <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[which.max(dayAddedRows)],
+                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+  
+  numBadArrestDate <- as.character(sum(naRows))
+  arrestDate <- c(numBadArrestDate, monthSlipped, dayTransposed, dayAdded)
+  
+  writeLines(arrestDate, cleanFile)
+  
+  macr.clean$arrest_month[naRows] <- NA
+  macr.clean$arrest_day[naRows]   <- NA
+  
+  rm(naRows, naIndices, monthSlippedRows, monthSlipped, dayTransposedRows, i,
+     dayTransposed, dayAddedRows, dayAdded, numBadArrestDate)
+} else {
+  arrestDate <- readLines(cleanFile)
+}
+rm(cleanFile)
+```
+
+A total of `r arrestDate[1L]` records cannot be parsed into valid dates, i.e. the combination of `arrest_year`, `arrest_month`, and `arrest_day` results in a non-sensical date. Record with `arrest_day` of 0 are straightforward to handle, while in other cases it may be either the day or month that has been recorded incorrectly. Some structure in the coding may allow the correct date to be recovered. For example:
+
+* Records at the end of a month with the `arrest_month` field prematurely incremented:
+
+```{r, echo=FALSE, results="asis"}
+cat(arrestDate[seq.int(2L, 10L)], "\n\n", sep = "\n")
+```
+* Records where the digits in `arrest_day` appear to be transposed:
+
+```{r echo=FALSE, results="asis"}
+cat(arrestDate[seq.int(11L, 19L)], "\n\n", sep = "\n")
+```
+* Records where days were added at the end of a month:
+
+```{r echo=FALSE, results="asis"}
+cat(arrestDate[seq.int(20L, 28L)], "\n\n", sep = "\n")
+rm(arrestDate)
+```
+
+As for now determining a 'correct arrest date' requires estimation, we replace those arrest day and month records with `NA`.
+
+##  Birth Date
+
+MACR includes fields for both the birth date and age, which do not always align. Errors in the birth date include:
+
+* birth year recorded as `19xx` instead of `18xx`
+* birth year recorded as `9xx` instead of `19xx`
+* birth year in wrong millenia
+* birth day 0
+* birth month 0
+* birth date invalid (e.g. `02/31/1991`)
+
+```{r clean_birthdate_1, echo=FALSE}
+cleanFile <- file.path("..", txtPath, "clean_birthdate_1.txt")
+if (!file.exists(cleanFile)) {
+  birth_year.clean <- macr.clean$birth_year
+
+  discrepancyRows <- with(macr.clean, abs(arrest_year - birth_year - age) > 1L)
+  discrepancyRows[is.na(discrepancyRows)] <- FALSE
+  numDiscepancyBirthYear <- as.character(sum(discrepancyRows))
+  
+  offBy100 <- discrepancyRows & with(macr.clean, abs(arrest_year - (birth_year - 100L) - age) <= 1L)
+  offBy100[is.na(offBy100)] <- FALSE
+  
+  birth_year.clean[offBy100] <- birth_year.clean[offBy100] - 100L
+  
+  discrepancyRows <- discrepancyRows & !offBy100
+  
+  offBy1000 <- discrepancyRows & with(macr.clean, abs(arrest_year - (birth_year + 1000L) - age) <= 1L)
+  offBy1000[is.na(offBy1000)] <- FALSE
+
+  birth_year.clean[offBy1000] <- birth_year.clean[offBy1000] + 1000L
+  
+  discrepancyRows <- discrepancyRows & !offBy1000
+  
+  birth_year.clean[which(birth_year.clean == 3082L)] <- 1982L
+  birth_year.clean[which(birth_year.clean == 5010L)] <- 1910L
+  
+  macr.clean$birth_year <- birth_year.clean
+  rm(discrepancyRows, offBy100, offBy1000, birth_year.clean)
+  
+  writeLines(numDiscrepancyBirthYear, cleanFile)
+} else {
+  numDiscrepancyBirthYear <- readLines(cleanFile)
+}
+rm(cleanFile)
+```
+
+Errors in the birth year are detected by looking for when the age and distance from arrest year to birth year exceed 1 in absolute value, and are `r numDiscrepancyBirthYear` in number. Cases where there difference is 100 or 1000 years can be resolved automatically, which leaves only 2 cases to be resolved by hand.
+
+```{r clean_birthdate_2, echo=FALSE}
+cleanFile <- file.path("..", txtPath, "clean_birthdate_2.txt")
+if (!file.exists(cleanFile)) {
+  macr.clean$birth_month[macr.clean$birth_month <= 0L] <- NA
+  macr.clean$birth_day  [macr.clean$birth_day   <= 0L] <- NA
+  
+  macr.clean$birth_date <- with(macr.clean, as.Date(paste(birth_year,  birth_month,  birth_day,  sep = "-"), format = "%F"))
+  
+  ## load getTimeDifferenceInYears
+  source(file.path("..", commonSrcPath, "time.R"))
+  age.est <- with(macr.clean, getTimeDifferenceInYears(arrest_date, birth_date))
+  discrepancyRows <- macr.clean$age != age.est
+  discrepancyRows[is.na(discrepancyRows)] <- FALSE
+  
+  numDiscrepancyBirthYear <- sum(discrepancyRows)
+  rm(age.est, discrepancyRows, getTimeDifferenceInYears)
+  
+  writeLines(as.character(numDiscrepancyBirthYear), cleanFile)
+} else {
+  numDiscrepancyBirthYear <- as.integer(readLines(cleanFile))
+}
+rm(cleanFile)
+```
+
+Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl == 1L) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age.
+
+```{r clean_birthdate_3, echo=FALSE}
+rm(numDiscrepancyBirthYear)
+cleanFile <- file.path("..", txtPath, "clean_birthdate_3.txt")
+if (!file.exists(cleanFile)) {
+  naRows <- with(macr.clean, is.na(birth_date) & !is.na(birth_month) & !is.na(birth_day))
+  
+  numInvalidBirthDates <- sum(naRows)
+  
+  birth_day.est  <- macr.clean$birth_day
+  birth_date.est <- macr.clean$birth_date
+  
+  invalidRows <- naRows
+  
+  ## we shift down the feb/31 to feb/30 to feb/29 until they're valid dates
+  for (i in seq_len(3)) {
+    birth_day.est[invalidRows] <- birth_day.est[invalidRows] - 1L
+    birth_date.est[invalidRows] <- with(macr.clean, as.Date(paste(
+        birth_year[invalidRows], birth_month[invalidRows], birth_day.est[invalidRows],
+        sep = "-"),
+      format = "%F"))
+  
+    invalidRows <- with(macr.clean, is.na(birth_date.est) & !is.na(birth_month) & !is.na(birth_day))
+  }
+  rm(i)
+  
+  ## load getTimeDifferenceInYears
+  source(file.path("..", commonSrcPath, "time.R"))
+  age.est <- getTimeDifferenceInYears(macr.clean$arrest_date, birth_date.est)
+
+  macr.sub <- macr.clean[c("arrest_month", "arrest_day", "arrest_date", "birth_year", "birth_month", "birth_day", "age")]
+  macr.sub$birth_date.est <- birth_date.est
+  macr.sub$age.est <- age.est
+  
+  discrepancyRows <- with(macr.sub, age.est != age)
+  discrepancyRows[is.na(discrepancyRows)] <- FALSE
+  macr.sub <- macr.sub[discrepancyRows,]
+  
+  numDiscrepancyBirthYear <- sum(discrepancyRows)
+  
+  numAddedDays <- with(macr.sub, sum(arrest_month != birth_month | birth_day <= arrest_day, na.rm = TRUE))
+  macr.sub$arrest_month <- NULL
+  macr.sub$arrest_day   <- NULL
+  addedDays <- rmdFormat(macr.sub[seq_len(5L),])
+  
+  macr.clean$birth_day[naRows]   <- NA
+  macr.clean$birth_month[naRows] <- NA
+  
+  rm(naRows, invalidRows, age.est, macr.sub, discrepancyRows, getTimeDifferenceInYears, birth_day.est, birth_date.est)
+  
+  writeLines(c(as.character(c(numInvalidBirthDates, numDiscrepancyBirthYear, numAddedDays)), addedDays), cleanFile)
+} else {
+  values <- readLines(cleanFile)
+  numInvalidBirthDates <- as.integer(values[1L])
+  numDiscrepancyBirthYear <- as.integer(values[2L])
+  numAddedDays <- as.integer(values[3L])
+  addedDays <- tail(values, -3L)
+  rm(values)
+}
+rm(cleanFile)
+```
+  
+There are `r numInvalidBirthDates` remaining rows with invalid birth dates. While in general not true, temporarily assuming that the `birth_month` field is correct and the `birth_day` is possibly incorrect allows for the construction of valid dates by progressively decrementing the `birth_day` field. After doing so, there are `r numDiscrepancyBirthYear` records remaining that show a discrepancy between age and that found by taking the difference between arrest date and birth date. `r if (numAddedDays == 0L) "All" else as.character(numDiscrepancyBirthYear - numAddedDays)` of these can be explained by the fact that the birth month and arrest month are the same, but the arrest happened so late in the month that the only way for a stated age to be valid would be if the month had extra days. For example:
+
+```{r echo=FALSE, results="asis"}
+cat(addedDays, "\n", sep = "\n")
+rm(numInvalidBirthDates, numDiscrepancyBirthYear, numAddedDays, addedDays)
+```
+
+This suggests that some clerks used the `birth_day` field to resolve a discrepancy between an arrestee's stated age and birth day/month. Regardless, invalid birth dates are treated by setting the `birth_day` and `birth_month` to `NA`.
+
+## Age
+
+```{r clean_ageHistogram, echo=FALSE, results="asis"}
+ageHistogramFile <- file.path("..", imgPath, "clean_ageHistogram.pdf")
+if (!file.exists(ageHistogramFile)) {
+  tab <- table(macr.clean$age)
+  ages <- as.integer(names(tab))
+  pdf(ageHistogramFile, width = 6, height = 3)
+  par(mfrow = c(1L, 2L))
+  discrete.histogram(tab[ages <= 10], xlab = "age", col = "gray", main = "age <= 10")
+  discrete.histogram(tab[ages >= 80], xlab = "age", col = "gray", main = "age >= 80")
+  dev.off()
+  rm(tab, ages)
+}
+ageHistogramFile <- file.path(imgPath, "clean_ageHistogram.pdf")
+imgText <- paste0("![](", ageHistogramFile, ")")
+
+cat(imgText, "\n\n", sep = "")
+rm(imgText, ageHistogramFile)
+```
+
+As the above figure shows, there are a large number of arrests for exceptionally young children, and an odd decrease in arrests at age 90. For the young we find:
+
+```{r clean_youngTable, echo=FALSE, results="asis"}
+cleanFile <- file.path("..", txtPath, "clean_youngTable.txt")
+if (!file.exists(cleanFile)) {
+  youngTable <- rmdFormat(table(macr.clean[macr.clean$age <= 5, c("offense_level", "age")]))
+  writeLines(youngTable, cleanFile)
+} else {
+  youngTable <- readLines(cleanFile)
+}
+
+cat(youngTable, sep = "\n")
+rm(youngTable, cleanFile)
+```

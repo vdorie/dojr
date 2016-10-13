@@ -4,6 +4,7 @@ output:
   pdf_document:
     includes:
       in_header: ../common/src/styles.sty
+    keep_tex: true
   html_document: default
 ---
 
@@ -52,7 +53,8 @@ loadData <- function(tableName = mainTable) {
     } else {
       stop("unrecognized file format: '", tables$file[tableIndex], "'")
     }
-    if (tables$on_load[tableIndex] != "") eval(parse(text = tables$on_load[tableIndex]), .GlobalEnv)
+    if (!is.na(tables$on_load[tableIndex]) && tables$on_load[tableIndex] != "")
+      eval(parse(text = tables$on_load[tableIndex]), .GlobalEnv)
   }
   .GlobalEnv$dataLoaded[[tableName]] <- TRUE
   
@@ -76,40 +78,33 @@ if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath,
 
 # Introduction
 
-## Tables
+# Tables
 
 ```{r tables_summary, echo=FALSE, results="asis"}
-getColumnType <- function(x) { cl <- class(x); if (cl[1L] %in% c("numeric", "integer") && length(unique(x)) == 2L) "binary" else cl }
-getColumnValues <- function(x) {
-  if (is.factor(x)) truncateString(paste0(truncateString(levels(x), 10L), collapse = "/"), 24)
-  else if (is.numeric(x)) paste0(range(x, na.rm = TRUE), collapse = "-")
-  else if (is.character(x)) truncateString(paste0(truncateString(unique(x), 10L), collapse = "/"), 24)
-}
-
 for (i in seq_len(nrow(tables))) {
   cat("### ", tables$display_name[i], "\n\n", sep = "")
   if (tables$description[i] != "")
     cat(tables$description[i], "\n\n", sep = "")
   
   firstFive <- formatFirstFiveRows(tables$name[i])
-  if (length(firstFive) != 1L && firstFive != "")
+  if (length(firstFive) != 1L || firstFive != "")
     cat("#### Sample Rows\n\n", firstFive, "\n", sep = "\n")
   
   variablesSummary <- summarizeVariables(tables$name[i])
-  if (length(variablesSummary) != 1L && variablesSummary != "")
+  if (length(variablesSummary) != 1L || variablesSummary != "")
     cat("#### Variable Summary\n\n", rmdFormat(variablesSummary), sep = "\n")
 }
+rm(firstFive, variablesSummary)
 ```
 
-`r if (targetType == "latex") cat("\n\\newpage\n\n")`
+`r if (targetType == "latex") "\n\\newpage\n\n"`
 
-## Main Table Variables
+# Main Table Variables
 
-```{r variables, echo=FALSE}
-variables <- read.csv(file.path(datasetDir, "macr_variables.csv"), stringsAsFactors = FALSE, header = TRUE)
-```
+```{r main_table_variables, echo=FALSE, results="asis"}
+variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv")),
+                      stringsAsFactors = FALSE)
 
-```{r variables_pages, echo=FALSE, results="asis"}
 for (i in seq_len(nrow(variables))) {
   if (targetType == "latex" && i > 1L) cat("\n\\newpage\n\n")
   variable <- variables[i,]
@@ -118,11 +113,18 @@ for (i in seq_len(nrow(variables))) {
   if (variable[["question_text"]] != "") cat("#### Prompt\n\n", variable[["question_text"]], "\n\n", sep = "")
   if (variable[["notes"]] != "") cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
   
+  if (!is.null(variable[["contains_pii"]]) && variable[["contains_pii"]] == 1L) next
+  
   variableSummary <- summarizeVariable(variable[["name"]])
-  if (length(variableSummary) > 1L || variableSummary != "") {
+  if (length(variableSummary) != 1L || variableSummary != "") {
     cat("#### Summary\n\n")
     cat(variableSummary, sep = "\n")
     cat("\n")
   }
 }
+rm(variable, variableSumamry)
+```
+
+
+```{r child = if (file.exists(cleanFile <- file.path(datasetDir, "clean.Rmd"))) cleanFile else NULL }
 ```

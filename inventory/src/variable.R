@@ -19,12 +19,12 @@ summarizeVariable <- function(variableName) {
     imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
     if (!file.exists(imgFile)) {
       pdf(imgFile, width = 4, height = 4)
-      barplot(table(x), main = variableName)
+      discrete.histogram(x, main = variableName, xlab = variableName, col = "gray")
       dev.off()
     }
     
     summaryStatistics <- summary(x)
-    variableSummary <- c(rmdFormat(summaryStatistics), "", "", paste0("![](", imgFile, ")"), "")
+    variableSummary <- c(rmdFormat(summaryStatistics), "", paste0("![](", imgFile, ")"), "")
   } else if (is.numeric(x)) {
     imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
     if (!file.exists(imgFile)) {
@@ -34,8 +34,7 @@ summarizeVariable <- function(variableName) {
     }
     
     summaryStatistics <- summary(x)
-    imgText <- paste0(if (targetType == "latex") "\\centering " else "", "![](", imgFile, ")")
-    variableSummary <- c(rmdFormat(summaryStatistics), "", "", imgText, "")
+    variableSummary <- c(rmdFormat(summaryStatistics), "", paste0("![](", imgFile, ")"), "")
   } else {
     variableSummary <- ""
   }

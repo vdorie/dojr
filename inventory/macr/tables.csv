@@ -1,5 +1,5 @@
 name,display_name,file,object,full_summary,main_table,on_load,description
-macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,"macr$name <- 'pii'","Words
+macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"Words
 
 * Words
 * More Words"

@@ -1,15 +1,17 @@
 name,display_name,short_description,contains_pii,question_text,value_labels,notes
 age,age of individual arrested,,0,"Arrest data for adults (age 18 years and older on the date of arrest) and juveniles (age 17 years or younger on the date of arrest) must be separated. Check the proper box to indicate if the data on the page submitted is adult or juvenile. If an agency has no adult or juvenile arrests for a month, ""no adults to report"" or ""no juveniles to report"" box must be checked.",,
 arrest_day,arrest day,,0,"Use eight-digits: two each for the month, and day, and four for the year. For example, an arrest made on February 9, 2006 should be entered as: 02/09/2006.",,
-arrest_month,arrest month,,0,,,
-arrest_year,arrest year,,0,,,
+arrest_month,arrest month,,0,"Use eight-digits: two each for the month, and day, and four for the year. For example, an arrest made on February 9, 2006 should be entered as: 02/09/2006.",,
+arrest_year,arrest year,,0,"Use eight-digits: two each for the month, and day, and four for the year. For example, an arrest made on February 9, 2006 should be entered as: 02/09/2006.",,
 bcs_jurisdiction,bcs jurisdiction,deprecated,0,The code/ID number assigned to the reporting agency (old). ,,
 bcs_offense_code,bcs offense code,,0,The code assigned to an offense. This code combines groups of like statutes that are grouped for statistical analysis.,,misdemeanor traffic violations (BCS codes 086 and 087) are optional to report on the MACR
 bcs_summary_offense_code,bcs summary offense code,,0,The codes assigned to a BCS code. This code combines like BCS codes for more general statistical analysis.,,
 birth_day,birth day,,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
 If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
-birth_month,birth month,,1,,,
-birth_year,birth year,,1,,,
+birth_month,birth month,,1,Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
+birth_year,birth year,,1,Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
 disposition,,,0,"This column is intended for the disposition of the agency reporting the arrest or citation. DO NOT report the district attorney or court disposition in this column. It is intended to reflect the law enforcement agency disposition of the charge, not the person. ENTER ONE DISPOSITION PER LINE ITEM.","Misdemeanor (only for adults):
 
 * Misdemeanor complaints that are sought by the arresting agency. (not used for juveniles)

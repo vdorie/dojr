@@ -64,7 +64,7 @@ Records of No Arrest Codes:
 Deleted Record Code:
 
 * 32 - Specific delete action",
-status_type,status after arrest,,0,"The status column describes the type of apprehension (at the time of initial contact with the arrestee). It determines how many individuals are cited versus those actually delivered to jail.
+status_type,status type,"whether the individual was booked, cited, or other",0,"The status column describes the type of apprehension (at the time of initial contact with the arrestee). It determines how many individuals are cited versus those actually delivered to jail.
 The arresting agency is responsible for determining if it is a ""cite,"" ""book"" or ""other."" The arresting agency should report “book” even when the suspect is sent to another law enforcement agency for processing. For example, many police departments send suspects that have been arrested to the county jail to be booked.","Cited:
 
 * Cited (or summoned) to appear in court as an alternative to being jailed or cited to court and later booked as directed by the court. A cite occurs in the field, when the suspect is not physically arrested by the officer.

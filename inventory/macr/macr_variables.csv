@@ -43,14 +43,14 @@ Department (only for juveniles):
 
 * A situation that has been settled by the arresting agency, no action is to be taken by the juvenile probation department or the court, and the juvenile is released to his/her parents, guardian, or the street with a warning.
 * A juvenile is placed on a local diversion program including, for statistical purposes, any juvenile deemed not arrested or cited.",
-fbi_offense_code,,,0,The FBI’s grouping of California offenses for national comparisons. These do not distinguish between felony and misdemeanor levels.,,
-gender,arrested individual's gender,,0,Enter either (1) Male or (2) Female.,,
-name,arrested individual's name,,1,"Print legibly or type the last name, middle name or initial (if known), and first name of the arrestee. If name is unknown, use “John Doe” or “Jane Doe.”",,
+fbi_offense_code,FBI offense code,code under the FBI's Uniform Crime Reporting system,0,The FBI’s grouping of California offenses for national comparisons. These do not distinguish between felony and misdemeanor levels.,,
+gender,gender,arrested individual's gender,0,Enter either (1) Male or (2) Female.,,
+name,name,arrested individual's name,1,"Print legibly or type the last name, middle name or initial (if known), and first name of the arrestee. If name is unknown, use “John Doe” or “Jane Doe.”",,
 id,id number assigned by local agency,,1,,,
-ncic_jurisdiction,police department code. first two digits are the county.,,0,"Enter your agency’s ORI/NCIC number. Agencies should abbreviate the nine-character NCIC code on the MACR report by using the fourth through seventh character of the NCIC code. For example, if your NCIC number is “CA0570100,” report “5701” only.",,
-offense_level,The level of the offense the individual was arrested for.,,0,"Select the level (delinquent, misdemeanor or felony) that best describes the most serious offense. Enter only one level per arrest or citation. 1) Delinquent (juvenile-only), 2) Misdemeanor, 3) Felony",,
-race_or_ethnicity,individual's race or ethnicity,,0,"Record only one alpha designation that applies. Agencies submitting automated reports must verify that the appropriate codes are being entered. Do not report the race as ""Unknown."" Record the appropriate alpha code for race. Do not use ""other"" for unknown race.",,
-record_type_id,type of arrest record,,0,"Flag that describes the action of the record. Codes 14, 24, and 94 represent arrest records. Codes 21, 32 and 91 represent deleted records or records of no arrest.","Arrest Codes:
+ncic_jurisdiction,NCIC jurisdiction,law enforcement agency code. first two digits are the county.,0,"Enter your agency’s ORI/NCIC number. Agencies should abbreviate the nine-character NCIC code on the MACR report by using the fourth through seventh character of the NCIC code. For example, if your NCIC number is “CA0570100,” report “5701” only.",,
+offense_level,offense level,The level of the offense the individual was arrested for.,0,"Select the level (delinquent, misdemeanor or felony) that best describes the most serious offense. Enter only one level per arrest or citation. 1) Delinquent (juvenile-only), 2) Misdemeanor, 3) Felony",,
+race_or_ethnicity,race or ethnicity,arrested individual's race or ethnicity,0,"Record only one alpha designation that applies. Agencies submitting automated reports must verify that the appropriate codes are being entered. Do not report the race as ""Unknown."" Record the appropriate alpha code for race. Do not use ""other"" for unknown race.",,
+record_type_id,record type,type of arrest record,0,"Flag that describes the action of the record. Codes 14, 24, and 94 represent arrest records. Codes 21, 32 and 91 represent deleted records or records of no arrest.","Arrest Codes:
 
 * 14 - Add a record
 * 24 - Replace a specific record

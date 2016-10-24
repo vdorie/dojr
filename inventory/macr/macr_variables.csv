@@ -5,7 +5,14 @@ arrest_month,arrest month,month the individual was arrested,0,"Use eight-digits:
 arrest_year,arrest year,year the individual was arrested,0,"Use eight-digits: two each for the month, and day, and four for the year. For example, an arrest made on February 9, 2006 should be entered as: 02/09/2006.",,
 bcs_jurisdiction,bcs jurisdiction,deprecated,0,The code/ID number assigned to the reporting agency (old). ,,
 bcs_offense_code,bcs offense code,a code that groups like statutes (offenses),0,The code assigned to an offense. This code combines like statutes for statistical analysis.,,misdemeanor traffic violations (BCS codes 086 and 087) are optional to report on the MACR
-bcs_summary_offense_code,bcs summary offense code,a code that combines BCS codes for more general analyses,0,These codes are assigned to BCS codes. They combine like BCS codes for more general statistical analysis.,,
+bcs_summary_offense_code,bcs summary offense code,a code that combines BCS codes for more general analyses,0,These codes are assigned to BCS codes. They combine like BCS codes for more general statistical analysis.,,"Arrests for the following offenses are not included in publications from the California DOJ's Criminal Justice Statistics Center:
+•	Summary code 26 = Felony Federal offense
+•	Summary code 27 = Felony outside warrant
+•	Summary code 28 = Felony probation/parole violation
+•	Summary code 65 = Misdemeanor civil drunk
+•	Summary code 66 = Misdemeanor outside warrant
+•	Summary code 67 = Misdemeanor probation/parole violation
+•	Summary code 74 = Misdemeanor miscellaneous traffic"
 birth_day,birth day,day of the month the individual was born,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
 If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
 birth_month,birth month,month the individual was born,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.

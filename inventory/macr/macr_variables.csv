@@ -6,11 +6,11 @@ arrest_year,arrest year,year the individual was arrested,0,"Use eight-digits: tw
 bcs_jurisdiction,bcs jurisdiction,deprecated,0,The code/ID number assigned to the reporting agency (old). ,,
 bcs_offense_code,bcs offense code,a code that groups like statutes (offenses),0,The code assigned to an offense. This code combines like statutes for statistical analysis.,,misdemeanor traffic violations (BCS codes 086 and 087) are optional to report on the MACR
 bcs_summary_offense_code,bcs summary offense code,a code that combines BCS codes for more general analyses,0,These codes are assigned to BCS codes. They combine like BCS codes for more general statistical analysis.,,
-birth_day,birth day,,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+birth_day,birth day,day of the month the individual was born,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
 If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
-birth_month,birth month,,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+birth_month,birth month,month the individual was born,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
 If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
-birth_year,birth year,,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
+birth_year,birth year,year the individual was born,1,"Use eight-digits: two each for the month and day, and four for the year. For example, a birthdate of January 9, 1949 should be entered as: 01/09/1949.
 If the month and day are not known, use February 30 for the month and day and show the year of birth. For example, if the year of birth is 1945, enter the following: 02/30/1945. Do not write in the age. If the age is known, but not the date of birth, subtract the age from the present year and enter the resulting year of birth.",,
 disposition,disposition,law enforcement disposition,0,"This column is intended for the disposition of the agency reporting the arrest or citation. DO NOT report the district attorney or court disposition in this column. It is intended to reflect the law enforcement agency disposition of the charge, not the person. ENTER ONE DISPOSITION PER LINE ITEM.","Misdemeanor (only for adults):
 
@@ -81,4 +81,4 @@ Other:
 * An adult makes bail on a warrant and is neither cited nor booked.
 * Detained for civil drunk occurrences per 647 (G) PC.
 * When juveniles are neither cited nor booked (e.g., detained only, sent to a diversion program, referred to the probation department, etc.). Use “other” when there was no arrest report filled out.",
-summary_offense_level,bcs summary offense level (used to separate juveniles),,0,The level assigned to the record used to distinguish between juvenile and adult records.,,
+summary_offense_level,summary offense level,bcs summary offense level (used to separate juveniles),0,The level distinguishs between juvenile and adult records.,,

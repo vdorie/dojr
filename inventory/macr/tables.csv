@@ -1,8 +1,20 @@
 name,display_name,file,object,full_summary,main_table,on_load,description
 macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"Words
 
-* Words
-* More Words"
+* The MACR contains only the most serious offense based on the severity of possible punishment for retention.
+* MACR data began to be stored in a digital format in 1980. The dataset spans 1980 to the present.
+
+Historical changes:
+* The race_or_ethnicity codes for Asian/Pacific Islander expanded in 1991. 
+* The CA DOJ stopped collecting data about arrests or citations made for infractions in 2005.  
+* In 2011, the lower limit of felony theft was raised from $400 to $950, contributing to the decrease in felony theft arrests and increase in misdemeanor theft arrests.
+* In 2011, some misdemeanor marijuana statutes were re-classified to infractions leading to a decrease in misdemeanor marijuana arrests.
+* In 2014, California voters passed Proposition 47, which reduced numerous state statutes from felonies to misdemeanors - leading to a reduction in some types of felony arrests. 
+
+
+Department-specific changes:
+* Bakersfield Police Department (PD) and Oakland PD were not able to report complete arrest data in 1995.
+* San Francisco did not update its race_or_ethnicity codes until 2012, when it adoped the FBI's categories: white, black, American Indian, other Asian, and other. San Francisco data since 2012 does not distinguish between Hispanic and non-Hispanic whites."
 bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,,"Not as many words"
 jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,0,,"Love words, best words"
 

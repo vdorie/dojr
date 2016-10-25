@@ -7,17 +7,17 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+targetType <- if (is.null(targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to"))) "latex" else targetType
 
-colFmt <- function(x, color) {
-  outputFormat = knitr::opts_knit$get("rmarkdown.pandoc.to")
-  switch(outputFormat, 
-         latex = paste0("\\textcolor{", color, "}{", x, "}"),
-         html  = paste0("<font color='", color, "'>", x, "</font>"),
-         x)
-}
+dataPath <- file.path("..", "common", "data")
 
-gridRatio <- knitr::opts_knit$get("rmarkdown.pandoc.to")
-gridRatio <- if (is.null(gridRatio) || gridRatio == "html") 1.6 else 8.5 / 11
+imgPath <- "img"
+srcPath <- "src"
+
+commonSrcPath <- file.path("..", "common", "src")
+source(file.path(commonSrcPath, "knitr.R"))
+
+gridRatio <- if (targetType == "html") 1.6 else 8.5 / 11
 ```
 
 ## Loading Data
@@ -25,7 +25,7 @@ gridRatio <- if (is.null(gridRatio) || gridRatio == "html") 1.6 else 8.5 / 11
 This document uses the `macr_clean.Rdata` file to aggregate and display booking rates for felonies and misdemeanors by first removing jurisdictions with anomalous booking rates.
 
 ```{r loading}
-load("macr_clean.Rdata") ## defines 'macr' object
+load(file.path(dataPath, "macr_pii.Rdata")) ## defines 'macr' object
 ## pull out only the columns that we use later
 macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type",
                     "offense_level",     "arrest_year",              "age",
@@ -36,10 +36,11 @@ macr.sub <- subset(macr.sub, arrest_year >= 2005)
 numYears <- length(unique(macr.sub$arrest_year))
 
 ## defines function getNamesForOffenseCodes
-source("offenseCodeNames.R")
+bcsOffenseCodes <- read.csv(file.path(dataPath, "bcs_offense_codes.csv"))
+source(file.path(commonSrcPath, "bcsOffenseCodes.R"))
 
 ## hides some ugly plot stuff
-source("plotFunctions.R")
+source(file.path(srcPath, "plotFunctions.R"))
 ```
 
 # Eliminating Jurisdictions

@@ -47,7 +47,7 @@ Department (only for juveniles):
 
 * A situation that has been settled by the arresting agency, no action is to be taken by the juvenile probation department or the court, and the juvenile is released to his/her parents, guardian, or the street with a warning.
 * A juvenile is placed on a local diversion program including, for statistical purposes, any juvenile deemed not arrested or cited.",
-fbi_offense_code,FBI offense code,[added by CA DOJ] code under the FBI's Uniform Crime Reporting system,0,The FBI’s grouping of California offenses for national comparisons. These do not distinguish between felony and misdemeanor levels.,,FBI codes only apply to the subset of offenses tracked in the Uniform Crime Reporting system
+fbi_offense_code,FBI offense code,[added by CA DOJ] code under the FBI Uniform Crime Reporting system,0,The FBI grouping of California offenses for national comparisons. These do not distinguish between felony and misdemeanor levels.,,FBI codes only apply to the subset of offenses tracked in the Uniform Crime Reporting system
 gender,gender,arrested individual's gender,0,Enter either (1) Male or (2) Female.,,
 name,name,arrested individual's name,1,"Print legibly or type the last name, middle name or initial (if known), and first name of the arrestee. If name is unknown, use ""John Doe"" or ""Jane Doe.""",,
 id,local reference number,an id number assigned by the reporting agency,1,"Enter the most reliable number for locating the arrested person in your agency's files in case questions arise. This can be the booking, arrest, or crime report number.",,
@@ -84,7 +84,7 @@ Other:
 
 * An adult makes bail on a warrant and is neither cited nor booked.
 * Detained for civil drunk occurrences per 647 (G) PC.
-* When juveniles are neither cited nor booked (e.g., detained only, sent to a diversion program, referred to the probation department, etc.). Use "other" when there was no arrest report filled out.","Analysis suggests that the booking rates are very unreliable at the agency level and extremely noisy, probably biased, at the aggregate level. We recommend not using this variable unless you have reason to believe that particular agencies have reliable data."
+* When juveniles are neither cited nor booked (e.g., detained only, sent to a diversion program, referred to the probation department, etc.). Use ""other"" when there was no arrest report filled out.","Analysis suggests that the booking rates are very unreliable at the agency level and extremely noisy, probably biased, at the aggregate level. We recommend not using this variable unless you have reason to believe that particular agencies have reliable data."
 summary_offense_level,summary offense level,[added by CA DOJ] BCS summary offense level (used to separate juveniles),0,The level distinguishs between juvenile and adult records.,"F - Felony (Adults)
 J - Juvenile
 M - Misdemeanor (Adults)",

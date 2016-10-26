@@ -56,8 +56,7 @@ gender,gender,arrested individual's gender,0,Enter either (1) Male or (2) Female
 name,name,arrested individual's name,1,"Print legibly or type the last name, middle name or initial (if known), and first name of the arrestee. If name is unknown, use “John Doe” or “Jane Doe.”",,
 id,local reference number,an id number assigned by the reporting agency,1,"Enter the most reliable number for locating the arrested person in your agency's files in case questions arise. This can be the booking, arrest, or crime report number.",,
 ncic_jurisdiction,NCIC jurisdiction,Unique law enforcement agency code. First two digits are the county.,0,"Enter your agency’s ORI/NCIC number. Agencies should abbreviate the nine-character NCIC code on the MACR report by using the fourth through seventh character of the NCIC code. For example, if your NCIC number is “CA0570100,” report “5701” only.",see the NCIC jurisdiction table,"Some agencies disappear and others are created over time. From 2005-2015, about 95% of arrests were made by about 250 agencies." 
-offense_level,offense level,The level of the offense the individual was arrested for.,0,"Select the level (delinquent, misdemeanor or felony) that best describes the most serious offense. Enter only one level per arrest or citation. 1) Delinquent (juvenile-only; also known as 'status offense'), 2) Misdemeanor, 3) Felony",
-Status offense
+offense_level,offense level,The level of the offense the individual was arrested for.,0,"Select the level (delinquent, misdemeanor or felony) that best describes the most serious offense. Enter only one level per arrest or citation. 1) Delinquent (juvenile-only; also known as 'status offense'), 2) Misdemeanor, 3) Felony",Status offense
 Misdemeanor
 Felony,Status offenses only apply to juveniles.
 race_or_ethnicity,race or ethnicity,arrested individual's race or ethnicity,0,"Record only one alpha designation that applies. Agencies submitting automated reports must verify that the appropriate codes are being entered. Do not report the race as ""Unknown."" Record the appropriate alpha code for race. Do not use ""other"" for unknown race.",,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
@@ -92,8 +91,6 @@ Other:
 * An adult makes bail on a warrant and is neither cited nor booked.
 * Detained for civil drunk occurrences per 647 (G) PC.
 * When juveniles are neither cited nor booked (e.g., detained only, sent to a diversion program, referred to the probation department, etc.). Use “other” when there was no arrest report filled out.","Analysis suggests that the booking rates are very unreliable at the agency level and extremely noisy, probably biased, at the aggregate level. We recommend not using this variable unless you have reason to believe that particular agencies have reliable data."
-summary_offense_level,summary offense level,[added by CA DOJ] BCS summary offense level (used to separate juveniles),0,The level distinguishs between juvenile and adult records.,
-"F - Felony (Adults)
+summary_offense_level,summary offense level,[added by CA DOJ] BCS summary offense level (used to separate juveniles),0,The level distinguishs between juvenile and adult records.,"F - Felony (Adults)
 J - Juvenile
-M - Misdemeanor (Adults)"
-,
+M - Misdemeanor (Adults)",

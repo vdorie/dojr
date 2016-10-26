@@ -14,6 +14,7 @@ Historical changes:
 
 
 Department-specific changes:
+
 * Bakersfield Police Department (PD) and Oakland PD were not able to report complete arrest data in 1995.
 * San Francisco did not update its race_or_ethnicity codes until 2012, when it adoped the FBI's categories: white, black, American Indian, other Asian, and other. San Francisco data since 2012 does not distinguish between Hispanic and non-Hispanic whites."
 bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,,"Not as many words"

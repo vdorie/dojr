@@ -1,0 +1,326 @@
+offense_code,summary_offense_code,summary_offense_type,offense_category,new_2013
+1,68,"Truancy","Status",0
+2,69,"Runaway","Status",0
+3,70,"Curfew","Status",0
+4,72,"Other Stat Offenses","Status",0
+6,72,"Other Stat Offenses","Status",0
+7,71,"Incorrigible","Status",0
+9,72,"Other Stat Offenses","Status",0
+11,72,"Other Stat Offenses","Status",0
+16,60,"Highway","Misdemeanor",0
+17,67,"Probation/Parole","Other",0
+18,67,"Probation/Parole","Other",0
+26,40,"Lewd Conduct","Misdemeanor",0
+27,60,"Fail to Register","Misdemeanor",0
+28,41,"Prostitution","Misdemeanor",0
+36,46,"Disturbing the Peace","Misdemeanor",0
+46,43,"Drunk","Misdemeanor",0
+47,65,"Civil Drunk","Other",0
+48,60,"Other","Misdemeanor",0
+49,60,"Other","Misdemeanor",0
+56,46,"Disturbing the Peace","Misdemeanor",0
+57,45,"Disorderly Conduct","Misdemeanor",0
+58,60,"Public Nuisance","Misdemeanor",0
+59,57,"Glue Sniffing","Misdemeanor",0
+63,25,"Malicious Mischief","Felony",0
+64,25,"Malicious Mischief","Felony",0
+65,27,"Outside Warrant","Other",0
+66,47,"Vandalism","Misdemeanor",0
+67,48,"Malicious Mischief","Misdemeanor",0
+68,49,"Trespassing","Misdemeanor",0
+69,66,"Outside Warrant Misd","Other",0
+75,25,"Gambling","Felony",0
+76,55,"Gambling","Misdemeanor",0
+77,44,"Liquor Laws","Misdemeanor",0
+78,44,"Liquor Laws","Misdemeanor",0
+79,60,"Contempt of Court","Misdemeanor",0
+86,74,"Misc Traffic","Other",0
+87,74,"Misc Traffic","Other",0
+88,53,"Traffic","Misdemeanor",0
+89,53,"Traffic","Misdemeanor",0
+90,26,"Federal Offense","Other",0
+91,26,"Federal Offense","Other",0
+92,26,"Federal Offense","Other",0
+93,28,"Probation/Parole Felony","Other",0
+94,28,"Probation/Parole Felony","Other",0
+96,60,"Other","Misdemeanor",0
+97,58,"City/County Ordinance","Misdemeanor",0
+98,59,"Failure to Appear/Non Traffic","Misdemeanor",0
+99,60,"Other","Misdemeanor",0
+100,1,"Homicide","Felony",0
+103,1,"Homicide","Felony",0
+110,1,"Homicide","Felony",0
+120,1,"Homicide","Felony",0
+121,1,"Homicide","Felony",0
+150,2,"Manslaughter","Felony",0
+151,2,"Manslaughter","Felony",0
+155,2,"Manslaughter","Felony",0
+160,3,"Manslaughter, Vehicle","Felony",0
+166,29,"Vehicle Manslaughter","Misdemeanor",0
+200,5,"Robbery","Felony",0
+210,5,"Robbery","Felony",0
+220,5,"Robbery","Felony",0
+230,5,"Robbery","Felony",0
+240,5,"Robbery","Felony",1
+250,5,"Robbery","Felony",0
+300,6,"Assault","Felony",0
+310,6,"Assault","Felony",0
+320,6,"Assault","Felony",0
+321,6,"Assault","Felony",0
+323,6,"Assault","Felony",0
+330,6,"Assault","Felony",0
+341,6,"Assault","Felony",0
+342,6,"Assault","Felony",0
+343,6,"Assault","Felony",0
+344,6,"Assault","Felony",0
+345,6,"Assault","Felony",0
+346,30,"Assault and Battery","Misdemeanor",0
+350,6,"Assault","Felony",0
+351,6,"Assault","Felony",0
+352,6,"Assault","Felony",0
+353,6,"Assault","Felony",0
+360,6,"Assault","Felony",0
+361,6,"Assault","Felony",0
+362,6,"Assault","Felony",0
+363,6,"Assault","Felony",0
+364,6,"Assault","Felony",0
+365,6,"Assault","Felony",0
+366,30,"Assault and Battery","Misdemeanor",0
+370,6,"Assault","Felony",0
+371,6,"Assault","Felony",0
+372,6,"Assault","Felony",0
+373,6,"Assault","Felony",0
+376,30,"Assault and Battery","Misdemeanor",0
+377,30,"Assault and Battery","Misdemeanor",0
+380,6,"Assault","Felony",0
+381,6,"Assault","Felony",0
+382,6,"Assault","Felony",0
+383,6,"Assault","Felony",0
+384,6,"Assault","Felony",0
+385,6,"Assault","Felony",0
+390,6,"Assault","Felony",0
+391,6,"Assault","Felony",0
+392,6,"Assault","Felony",0
+393,6,"Assault","Felony",0
+396,30,"Assault and Battery","Misdemeanor",0
+397,30,"Assault and Battery","Misdemeanor",0
+398,30,"Assault and Battery","Misdemeanor",0
+399,30,"Assault and Battery","Misdemeanor",0
+400,8,"Burglary","Felony",0
+406,76,"Burglary-Misd","Misdemeanor",0
+410,8,"Burglary","Felony",0
+420,8,"Burglary","Felony",0
+425,8,"Burglary","Felony",0
+430,8,"Burglary","Felony",0
+440,8,"Burglary","Felony",0
+450,8,"Burglary","Felony",0
+476,61,"Burglary Tools","Misdemeanor",0
+478,61,"Burglary Tools","Misdemeanor",0
+500,9,"Theft","Felony",0
+501,9,"Theft","Felony",0
+502,9,"Theft","Felony",0
+503,9,"Theft","Felony",0
+504,9,"Theft","Felony",0
+505,9,"Theft","Felony",0
+506,32,"Other Theft","Misdemeanor",0
+510,9,"Theft","Felony",0
+511,9,"Theft","Felony",0
+516,31,"Petty Theft","Misdemeanor",0
+517,31,"Petty Theft","Misdemeanor",0
+518,31,"Petty Theft","Misdemeanor",0
+530,9,"Theft","Felony",0
+531,9,"Theft","Felony",0
+537,32,"Other Theft","Misdemeanor",0
+550,9,"Theft","Felony",0
+551,9,"Theft","Felony",0
+552,9,"Theft","Felony",0
+556,32,"Other Theft","Misdemeanor",0
+557,32,"Other Theft","Misdemeanor",0
+558,32,"Other Theft","Misdemeanor",0
+560,10,"Motor Vehicle Theft","Felony",0
+561,10,"Motor Vehicle Theft","Felony",0
+570,10,"Motor Vehicle Theft","Felony",0
+571,10,"Motor Vehicle Theft","Felony",0
+572,9,"Theft","Felony",0
+576,54,"Joy Riding","Misdemeanor",0
+580,11,"Forgery/Checks/Access Cards","Felony",0
+581,11,"Forgery/Checks/Access Cards","Felony",0
+582,11,"Forgery/Checks/Access Cards","Felony",0
+583,11,"Forgery/Checks/Access Cards","Felony",0
+584,11,"Forgery/Checks/Access Cards","Felony",0
+585,11,"Forgery/Checks/Access Cards","Felony",0
+586,33,"Checks and Access Cards","Misdemeanor",0
+587,33,"Checks and Access Cards","Misdemeanor",0
+600,4,"Forcible rape","Felony",0
+600,4,"Rape","Felony",1
+610,4,"Forcible rape","Felony",0
+610,4,"Rape","Felony",1
+611,4,"Forcible rape","Felony",0
+611,4,"Rape","Felony",1
+620,4,"Forcible rape","Felony",0
+620,4,"Rape","Felony",1
+621,4,"Forcible rape","Felony",0
+621,4,"Rape","Felony",1
+630,4,"Forcible rape","Felony",0
+630,4,"Rape","Felony",1
+635,4,"Forcible rape","Felony",0
+635,4,"Rape","Felony",1
+640,17,"Unlawful Sexual Intercourse","Felony",0
+646,38,"Annoying Child","Misdemeanor",0
+700,16,"Lewd or Lascivious","Felony",0
+705,4,"Rape","Felony",1
+705,18,"Other Sex Law Violations","Felony",0
+710,4,"Rape","Felony",1
+710,18,"Other Sex Law Violations","Felony",0
+711,4,"Rape","Felony",1
+711,18,"Other Sex Law Violations","Felony",0
+712,4,"Rape","Felony",1
+712,18,"Other Sex Law Violations","Felony",0
+713,4,"Rape","Felony",1
+713,18,"Other Sex Law Violations","Felony",0
+714,4,"Rape","Felony",1
+714,18,"Other Sex Law Violations","Felony",0
+720,18,"Other Sex Law Violations","Felony",0
+726,42,"Contributing to the Delinquency of Minor","Misdemeanor",0
+730,18,"Other Sex Law Violations","Felony",0
+731,4,"Rape","Felony",1
+731,18,"Other Sex Law Violations","Felony",0
+732,4,"Rape","Felony",1
+732,18,"Other Sex Law Violations","Felony",0
+733,4,"Rape","Felony",1
+733,18,"Other Sex Law Violations","Felony",0
+734,4,"Rape","Felony",1
+734,18,"Other Sex Law Violations","Felony",0
+737,62,"Other Sex","Misdemeanor",1
+738,62,"Other Sex","Misdemeanor",0
+739,62,"Other Sex","Misdemeanor",0
+740,18,"Other Sex Law Violations","Felony",0
+746,60,"Other","Misdemeanor",0
+750,18,"Other Sex Law Violations","Felony",0
+751,18,"Other Sex Law Violations","Felony",0
+760,18,"Other Sex Law Violations","Felony",0
+766,37,"Indecent Exposure","Misdemeanor",0
+770,18,"Other Sex Law Violations","Felony",0
+775,18,"Other Sex Law Violations","Felony",0
+776,38,"Annoying Child","Misdemeanor",0
+777,38,"Annoying Child","Misdemeanor",1
+780,18,"Other Sex Law Violations","Felony",0
+781,18,"Other Sex Law Violations","Felony",0
+786,39,"Obscene Matter","Misdemeanor",0
+787,39,"Obscene Matter","Misdemeanor",0
+790,18,"Other Sex Law Violations","Felony",0
+791,4,"Rape","Felony",1
+791,18,"Other Sex Law Violations","Felony",0
+792,18,"Other Sex Law Violations","Felony",0
+793,18,"Other Sex Law Violations","Felony",0
+794,18,"Other Sex Law Violations","Felony",0
+800,12,"Narcotics","Felony",0
+801,12,"Narcotics","Felony",0
+802,12,"Narcotics","Felony",0
+803,12,"Narcotics","Felony",0
+804,12,"Narcotics","Felony",0
+805,15,"Other Drug Law Violations","Felony",0
+810,13,"Marijuana","Felony",0
+811,13,"Marijuana","Felony",0
+812,13,"Marijuana","Felony",0
+813,13,"Marijuana","Felony",0
+815,13,"Marijuana","Felony",0
+816,34,"Marijuana","Misdemeanor",0
+817,36,"Other Drug Law Violations","Misdemeanor",0
+818,36,"Other Drug Law Violations","Misdemeanor",0
+819,34,"Marijuana","Misdemeanor",0
+820,14,"Dangerous Drugs","Felony",0
+821,14,"Dangerous Drugs","Felony",0
+822,14,"Dangerous Drugs","Felony",0
+825,14,"Dangerous Drugs","Felony",0
+826,35,"Dangerous Drugs","Misdemeanor",0
+827,35,"Dangerous Drugs","Misdemeanor",0
+828,13,"Marijuana","Felony",0
+829,34,"Marijuana","Misdemeanor",0
+831,15,"Other Drug Law Violations","Felony",0
+832,15,"Other Drug Law Violations","Felony",0
+833,15,"Other Drug Law Violations","Felony",0
+834,15,"Other Drug Law Violations","Felony",0
+835,15,"Other Drug Law Violations","Felony",0
+836,36,"Other Drug Law Violations","Misdemeanor",0
+837,36,"Other Drug Law Violations","Misdemeanor",0
+838,36,"Other Drug Law Violations","Misdemeanor",0
+839,36,"Other Drug Law Violations","Misdemeanor",0
+840,19,"Weapons","Felony",0
+841,19,"Weapons","Felony",0
+842,19,"Weapons","Felony",0
+843,19,"Weapons","Felony",0
+844,19,"Weapons","Felony",0
+845,19,"Weapons","Felony",0
+846,50,"Weapons","Misdemeanor",0
+847,50,"Weapons","Misdemeanor",0
+848,50,"Weapons","Misdemeanor",0
+849,50,"Weapons","Misdemeanor",0
+850,20,"Drive Under the Influence","Felony",0
+851,15,"Other Drug Law Violations","Felony",0
+854,20,"Drive Under the Influence","Felony",0
+855,20,"Drive Under the Influence","Felony",0
+856,51,"Drive Under the Influence","Misdemeanor",0
+857,36,"Other Drug Law Violations","Misdemeanor",0
+858,51,"Drive Under the Influence","Misdemeanor",0
+859,51,"Drive Under the Influence","Misdemeanor",0
+860,21,"Hit and Run","Felony",0
+865,25,"Felony Traffic","Felony",0
+867,52,"Hit and Run","Misdemeanor",0
+869,53,"Traffic","Misdemeanor",0
+870,22,"Escape","Felony",0
+871,22,"Escape","Felony",0
+872,22,"Escape","Felony",0
+873,22,"Escape","Felony",0
+874,22,"Escape","Felony",0
+875,22,"Escape","Felony",0
+876,63,"Escape","Misdemeanor",0
+880,7,"Kidnapping","Felony",0
+881,7,"Kidnapping","Felony",0
+882,7,"Kidnapping","Felony",0
+883,7,"Kidnapping","Felony",0
+884,7,"Kidnapping","Felony",0
+890,23,"Bookmaking","Felony",0
+891,7,"Kidnapping","Felony",0
+900,25,"Accessory","Felony",0
+901,25,"Other Felony","Felony",0
+905,25,"Treason","Felony",0
+910,25,"Abortion","Felony",0
+911,25,"Abortion","Felony",0
+920,24,"Arson","Felony",0
+921,24,"Arson","Felony",0
+922,24,"Arson","Felony",0
+923,24,"Arson","Felony",0
+924,24,"Arson","Felony",0
+925,24,"Arson","Felony",0
+926,64,"Misd Arson","Misdemeanor",0
+927,24,"Arson","Felony",0
+929,64,"Misd Arson","Misdemeanor",0
+930,25,"Bigamy","Felony",0
+940,25,"Bribery","Felony",0
+941,25,"Bribery","Felony",0
+942,25,"Bribery","Felony",0
+943,25,"Bribery","Felony",0
+944,25,"Bribery","Felony",0
+945,25,"Bribery","Felony",0
+946,25,"Bribery","Felony",0
+946,60,"Bribery","Misdemeanor",0
+950,25,"Extort","Felony",0
+960,25,"Extort","Felony",0
+961,25,"Extort","Felony",0
+966,60,"Extort","Misdemeanor",0
+970,25,"Neglect","Felony",0
+971,25,"Neglect","Felony",0
+976,56,"Nonsupport","Misdemeanor",0
+977,60,"Neglect","Misdemeanor",0
+980,25,"Perjury","Felony",0
+981,25,"Perjury","Felony",0
+985,25,"Other Felony","Felony",0
+986,60,"Perjury","Misdemeanor",0
+990,25,"Other Felony","Felony",0
+991,25,"Other Felony","Felony",0
+992,25,"Other Felony","Felony",0
+993,25,"Other Felony","Felony",0
+994,25,"Other Felony","Felony",0
+995,25,"Other Felony","Felony",0
+998,25,"Other Felony","Felony",0

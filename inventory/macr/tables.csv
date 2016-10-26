@@ -5,6 +5,7 @@ macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"Words
 * MACR data began to be stored in a digital format in 1980. The dataset spans 1980 to the present.
 
 Historical changes:
+
 * The race_or_ethnicity codes for Asian/Pacific Islander expanded in 1991. 
 * The CA DOJ stopped collecting data about arrests or citations made for infractions in 2005.  
 * In 2011, the lower limit of felony theft was raised from $400 to $950, contributing to the decrease in felony theft arrests and increase in misdemeanor theft arrests.

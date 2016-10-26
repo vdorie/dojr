@@ -1,0 +1,912 @@
+CntyCode,County,Code,Agency,Start,End,Contract,CJSC Notes,Old Juris Code
+01,Alameda County,0100,Alameda Co. Sheriff's Department,,,,,20-000
+01,Alameda County,0101,Alameda,,,,,20-002
+01,Alameda County,0102,Albany,,,,,20-004
+01,Alameda County,0103,Berkeley,,,,,20-073
+01,Alameda County,0104,Emeryville,,,,,20-236
+01,Alameda County,0105,Fremont,,,,,20-280
+01,Alameda County,0106,Hayward,,,,,20-316
+01,Alameda County,0107,Livermore,,,,,20-394
+01,Alameda County,0108,Newark,,,,,20-497
+01,Alameda County,0109,Oakland,,,,,20-512
+01,Alameda County,0110,Piedmont,,,,,20-566
+01,Alameda County,0111,Pleasanton,,,,,20-581
+01,Alameda County,0112,San Leandro,,,,,20-688
+01,Alameda County,0113,Union City,,,,,20-814
+01,Alameda County,0114,Alameda E. Bay Reg. Park Dist.,,,,,20-991
+01,Alameda County,0115,CSU East Bay,,,,Name change in 2007 from CSU Hayward,20-980
+01,Alameda County,0116,Union Pacific RR - Alameda,1/1/1997,,,,
+01,Alameda County,011A,ABC Oakland,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+01,Alameda County,0121,Alameda BART,,,,,20-990
+01,Alameda County,0122,UC Lawrence-Livermore,,6/30/2007,,,20-952
+01,Alameda County,0127,UC Lawrence-Berkeley,,12/31/1992,,"Since 1993, stats included with UC Lawrence Livermore (0122)",20-953
+01,Alameda County,0128,Santa Fe RR - Alameda,,12/31/1990,,Stopped reporting due to budget cuts,20-928
+01,Alameda County,0129,Southern Pacific RR - Alameda,,12/31/1996,,Merged with Alameda UP RR (0116),20-927
+01,Alameda County,0130,Dublin,,,C,Contracts to SD,20-216
+01,Alameda County,0131,Alameda E. Bay Mun. Util. Dist.,,,,,20-992
+01,Alameda County,0132,Union Pacific RR - Alameda,,12/31/1996,,Merged with Alameda UP RR (0116),20-926
+01,Alameda County,0197,UC Berkeley,,,,,20-951
+01,Alameda County,0198,CA State Police - Alameda,,6/30/1995,,CA State Police merged with CHP in July 1995.,20-904
+01,Alameda County,0199,CA Highway Patrol - Alameda,,,,,20-001
+02,Alpine County,0200,Alpine Co. Sheriff's Department,,,,,70-000
+02,Alpine County,0299,CA Highway Patrol - Alpine,,,,,70-001
+03,Amador County,0300,Amador Co. Sheriff's Department,,,,,71-000
+03,Amador County,0301,Amador,,prior to 1979,,Unknown if Amador ever reported anything.  Nothing on Crimes from 1979-current.  But on BCS Jurisdiction lists from 1970's.,71-016
+03,Amador County,0302,Ione,,,,,71-353
+03,Amador County,0303,Jackson,,,,,71-358
+03,Amador County,0304,Plymouth,,9/30/1985,,,71-584
+03,Amador County,0305,Sutter Creek,,,,,71-780
+03,Amador County,0306,Union Pacific RR - Amador,,,,Name change from Southern Pacific to Union Pacific (1997),71-927
+03,Amador County,0399,CA Highway Patrol - Amador,,,,,71-001
+04,Butte County,0400,Butte Co. Sheriff's Department,,,,,50-000
+04,Butte County,0401,Biggs,,,C,Biggs contracts to Gridley,50-079
+04,Butte County,0402,Chico,,,,,50-123
+04,Butte County,0403,Gridley,,,,,50-302
+04,Butte County,0404,Oroville,,,,,50-530
+04,Butte County,0405,Paradise,,,,,50-546
+04,Butte County,0406,Union Pacific RR - Butte,,,,Name change from Southern Pacific to Union Pacific (1997),50-927
+04,Butte County,0407,Northern Buttes DPR,,,,,50-930
+04,Butte County,0409,Upper Valley DPR,,12/31/1992,,Merged with Northern Buttes DPR (0407),50-931
+04,Butte County,0411,Union Pacific RR - Butte,,12/31/1996,,Merged with Butte UP RR (0406),50-926
+04,Butte County,0497,CSU Chico,,,,,50-980
+04,Butte County,0498,CA State Police - Butte,,6/30/1995,,CA State Police merged with CHP in July 1995.,50-904
+04,Butte County,0499,CA Highway Patrol - Butte,,,,,50-001
+05,Calaveras County,0500,Calaveras Co. Sheriff's Department,,,,,72-000
+05,Calaveras County,0501,Angels Camp,,,,,72-022
+05,Calaveras County,0502,Union Pacific RR - Calaveras,,,,Name change from Southern Pacific to Union Pacific (1997),72-927
+05,Calaveras County,0503,Calaveras DPR,,,,,72-930
+05,Calaveras County,0599,CA Highway Patrol - Calaveras,,,,,72-001
+06,Colusa County,0600,Colusa Co. Sheriff's Department,,,,,51-000
+06,Colusa County,0601,Colusa,,,,,51-159
+06,Colusa County,0602,Williams,,,,,51-854
+06,Colusa County,0603,Union Pacific RR - Colusa,,,,Name change from Southern Pacific to Union Pacific (1997),51-927
+06,Colusa County,0699,CA Highway Patrol - Colusa,,,,,51-001
+07,Contra Costa County,0700,Contra Costa Co. Sheriff's Department,,,,,30-000
+07,Contra Costa County,0701,Antioch,,,,,30-025
+07,Contra Costa County,0702,Brentwood,,,,,30-095
+07,Contra Costa County,0703,Clayton,,,,,30-137
+07,Contra Costa County,0704,Concord,,,,,30-165
+07,Contra Costa County,0705,El Cerrito,,,,,30-224
+07,Contra Costa County,0706,Hercules,,,,,30-325
+07,Contra Costa County,0707,Pinole,,,,,30-569
+07,Contra Costa County,0708,Pittsburg,,,,,30-572
+07,Contra Costa County,0709,Pleasant Hill,,,,,30-580
+07,Contra Costa County,0710,Richmond,,,,,30-616
+07,Contra Costa County,0711,San Pablo,,,,,30-699
+07,Contra Costa County,0712,Walnut Creek,,,,,30-836
+07,Contra Costa County,0713,Kensington,,,,,30-360
+07,Contra Costa County,0714,Martinez,,,,,30-438
+07,Contra Costa County,0715,Lafayette,,,C,Contracts to SD,30-375
+07,Contra Costa County,0716,Moraga,,,,,30-479
+07,Contra Costa County,0717,Contra Costa E. Bay Reg. Park Dist.,,,,,30-991
+07,Contra Costa County,0718,Contra Costa BART,,,,,30-990
+07,Contra Costa County,0719,Santa Fe RR - Contra Costa,,12/31/1990,,Stopped reporting due to budget cuts,30-928
+07,Contra Costa County,0720,Southern Pacific RR - Contra Costa,,12/31/1996,,Merged with Contra Costa UP RR (0733),30-927
+07,Contra Costa County,0721,Contra Costa Community College,,,,,30-980
+07,Contra Costa County,0723,Danville,,,C,Contracts to SD,30-193
+07,Contra Costa County,0724,San Ramon,,,,,30-703
+07,Contra Costa County,0725,Diablo DPR,,12/31/1992,,Merged with 4126,30-930
+07,Contra Costa County,0726,Orinda,,,C,Contracts to SD,30-526
+07,Contra Costa County,0733,Union Pacific RR - Contra Costa,1/1/1997,,,,
+07,Contra Costa County,0734,Oakley,7/1/2000,,C,Contracts to SD,
+07,Contra Costa County,0798,CA State Police - Contra Costa,,6/30/1995,,CA State Police merged with CHP in July 1995.,30-904
+07,Contra Costa County,0799,CA Highway Patrol - Contra Costa,,,,,30-001
+08,Del Norte County,0800,Del Norte Co. Sheriff's Department,,,,,73-000
+08,Del Norte County,0801,Crescent City,,,,,73-186
+08,Del Norte County,0899,CA Highway Patrol - Del Norte,,,,,73-001
+09,El Dorado County,0900,El Dorado Co. Sheriff's Department,,,,,74-000
+09,El Dorado County,0901,Placerville,,,,,74-578
+09,El Dorado County,0902,South Lake Tahoe,,,,,74-760
+09,El Dorado County,0903,Union Pacific RR - El Dorado,,,,Name change from Southern Pacific to Union Pacific (1997),74-927
+09,El Dorado County,0923,Marshall Gold DPR,,12/31/1992,,Merged with 3422,74-930
+09,El Dorado County,0999,CA Highway Patrol - El Dorado,,,,,74-001
+10,Fresno County,1000,Fresno Co. Sheriff's Department,,,,,40-000
+10,Fresno County,1001,Clovis,,,,"2014 is first year population estimate exceeded 100,000",40-141
+10,Fresno County,1002,Coalinga,,,,,40-147
+10,Fresno County,1003,Firebaugh,,,,,40-263
+10,Fresno County,1004,Fowler,,,,,40-278
+10,Fresno County,1005,Fresno,,,,,40-281
+10,Fresno County,1006,Huron,,,,,40-344
+10,Fresno County,1007,Kerman,,,,,40-359
+10,Fresno County,1008,Kingsburg,,,,,40-361
+10,Fresno County,1009,Mendota,9/1/2009,,,,40-447
+10,Fresno County,1010,Orange Cove,1/1/2013,,,Did not report 1987-2012.  Stopped after 1986 and began again in 2013.,40-525
+10,Fresno County,1011,Parlier,,,,,40-548
+10,Fresno County,1012,Reedley,,,,,40-610
+10,Fresno County,1013,Sanger,,,,,40-646
+10,Fresno County,1014,San Joaquin,,3/31/1979,,,40-679
+10,Fresno County,1015,Selma,,,,,40-738
+10,Fresno County,1017,State Center Community College,1/1/1990,,,Name change in 2010 from Fresno CC,
+10,Fresno County,1018,Santa Fe RR - Fresno,,12/31/1990,,Stopped reporting due to budget cuts,40-928
+10,Fresno County,1019,Southern Pacific RR - Fresno,,12/31/1996,,Merged with Fresno UP RR (1024),40-927
+10,Fresno County,101A,ABC Fresno,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+10,Fresno County,1024,Union Pacific RR - Fresno,1/1/1997,,,,
+10,Fresno County,1030,San Joaquin DPR,,,,,40-930
+10,Fresno County,1031,Reedley Community College,1/1/1991,12/31/2009,,Combined with State Center CC in 2010.  Name change in 2007 from Kings River CC.,
+10,Fresno County,1097,CSU Fresno,,,,,40-980
+10,Fresno County,1098,CA State Police - Fresno,,6/30/1995,,CA State Police merged with CHP in July 1995.,40-904
+10,Fresno County,1099,CA Highway Patrol - Fresno,,,,,40-001
+10,Fresno County,10M1,Coalinga State Hospital,1/1/2008,,,,
+11,Glenn County,1100,Glenn Co. Sheriff's Department,,,,,52-000
+11,Glenn County,1101,Orland,,,,,52-527
+11,Glenn County,1102,Willows,,,,,52-860
+11,Glenn County,1103,Union Pacific RR - Glenn,,,,Name change from Southern Pacific to Union Pacific (1997),52-927
+11,Glenn County,1199,CA Highway Patrol - Glenn,,,,,52-001
+12,Humboldt County,1200,Humboldt Co. Sheriff's Department,,,,,75-000
+12,Humboldt County,1201,Arcata,,,,,75-031
+12,Humboldt County,1202,Blue Lake,,6/30/2008,,"Starting 7/1/2008, area covered by Humboldt Sheriff's Dept.",75-085
+12,Humboldt County,1203,Eureka,,,,,75-245
+12,Humboldt County,1204,Ferndale,,,,,75-257
+12,Humboldt County,1205,Fortuna,,,,,75-275
+12,Humboldt County,1206,Trinidad,,6/30/2010,,Defunct.  Statistics included in Humboldt SD.,75-798
+12,Humboldt County,1207,Rio Dell,,,,,75-618
+12,Humboldt County,1208,CSU Humboldt,,,,,75-980
+12,Humboldt County,1209,Union Pacific RR - Humboldt,,,,Name change from Southern Pacific to Union Pacific (1997),75-927
+12,Humboldt County,1210,Eel River DPR,,12/31/1992,,Merged with 1211,75-930
+12,Humboldt County,1211,Northern Coast Redwoods DPR,,,,,75-931
+12,Humboldt County,121A,ABC Eureka,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+12,Humboldt County,1299,CA Highway Patrol - Humboldt,,,,,75-001
+13,Imperial County,1300,Imperial Co. Sheriff's Department,,,,,10-000
+13,Imperial County,1301,Brawley,,,,,10-091
+13,Imperial County,1302,Calexico,,,,,10-108
+13,Imperial County,1303,Calipatria,,,,,10-111
+13,Imperial County,1304,El Centro,,,,,10-221
+13,Imperial County,1305,Holtville,,,C,"Per Penny 5-19-11, Imperial SO is trying to say that they sent in reports for Holtville as a contract for 2010, but Penny says they never received any.  Now Imperial is trying to send in 2011.  May need to note 1305 as unable to report for 2010.",10-337
+13,Imperial County,1306,Imperial,,,,,10-346
+13,Imperial County,1307,Westmorland,,,,,10-845
+13,Imperial County,1308,Union Pacific RR - Imperial,,,,Name change from Southern Pacific to Union Pacific (1997),10-927
+13,Imperial County,1309,Montane DPR,1/1/1985,12/31/1986,,"Note found on one of Tricia's jurisdiction lists ""changed to 3727 (14-934)""",10-930
+13,Imperial County,1398,CA State Police - Imperial,,6/30/1995,,CA State Police merged with CHP in July 1995.,10-904
+13,Imperial County,1399,CA Highway Patrol - Imperial,,,,,10-001
+14,Inyo County,1400,Inyo Co. Sheriff's Department,,,,,76-000
+14,Inyo County,1401,Bishop,,,,,76-082
+14,Inyo County,1403,Union Pacific RR - Inyo,,,,Name change from Southern Pacific to Union Pacific (1997),76-927
+14,Inyo County,1499,CA Highway Patrol - Inyo,,,,,76-001
+15,Kern County,1500,Kern Co. Sheriff's Department,,,,,41-000
+15,Kern County,1501,Arvin,,,,,41-035
+15,Kern County,1502,Bakersfield,,,,,41-052
+15,Kern County,1503,Delano,,,,,41-198
+15,Kern County,1504,Maricopa,,12/31/1999,,,41-435
+15,Kern County,1505,McFarland,1/1/2010,,,"Agency reported until 10/1991, then went defunct until starting up again in 2010.",41-445
+15,Kern County,1506,Ridgecrest,,,,,41-617
+15,Kern County,1507,Shafter,,,,,41-741
+15,Kern County,1508,Taft,,,,,41-783
+15,Kern County,1509,Tehachapi,1/1/2009,,,,
+15,Kern County,1510,Wasco,,12/31/1981,,,41-837
+15,Kern County,1511,California City,,,,,41-109
+15,Kern County,1513,China Lake,,1/1/1995,,Agency determined they were federal property and not bound to report UCR.,41-152
+15,Kern County,1514,Stallion Springs,,,,,41-767
+15,Kern County,1515,Bear Valley,,,,,41-057
+15,Kern County,1516,Santa Fe RR - Kern,,12/31/1990,,Stopped reporting due to budget cuts,41-928
+15,Kern County,1517,Southern Pacific RR - Kern,,12/31/1996,,Merged with Kern UP RR (1522),41-927
+15,Kern County,151A,ABC Bakersfield,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+15,Kern County,1522,Union Pacific RR - Kern,1/1/1997,,,,
+15,Kern County,1597,CSU Bakersfield,,,,,41-980
+15,Kern County,1598,CA State Police - Kern,,6/30/1995,,CA State Police merged with CHP in July 1995.,41-904
+15,Kern County,1599,CA Highway Patrol - Kern,,,,,41-001
+16,Kings County,1600,Kings Co. Sheriff's Department,,,,,42-000
+16,Kings County,1601,Corcoran,,,,,42-168
+16,Kings County,1602,Hanford,,,,,42-310
+16,Kings County,1603,Lemoore,,,,,42-385
+16,Kings County,1604,Santa Fe RR - Kings,,12/31/1990,,Stopped reporting due to budget cuts,42-928
+16,Kings County,1605,Union Pacific RR - Kings,,,,Name change from Southern Pacific to Union Pacific (1997),42-927
+16,Kings County,1606,Porterville Developmental Center,,,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,42-924
+16,Kings County,1607,Avenal,1/1/1992,,,"Contracted to SD prior to 2011.  FBI changed their ORI to CA0160800, but NCIC code will remain 1607 until new database is done.",
+16,Kings County,1698,CA State Police - Kings,,6/30/1995,,CA State Police merged with CHP in July 1995.,42-904
+16,Kings County,1699,CA Highway Patrol - Kings,,,,,42-001
+17,Lake County,1700,Lake Co. Sheriff's Department,,,,,77-000
+17,Lake County,1701,Lakeport,,,,,77-373
+17,Lake County,1702,Clearlake,,,,,77-136
+17,Lake County,1703,Clear Lake DPR,,12/31/1992,,Merged with 4911,77-930
+17,Lake County,1799,CA Highway Patrol - Lake,,,,,77-001
+18,Lassen County,1800,Lassen Co. Sheriff's Department,,,,,78-000
+18,Lassen County,1801,Susanville,,,,,78-777
+18,Lassen County,1803,Union Pacific RR - Lassen,,,,Name change from Southern Pacific to Union Pacific (1997),78-927
+18,Lassen County,1804,Union Pacific RR - Lassen,,12/31/1996,,Merged with Lassen 1803,78-926
+18,Lassen County,1898,CA State Police - Lassen,,6/30/1995,,CA State Police merged with CHP in July 1995.,78-904
+18,Lassen County,1899,CA Highway Patrol - Lassen,,,,,78-001
+19,Los Angeles County,1900,Los Angeles Co. Sheriff's Department,,,,,00-000
+19,Los Angeles County,1901,Alhambra,,,,,00-007
+19,Los Angeles County,1902,Arcadia,,,,,00-028
+19,Los Angeles County,1903,Artesia,,,C,Contracts to SD,00-036
+19,Los Angeles County,1904,Avalon,,,C,Contracts to SD,00-046
+19,Los Angeles County,1905,Azusa,,,,,00-049
+19,Los Angeles County,1906,Baldwin Park,,,,,00-053
+19,Los Angeles County,1907,Bell,,,,,00-061
+19,Los Angeles County,1908,Bellflower,,,C,Contracts to SD,00-062
+19,Los Angeles County,1909,Bell Gardens,,,,,00-063
+19,Los Angeles County,190C,El Camino College,1/1/1994,,,,
+19,Los Angeles County,190D,La Habra Heights,,,C,Contracts to SD,00-371
+19,Los Angeles County,190E,Santa Fe RR - Los Angeles,,12/31/1990,,Stopped reporting due to budget cuts,00-928
+19,Los Angeles County,190G,Los Angeles Housing Authority,8/1/1981,6/30/1985,,Stopped reporting,
+19,Los Angeles County,190H,Southern Pacific RR - Los Angeles,,12/31/1996,,Merged with Los Angeles UP RR (190i),00-927
+19,Los Angeles County,190i,Union Pacific RR - Los Angeles,1/1/1997,,,,
+19,Los Angeles County,190K,Metropolitan Trans. Authority (MTA),1/1/1995,,C,Contracts to SD,
+19,Los Angeles County,190M,Union Pacific RR - Los Angeles,,12/31/1996,,Merged with 190i,00-926
+19,Los Angeles County,190P,Long Beach City College,1/1/2001,7/31/2003,,,
+19,Los Angeles County,190R,Pasadena Community College,,,,,00-986
+19,Los Angeles County,190X,Westlake Village,,,C,Contracts to SD,00-843
+19,Los Angeles County,1910,Beverly Hills,,,,,00-076
+19,Los Angeles County,1911,Bradbury,,,C,Contracts to SD,00-090
+19,Los Angeles County,1912,Burbank,,,,,00-097
+19,Los Angeles County,1913,Claremont,,,,,00-135
+19,Los Angeles County,1914,Commerce,,,C,Contracts to SD,00-161
+19,Los Angeles County,1915,Compton,,,C,Contracts to SD,00-162
+19,Los Angeles County,1916,Covina,,,,,00-183
+19,Los Angeles County,1917,Cudahy,,,C,Contract to Maywood prior to 2010.  Began contract with SD in 2010.,00-188
+19,Los Angeles County,1918,Culver City,,,,,00-189
+19,Los Angeles County,1919,Cerritos,,,C,Contracts to SD,00-193
+19,Los Angeles County,191B,High Desert DPR,,12/31/1992,,Merged with 5613,00-930
+19,Los Angeles County,191C,Hungry Valley DPR,1/1/1985,12/31/1989,,,00-931
+19,Los Angeles County,191E,Lanterman Developmental Center,,,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,00-924
+19,Los Angeles County,191F,Agoura Hills,,,C,Contracts to SD,00-005
+19,Los Angeles County,191H,West Hollywood,,,C,Contracts to SD,00-846
+19,Los Angeles County,191P,Santa Clarita,1/1/1988,12/31/1989,C,"Changed NCIC number to ""191R"" in 1990.",
+19,Los Angeles County,191R,Santa Clarita,1/1/1990,,C,"Contracts to SD.  Reported under ""191P"" in 1988 and 1989.",00-712
+19,Los Angeles County,191T,ABC Southern,1/1/2002,12/31/03,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+19,Los Angeles County,191W,Diamond Bar,,,C,Contracts to SD,00-200
+19,Los Angeles County,1920,Downey,,,,,00-213
+19,Los Angeles County,1921,Duarte,,,C,Contracts to SD,00-214
+19,Los Angeles County,1922,El Monte,,,,,00-227
+19,Los Angeles County,1923,El Segundo,,,,,00-230
+19,Los Angeles County,1924,Gardena,,,,,00-287
+19,Los Angeles County,1925,Glendale,,,,,00-293
+19,Los Angeles County,1926,Glendora,,,,,00-296
+19,Los Angeles County,1927,Hawaiian Gardens,,,C,Contracts to SD,00-312
+19,Los Angeles County,1928,Hawthorne,,,,,00-313
+19,Los Angeles County,1929,Hermosa Beach,,,,,00-328
+19,Los Angeles County,192H,Calabasas,7/1/1991,,C,Contracts to SD,
+19,Los Angeles County,192J,Malibu,7/1/1991,,C,Contracts to SD,
+19,Los Angeles County,192K,Los Angeles Impact,7/1/1991,,C,Contracts to SD. MACR only.,
+19,Los Angeles County,192Q,Los Angeles City College,1/1/1993,12/31/2000,,,
+19,Los Angeles County,192R,Los Angeles Transit Serv. Bureau,1/1/1993,12/31/1994,,"LA County Transit (192U) used 192R from 1993-1994. In 1995, LA Transit's NCIC was changed to 192U (because FBI assigned 192R to Pomona Sch Dist). The 1993 & 1994 Crimes files were changed, but only the 1994 MACR file was changed.  1993 MACR remains 192R.",
+19,Los Angeles County,192U,Los Angeles Transit Serv. Bureau,1/1/1995,,C,"Contracts to SD.  From 1993-1994, LA County transit reported under 192R, however, the agency code was changed in the 1993 & 1994 Crimes and 1994 MACR data files to 192U (change occurred in 1995). 1993 MACR data remains 192R.",
+19,Los Angeles County,1930,Hidden Hills,,,C,Contracts to SD,00-330
+19,Los Angeles County,1931,Huntington Park,,,,,00-343
+19,Los Angeles County,1932,Industry,,,C,Contracts to SD,00-350
+19,Los Angeles County,1933,Inglewood,,,,,00-352
+19,Los Angeles County,1934,Irwindale,,,,,00-354
+19,Los Angeles County,1935,Lakewood,,,C,Contracts to SD,00-374
+19,Los Angeles County,1936,La Mirada,,,C,Contracts to SD,00-377
+19,Los Angeles County,1937,La Puente,,,C,Contracts to SD,00-378
+19,Los Angeles County,1938,La Verne,,,,,00-382
+19,Los Angeles County,1939,Lawndale,,,C,Contracts to SD,00-383
+19,Los Angeles County,193V,LAPD - San Fernando Valley,1/1/2005,,,,
+19,Los Angeles County,193W,LAPD - Non-San Fernando Valley,1/1/2005,,,,
+19,Los Angeles County,1940,Lomita,,,C,Contracts to SD,00-406
+19,Los Angeles County,1941,Long Beach,,,,,00-408
+19,Los Angeles County,1942,Los Angeles,,12/31/2004,,Created 193V (LAPD - San Fernando Valley) and 193W (LAPD - Non San Fernando Valley) to capture LAPD data.,00-411
+19,Los Angeles County,1943,Lynwood,,,C,Contracts to SD,00-423
+19,Los Angeles County,1944,Manhattan Beach,,,,,00-429
+19,Los Angeles County,1945,Maywood,,,C,Contracts to SD (began 2010),00-444
+19,Los Angeles County,1946,Monrovia,,,,,00-462
+19,Los Angeles County,1947,Montebello,,,,,00-468
+19,Los Angeles County,1948,Monterey Park,,,,,00-474
+19,Los Angeles County,1949,Norwalk,,,C,Contracts to SD,00-507
+19,Los Angeles County,1950,Palmdale,,,C,Contracts to SD,00-538
+19,Los Angeles County,1951,Palos Verdes Estates,,,,,00-545
+19,Los Angeles County,1952,Paramount,,,C,Contracts to SD,00-547
+19,Los Angeles County,1953,Pasadena,,,,,00-551
+19,Los Angeles County,1954,Pico Rivera,,,C,Contracts to SD,00-565
+19,Los Angeles County,1955,Pomona,,,,,00-590
+19,Los Angeles County,1956,Redondo Beach,,,,,00-604
+19,Los Angeles County,1957,Rolling Hills,,,C,Contracts to SD,00-630
+19,Los Angeles County,1958,Rolling Hills Estates,,,C,Contracts to SD,00-629
+19,Los Angeles County,1959,Rosemead,,,C,Contracts to SD,00-632
+19,Los Angeles County,1960,San Dimas,,,C,Contracts to SD,00-665
+19,Los Angeles County,1961,San Fernando,,,,,00-667
+19,Los Angeles County,1962,San Gabriel,,,,,00-673
+19,Los Angeles County,1963,San Marino,,,,,00-694
+19,Los Angeles County,1964,Santa Fe Springs,,,C,Contracts to Whittier,00-715
+19,Los Angeles County,1965,Santa Monica,,,,,00-720
+19,Los Angeles County,1966,Sierra Madre,,,,,00-744
+19,Los Angeles County,1967,Signal Hill,,,,,00-747
+19,Los Angeles County,1968,South El Monte,,,C,Contracts to SD,00-758
+19,Los Angeles County,1969,South Gate,,,,"Per 2010 census, population dropped to 94,666",00-759
+19,Los Angeles County,1970,South Pasadena,,,,,00-762
+19,Los Angeles County,1971,Temple City,,,C,Contracts to SD,00-790
+19,Los Angeles County,1972,Torrance,,,,,00-792
+19,Los Angeles County,1973,Vernon,,,,,00-830
+19,Los Angeles County,1974,Walnut,,,C,Contracts to SD,00-835
+19,Los Angeles County,1975,West Covina,,,,,00-842
+19,Los Angeles County,1976,Whittier,,,,,00-851
+19,Los Angeles County,1977,Carson,,,C,Contracts to SD,00-121
+19,Los Angeles County,1978,Cal Poly - Pomona,,,,,00-984
+19,Los Angeles County,1980,Rancho Palos Verdes,,,C,Contracts to SD,00-598
+19,Los Angeles County,1981,CSU Dominguez Hills,,,,,00-981
+19,Los Angeles County,1982,CSU Long Beach,,,,,00-982
+19,Los Angeles County,1983,CSU Los Angeles,,,,,00-980
+19,Los Angeles County,1984,CSU Northridge,,,,,00-983
+19,Los Angeles County,1990,La Canada-Flintridge,,,C,Contracts to SD,00-372
+19,Los Angeles County,1996,Lancaster,,,C,Contracts to SD,00-375
+19,Los Angeles County,1997,UC Los Angeles,,,,,00-952
+19,Los Angeles County,1998,CA State Police - Los Angeles,,6/30/1995,,CA State Police merged with CHP in July 1995.,00-904
+19,Los Angeles County,1999,CA Highway Patrol - Los Angeles,,,,,00-001
+19,Los Angeles County,19B2,ABC El Monte,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+19,Los Angeles County,19B3,ABC Inglewood,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+19,Los Angeles County,19B4,ABC Lakewood,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+19,Los Angeles County,19B5,ABC Metro,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+19,Los Angeles County,19B6,ABC Van Nuys,1/1/2003,12/31/03,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+20,Madera County,2000,Madera Co. Sheriff's Department,,,,,43-000
+20,Madera County,2001,Chowchilla,,,,,43-129
+20,Madera County,2002,Madera,,,,,43-426
+20,Madera County,2003,Santa Fe RR - Madera,,12/31/1990,,Stopped reporting due to budget cuts,43-928
+20,Madera County,2004,Union Pacific RR - Madera,,,,Name change from Southern Pacific to Union Pacific (1997),43-927
+20,Madera County,2099,CA Highway Patrol - Madera,,,,,43-001
+21,Marin County,2100,Marin Co. Sheriff's Department,,,,,31-000
+21,Marin County,2101,Belvedere,,,,,31-067
+21,Marin County,2102,Corte Madera,,12/31/1980,,Combined with Larkspur to form Twin Cities,31-180
+21,Marin County,2103,Fairfax,,,,,31-251
+21,Marin County,2104,Twin Cities,,12/31/2012,,"Per Carrie Hurt, Twin Cities and San Anselmo merged to become the Central Marin Police Authority effective 1/1/2013.",31-813
+21,Marin County,2105,Mill Valley,,,,,31-456
+21,Marin County,2106,Novato,,,,,31-508
+21,Marin County,2107,Ross,,,,,31-634
+21,Marin County,2108,San Anselmo,,12/31/2012,,"Per Carrie Hurt, Twin Cities and San Anselmo merged to become the Central Marin Police Authority effective 1/1/2013.",31-649
+21,Marin County,2109,San Rafael,,,,,31-702
+21,Marin County,2110,Sausalito,,,,,31-729
+21,Marin County,2111,Tiburon,,,,,31-791
+21,Marin County,2112,Union Pacific RR - Marin,,,,Name change from Southern Pacific to Union Pacific (1997),31-927
+21,Marin County,2113,Marin Community College,,,,,31-980
+21,Marin County,2114,Marin DPR,,,,,31-930
+21,Marin County,2116,NARC Task Force,,12/31/2008,,MACR only.,31-970
+21,Marin County,2117,Central Marin Police Authority,1/1/2013,,,"Per Carrie Hurt, Twin Cities and San Anselmo merged to become the Central Marin Police Authority effective 1/1/2013.",
+21,Marin County,2198,CA State Police - Marin,1/1/1984,1/31/1984,,Only reported one negative MACR report.  Could not find on any jurisdiction list.  Educated guess that it was a CA State Police Office.,
+21,Marin County,2199,CA Highway Patrol - Marin,,,,,31-001
+22,Mariposa County,2200,Mariposa Co. Sheriff's Department,,,,,79-000
+22,Mariposa County,2299,CA Highway Patrol - Mariposa,,,,,79-001
+23,Mendocino County,2300,Mendocino Co. Sheriff's Department,,,,,80-000
+23,Mendocino County,2301,Fort Bragg,,,,,80-269
+23,Mendocino County,2302,Point Arena,,prior to 1979,,Unknown if Point Arena ever reported anything.  Nothing on Crimes from 1979-current.  But on BCS Jurisdiction lists from 1970's.,80-587
+23,Mendocino County,2303,Ukiah,,,,,80-815
+23,Mendocino County,2304,Willits,,,,,80-857
+23,Mendocino County,2305,Southern Pacific RR - Mendocino,,12/31/1996,,Merged with Mendocino UP RR (2309),80-927
+23,Mendocino County,2306,Mendocino DPR,7/1/2001,,,,80-930
+23,Mendocino County,2309,Union Pacific RR - Mendocino,1/1/1997,,,,
+23,Mendocino County,2399,CA Highway Patrol - Mendocino,,,,,80-001
+24,Merced County,2400,Merced Co. Sheriff's Department,,,,,44-000
+24,Merced County,2401,Atwater,,,,,44-040
+24,Merced County,2402,Dos Palos,,,,,44-212
+24,Merced County,2403,Gustine,,,,,44-307
+24,Merced County,2404,Livingston,,,,,44-397
+24,Merced County,2405,Los Banos,,,,,44-414
+24,Merced County,2406,Merced,,,,,44-453
+24,Merced County,2407,Santa Fe RR - Merced,,12/31/1990,,Stopped reporting due to budget cuts,44-928
+24,Merced County,2408,Union Pacific RR - Merced,,,,Name change from Southern Pacific to Union Pacific (1997),44-927
+24,Merced County,2409,Merced College,,12/31/1992,,"Since 1993, stats included with Merced SD (2400)",44-980
+24,Merced County,2410,Four Rivers DPR,,,,,44-930
+24,Merced County,2412,UC Merced,1/1/2006,,,,
+24,Merced County,2498,CA State Police - Merced,,6/30/1995,,CA State Police merged with CHP in July 1995.,44-904
+24,Merced County,2499,CA Highway Patrol - Merced,,,,,44-001
+25,Modoc County,2500,Modoc Co. Sheriff's Department,,,,,81-000
+25,Modoc County,2501,Alturas,,,,,81-010
+25,Modoc County,2502,Union Pacific RR - Modoc,,,,Name change from Southern Pacific to Union Pacific (1997),81-927
+25,Modoc County,2599,CA Highway Patrol - Modoc,,,,,81-001
+26,Mono County,2600,Mono Co. Sheriff's Department,,,,,82-000
+26,Mono County,2601,Mammoth Lakes,,,,,82-427
+26,Mono County,2699,CA Highway Patrol - Mono,,,,,82-001
+27,Monterey County,2700,Monterey Co. Sheriff's Department,,,,,60-000
+27,Monterey County,2701,Carmel,,,,,60-117
+27,Monterey County,2702,Del Rey Oaks,,,,,60-201
+27,Monterey County,2703,Gonzales,,,,,60-297
+27,Monterey County,2704,Greenfield,,,,,60-301
+27,Monterey County,2705,King City,,,,,60-364
+27,Monterey County,2706,Monterey,,,,,60-471
+27,Monterey County,2707,Pacific Grove,,,,,60-536
+27,Monterey County,2708,Salinas,,,,,60-643
+27,Monterey County,2709,Sand City,,,,,60-662
+27,Monterey County,2710,Seaside,,,,,60-733
+27,Monterey County,2711,Soledad,,,,,60-750
+27,Monterey County,2712,Marina,,,,,60-450
+27,Monterey County,2714,Monterey Airport,,,,,60-110
+27,Monterey County,2715,Union Pacific RR - Monterey,,,,Name change from Southern Pacific to Union Pacific (1997),60-927
+27,Monterey County,2716,Big Sur DPR,,12/31/1992,,Merged with 2717,60-930
+27,Monterey County,2717,Monterey DPR,,,,,60-931
+27,Monterey County,2719,CSU Monterey Bay,1/1/1995,,,,
+27,Monterey County,271A,ABC Salinas,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+27,Monterey County,2799,CA Highway Patrol - Monterey,,,,,60-001
+28,Napa County,2800,Napa Co. Sheriff's Department,,,,,32-000
+28,Napa County,2801,Calistoga,,,,,32-114
+28,Napa County,2802,Napa,,,,,32-486
+28,Napa County,2803,St. Helena,,,,,32-640
+28,Napa County,2806,Union Pacific RR - Napa,,,,Name change from Southern Pacific to Union Pacific (1997),32-927
+28,Napa County,2807,Napa DPR,,12/31/1992,,Merged with 4911,32-930
+28,Napa County,2808,Napa State Hospital,,,,,32-924
+28,Napa County,2809,American Canyon,7/1/1993,,C,Contracts to SD,
+28,Napa County,2810,Yountville,,,C,Contracts to SD,32-874
+28,Napa County,2810 (LEP),Napa County Dept. of Corrections,1/1/2004,12/31/2004,,Only reported one year (2004) of Law Enforcement Personnel (but on LEP jurisdiction file 2003-2005).  Duplicate NCIC with Yountville.  Rey del Rio made up the number not knowing that Yountville (a contract agency to Napa SO) existed.,
+28,Napa County,2898,CA State Police - Napa,1/1/1984,1/31/1984,,Only reported one negative MACR report.  Could not find on any jurisdiction list.  Educated guess that it was a CA State Police Office.,
+28,Napa County,2899,CA Highway Patrol - Napa,,,,,32-001
+29,Nevada County,2900,Nevada Co. Sheriff's Department,,,,,83-000
+29,Nevada County,2901,Grass Valley,,,,,83-299
+29,Nevada County,2902,Nevada City,,,,,83-495
+29,Nevada County,2903,Union Pacific RR - Nevada,,,,Name change from Southern Pacific to Union Pacific (1997),83-927
+29,Nevada County,2904,Gold Mines DPR,,12/31/1992?,,Merged with 3422,83-930
+29,Nevada County,2908,Truckee,1/1/2002,,,,
+29,Nevada County,2999,CA Highway Patrol - Nevada,,,,,83-001
+30,Orange County,3000,Orange Co. Sheriff's Department,,,,,11-000
+30,Orange County,3001,Anaheim,,,,,11-019
+30,Orange County,3002,Brea,,,,,11-094
+30,Orange County,3003,Buena Park,,,,,11-098
+30,Orange County,3004,Costa Mesa,,,,,11-182
+30,Orange County,3005,Cypress,,,,,11-194
+30,Orange County,3006,La Palma,,,,,11-191
+30,Orange County,3007,Fountain Valley,,,,,11-277
+30,Orange County,3008,Fullerton,,,,,11-284
+30,Orange County,3009,Garden Grove,,,,,11-288
+30,Orange County,3010,Huntington Beach,,,,,11-340
+30,Orange County,3011,Laguna Beach,,,,,11-367
+30,Orange County,3012,La Habra,,,,,11-370
+30,Orange County,3013,Los Alamitos,,,,,11-412
+30,Orange County,3014,Newport Beach,,,,,11-503
+30,Orange County,3015,Orange,,,,,11-524
+30,Orange County,3016,Placentia,,,,,11-575
+30,Orange County,3017,San Clemente,,,C,Contracts to SD,11-661
+30,Orange County,3018,San Juan Capistrano,,,C,Contracts to SD,11-686
+30,Orange County,3019,Santa Ana,,,,,11-705
+30,Orange County,301A,ABC Santa Ana,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+30,Orange County,3020,Seal Beach,,,,,11-732
+30,Orange County,3021,Stanton,,,C,Contracts to SD,11-766
+30,Orange County,3022,Tustin,,,,,11-812
+30,Orange County,3023,Villa Park,,,C,Contracts to SD,11-832
+30,Orange County,3024,Westminster,,,,,11-844
+30,Orange County,3025,Yorba Linda,,,C,Contracts to SD (start in 2013).  Prior contracted to Brea,11-873
+30,Orange County,3026,Irvine,,,,,11-356
+30,Orange County,3027,CSU Fullerton,,,,,11-980
+30,Orange County,3028,Santa Fe RR - Orange,,12/31/1990,,Stopped reporting due to budget cuts,11-928
+30,Orange County,3029,Union Pacific RR - Orange,,,,Name change from Southern Pacific to Union Pacific (1997),11-927
+30,Orange County,3030,Union Pacific RR - Orange,,12/31/1996,,Merged with 3029,11-926
+30,Orange County,3032,Orange Coast DPR,,,,,11-930
+30,Orange County,3033,Pendleton Coast DPR,,12/31/1992,,Merged with 3032,11-931
+30,Orange County,3034,Fairview Developmental Center,,,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,11-924
+30,Orange County,3035,Mission Viejo,,,C,"Contracts to SD. Per 2010 census, population dropped to 93,483",11-413
+30,Orange County,3036,Dana Point,,,C,Contracts to SD,11-183
+30,Orange County,3039,Laguna Niguel,1/1/1990,,C,Contracts to SD,
+30,Orange County,3042,Laguna Hills,1/1/1992,,C,Contracts to SD,
+30,Orange County,3043,Lake Forest,1/1/1992,,C,Contracts to SD,
+30,Orange County,3047,Laguna Woods,7/1/1999,,C,Contracts to SD,
+30,Orange County,3048,Rancho Santa Margarita,7/1/2000,,C,Contracts to SD,
+30,Orange County,3049,Aliso Viejo,7/1/2001,,C,Contracts to SD,
+30,Orange County,3091,Orange County Marshal,,6/30/2000,,,11-961
+30,Orange County,3097,UC Irvine,,,,,11-950
+30,Orange County,3098,CA State Police - Orange,,6/30/1995,,CA State Police merged with CHP in July 1995.,11-904
+30,Orange County,3099,CA Highway Patrol - Orange,,,,,11-001
+31,Placer County,3100,Placer Co. Sheriff's Department,,,,,53-000
+31,Placer County,3101,Auburn,,,,,53-043
+31,Placer County,3102,Colfax,,6/30/1996,,,53-150
+31,Placer County,3103,Lincoln,,,,,53-388
+31,Placer County,3104,Rocklin,,,,,53-628
+31,Placer County,3105,Roseville,,,,,53-631
+31,Placer County,3106,Southern Pacific RR - Placer,,12/31/1996,,Merged with Placer UP RR (3112),53-927
+31,Placer County,3107,Sierra DPR,,,,,53-930
+31,Placer County,3112,Union Pacific RR - Placer,1/1/1997,,,,
+31,Placer County,3199,CA Highway Patrol - Placer,,,,,53-001
+32,Plumas County,3200,Plumas Co. Sheriff's Department,,,,,84-000
+32,Plumas County,3201,Portola,,prior to 1979,,Unknown if Portola ever reported anything.  Nothing on Crimes from 1979-current.  But on BCS Jurisdiction lists from 1970's.,84-594
+32,Plumas County,3202,Plumas-Eureka DPR,,12/31/1992,,Merged with 3107,84-930
+32,Plumas County,3203,Union Pacific RR - Plumas,,,,,84-926
+32,Plumas County,3299,CA Highway Patrol - Plumas,,,,,84-001
+33,Riverside County,3300,Riverside Co. Sheriff's Department,,,,,12-000
+33,Riverside County,3301,Banning,,,,,12-055
+33,Riverside County,3302,Beaumont,,,,,12-058
+33,Riverside County,3303,Blythe,,,,,12-088
+33,Riverside County,3305,Coachella,,,C,Contracts to SD,12-144
+33,Riverside County,3306,Desert Hot Springs,,,,,12-202
+33,Riverside County,3307,Elsinore,,prior to 1978,,,12-233
+33,Riverside County,3308,Hemet,,,,,12-322
+33,Riverside County,3309,Indio,,,,,12-349
+33,Riverside County,3310,Norco,,,C,Contracts to SD,12-505
+33,Riverside County,3311,Palm Springs,,,,,12-539
+33,Riverside County,3312,Perris,,,C,Contracts to SD,12-560
+33,Riverside County,3313,Riverside,,,,,12-625
+33,Riverside County,3314,San Jacinto,,,C,Contracts to SD,12-676
+33,Riverside County,3315,Corona,,,,,12-174
+33,Riverside County,3316,Indian Wells,,,C,Contracts to SD,12-345
+33,Riverside County,3317,Rancho Mirage,,,C,Contracts to SD,12-597
+33,Riverside County,3318,Palm Desert,,,C,Contracts to SD,12-537
+33,Riverside County,331A,ABC Rancho Mirage,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+33,Riverside County,3320,Santa Fe RR - Riverside,,12/31/1990,,Stopped reporting due to budget cuts,12-928
+33,Riverside County,3321,Union Pacific RR - Riverside,,,,Name change from Southern Pacific to Union Pacific (1997),12-927
+33,Riverside County,3322,Union Pacific RR - Riverside,,12/31/1996,,Merged with 3321,12-926
+33,Riverside County,3324,Inland Empire DPR,,,,Name change in 2001 from Los Lagos,12-930
+33,Riverside County,3325,Cathedral City,,,,,12-022
+33,Riverside County,3326,Mt. San Jacinto DPR,,12/31/1992,,Merged with 3722,12-931
+33,Riverside County,3327,Salton Sea DPR,,12/31/1992,,Merged with 3722,12-932
+33,Riverside County,3328,Picacho DPR,,12/31/1992,,Merged with 3722,12-933
+33,Riverside County,332A,ABC Riverside,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+33,Riverside County,3330,Lake Elsinore,1/1/1990,,C,Contracts to SD,
+33,Riverside County,3331,La Quinta,1/1/1990,,C,Contracts to SD,
+33,Riverside County,3332,Moreno Valley,1/1/1990,,C,Contracts to SD,
+33,Riverside County,3337,Chino Hills DPR,1/1/1990,12/31/1992,,Was 3629 in 1989. Changed to 3337 in 1990. Merged with 3324 in 1993.,12-934
+33,Riverside County,3338,Temecula,7/1/1990,,C,Contracts to SD,
+33,Riverside County,3340,Calimesa,7/1/1991,,C,Contracts to SD,
+33,Riverside County,3341,Canyon Lake,1/1/1992,,C,Contracts to SD,
+33,Riverside County,3342,Murrieta,1/1/1993,,,,
+33,Riverside County,3344,Riverside Community College,1/1/2000,,,,
+33,Riverside County,3377,Wildomar,7/1/2008,,C,Contracts to SD,
+33,Riverside County,3378,Menifee,10/1/2008,,C,Contracts to SD,
+33,Riverside County,3379,Eastvale,1/1/2011,,C,Contracts to SD,
+33,Riverside County,3397,UC Riverside,,,,,12-954
+33,Riverside County,3398,CA State Police - Riverside,,6/30/1995,,CA State Police merged with CHP in July 1995.,12-904
+33,Riverside County,3399,CA Highway Patrol - Riverside,,,,,12-001
+33,Riverside County,33A0,Jurupa Valley,7/1/2011,,C,Contracts to SD,
+34,Sacramento County,3400,Sacramento Co. Sheriff's Department,,,,,54-000
+34,Sacramento County,3401,Folsom,,,,,54-266
+34,Sacramento County,3402,Galt,,,,,54-285
+34,Sacramento County,3403,Isleton,,,C,Contracted to Sacramento SO beginning 9/1/12.,54-355
+34,Sacramento County,3404,Sacramento,,,,,54-637
+34,Sacramento County,3408,CSU Sacramento,,,,,54-980
+34,Sacramento County,340H,Elk Grove,7/1/2006,,,,
+34,Sacramento County,3412,Gold Fields DPR,,,,Name change in 2001 from American River,54-930
+34,Sacramento County,3414,Twin Rivers Unified School District,2/1/2001,,,Name change in 2008 from Grant Union School District,
+34,Sacramento County,3415,Southern Pacific RR - Sacramento,,12/31/1996,,Merged with Sacramento UP RR (3448),54-927
+34,Sacramento County,3420,CA State Fair,,,,Cal Expo Police,54-919
+34,Sacramento County,3422,Capital DPR,,,,Name change in 2001 from Gold Rush,54-931
+34,Sacramento County,3423,Union Pacific RR - Sacramento,,12/31/1996,,Merged with 3448,54-926
+34,Sacramento County,342A,ABC Sacramento,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+34,Sacramento County,3430,ABC Northern,1/1/2002,12/31/03,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+34,Sacramento County,3433,Twin Cities DPR,1/1/1990,,,Was 4809 from 1985-1989.  Changed to 3433 in 1990.,54-932
+34,Sacramento County,3448,Union Pacific RR - Sacramento,1/1/1997,,,,
+34,Sacramento County,3455,Rancho Cordova,1/1/2009,,C,Contracts to SD,
+34,Sacramento County,3477,California Developmental Centers,,,,NCIC number only used for Law Enforcement Personnel and DIC annual summary.,
+34,Sacramento County,3496,Citrus Heights,7/1/2006,,,,
+34,Sacramento County,3497,UC Med Center Sacramento,,,,,54-950
+34,Sacramento County,3498,CA State Police - Sacramento,,6/30/1995,,CA State Police merged with CHP in July 1995.,54-904
+34,Sacramento County,3499,CA Highway Patrol - Sacramento,,,,,54-001
+35,San Benito County,3500,San Benito Co. Sheriff's Department,,,,,61-000
+35,San Benito County,3501,Hollister,,,,,61-334
+35,San Benito County,3502,San Juan Bautisto,,12/31/1992,,"Since 1993, stats included with San Benito SD (3500)",61-685
+35,San Benito County,3503,Union Pacific RR - San Benito,,,,Name change from Southern Pacific to Union Pacific (1997),61-927
+35,San Benito County,3504,Hollister Hills DPR,,,,,61-930
+35,San Benito County,3505,Gavilan DPR,,12/31/1992,,Merged with 2410,61-931
+35,San Benito County,3598,CA State Police - San Benito,1/1/1984,1/31/1984,,Only reported one negative MACR report.  Could not find on any jurisdiction list.  Educated guess that it was a CA State Police Office.,
+35,San Benito County,3599,CA Highway Patrol - San Benito,,,,,61-001
+36,San Bernardino County,3600,San Bernardino Co. Sheriff's Department,,,,,13-000
+36,San Bernardino County,3601,Barstow,,,,,13-056
+36,San Bernardino County,3602,Chino,,,,,13-126
+36,San Bernardino County,3603,Colton,,,,,13-156
+36,San Bernardino County,3604,Fontana,,,,,13-267
+36,San Bernardino County,3605,Montclair,,,,,13-476
+36,San Bernardino County,3606,Needles,,,C,Contracts to SD,13-492
+36,San Bernardino County,3607,Ontario,,,,,13-521
+36,San Bernardino County,3608,Redlands,,,,,13-601
+36,San Bernardino County,3609,Rialto,,,,,13-613
+36,San Bernardino County,3610,San Bernardino,,,,,13-652
+36,San Bernardino County,3611,Upland,,,,,13-818
+36,San Bernardino County,3612,Victorville,,,C,Contracts to SD,13-831
+36,San Bernardino County,3613,Adelanto,,,C,Contracts to SD,13-003
+36,San Bernardino County,3614,CSU San Bernardino,,,,,13-980
+36,San Bernardino County,3616,Rancho Cucamonga,,,C,Contracts to SD,13-600
+36,San Bernardino County,3617,Santa Fe RR - San Bernardino,,12/31/1990,,Stopped reporting due to budget cuts,13-928
+36,San Bernardino County,3618,Southern Pacific RR - San Bernardino,,12/31/1996,,Merged with San Bernardino UP RR (3654),13-927
+36,San Bernardino County,3619,Union Pacific RR - San Bernardino,,12/31/1996,,Merged with 3654,13-926
+36,San Bernardino County,3620,Big Bear,,,C,Contracts to SD,13-078
+36,San Bernardino County,3621,Grand Terrace,,,C,Contracts to SD,13-298
+36,San Bernardino County,3622,Loma Linda,,,C,Contracts to SD,13-403
+36,San Bernardino County,3623,San Bernardino Unified School District,1/1/1997,,,,
+36,San Bernardino County,3625,Mojave River DPR,,12/21/1992,,Merged with 3324,13-930
+36,San Bernardino County,3629,Chino Hills DPR,1/1/1989,12/31/1989,,Changed to 3337 after 1 year  as 3629.,13-931
+36,San Bernardino County,3630,Highland,,,C,Contracts to SD,13-315
+36,San Bernardino County,3631,Twentynine Palms,,,C,Contracts to SD,13-653
+36,San Bernardino County,3632,Hesperia,,,C,Contracts to SD,13-270
+36,San Bernardino County,3633,Apple Valley,,,C,Contracts to SD,13-004
+36,San Bernardino County,3635,Yucaipa,4/1/1990,,C,Contracts to SD,
+36,San Bernardino County,3639,San Bernardino College,1/1/1992,,,,
+36,San Bernardino County,3640,Chino Hills,7/1/1992,,C,Contracts to SD,
+36,San Bernardino County,3641,Yucca Valley,7/1/1992,,C,Contracts to SD,
+36,San Bernardino County,3650,Fontana Unified School District,1/1/1997,,,,
+36,San Bernardino County,3654,Union Pacific RR - San Bernardino,1/1/1997,,,,
+36,San Bernardino County,3657,Patton State Hospital,1/1/2008,,,,
+36,San Bernardino County,3659,Tehachapi DPR,1/1/2009,,,,
+36,San Bernardino County,3698,CA State Police - San Bernardino,,6/30/1995,,CA State Police merged with CHP in July 1995.,13-904
+36,San Bernardino County,3699,CA Highway Patrol - San Bernardino,,,,,13-001
+37,San Diego County,3700,San Diego Co. Sheriff's Department,,,,,14-000
+37,San Diego County,3701,Carlsbad,,,,,14-118
+37,San Diego County,3702,Chula Vista,,,,,14-132
+37,San Diego County,3703,Coronado,,,,,14-177
+37,San Diego County,3704,Del Mar,,,C,Contracts to SD,14-199
+37,San Diego County,3705,El Cajon,,,,"2011 is first year population estimate exceeded 100,000",14-218
+37,San Diego County,3706,Escondido,,,,,14-239
+37,San Diego County,3707,Imperial Beach,,,C,Contracts to SD,14-347
+37,San Diego County,3708,La Mesa,,,,,14-376
+37,San Diego County,3709,National City,,,,,14-489
+37,San Diego County,3710,Oceanside,,,,,14-515
+37,San Diego County,3711,San Diego,,,,,14-664
+37,San Diego County,3712,San Marcos,,,C,Contracts to SD,14-692
+37,San Diego County,3713,Vista,,,C,Contracts to SD,14-834
+37,San Diego County,3714,CSU San Diego,,,,,14-980
+37,San Diego County,3715,San Diego Harbor,1/1/1993,,,,
+37,San Diego County,3717,Santa Fe RR - San Diego,,12/31/1990,,Stopped reporting due to budget cuts,14-928
+37,San Diego County,3718,Southern Pacific RR - San Diego,,4/30/1989,,Stopped reporting,14-927
+37,San Diego County,371A,ABC San Diego,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+37,San Diego County,3722,Colorado DPR,,,,,14-933
+37,San Diego County,3723,Frontera DPR,,12/31/1992,,Merged with 3725,14-930
+37,San Diego County,3724,Ocotillo Wells DPR,,,,,14-931
+37,San Diego County,3725,San Diego Coast DPR,,,,,14-932
+37,San Diego County,3727,Montane DPR,,12/31/1992,,Merged with 3722,14-934
+37,San Diego County,372A,ABC San Marcos,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+37,San Diego County,3732,CSU San Marcos,7/1/1993,,,,
+37,San Diego County,3797,UC San Diego,,,,,14-950
+37,San Diego County,3798,CA State Police - San Diego,,6/30/1995,,CA State Police merged with CHP in July 1995.,14-904
+37,San Diego County,3799,CA Highway Patrol - San Diego,,,,,14-001
+37,San Diego County,37A1,Lemon Grove,1/1/1997,,C,Contracts to SD,
+37,San Diego County,37A2,Santee,1/1/1997,,C,Contracts to SD,
+37,San Diego County,37A3,Poway,1/1/1997,,C,Contracts to SD,
+37,San Diego County,37A4,Encinitas,1/1/1997,,C,Contracts to SD,
+37,San Diego County,37A5,Solana Beach,1/1/1997,,C,Contracts to SD,
+38,San Francisco County,3800,San Francisco Sheriff's Department,,12/31/1989,,Has not reported UCR since 1989.  SFSD runs the jail but does not patrol.,21-000
+38,San Francisco County,3801,San Francisco,,,,,21-670
+38,San Francisco County,3803,CSU San Francisco,,,,,21-980
+38,San Francisco County,3805,San Francisco BART,,,,,21-990
+38,San Francisco County,3807,Santa Fe RR - San Francisco,,12/31/1990,,Stopped reporting due to budget cuts,21-928
+38,San Francisco County,3808,Southern Pacific RR - San Francisco,,12/31/1996,,Merged with San Francisco UP RR (3819),21-927
+38,San Francisco County,3810,San Francisco DPR,,12/31/1992,,Merged with 4126,21-930
+38,San Francisco County,3816,UC Hastings College of Law,1/1/1993,,,,
+38,San Francisco County,3819,Union Pacific RR - San Francisco,1/1/1997,,,,
+38,San Francisco County,381A,ABC San Francisco,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+38,San Francisco County,3897,UC San Francisco,,,,,21-950
+38,San Francisco County,3898,CA State Police - San Francisco,,6/30/1995,,CA State Police merged with CHP in July 1995.,21-904
+38,San Francisco County,3899,CA Highway Patrol - San Francisco,,,,,21-001
+39,San Joaquin County,3900,San Joaquin Co. Sheriff's Department,,,,,45-000
+39,San Joaquin County,3901,Escalon,,,,,45-238
+39,San Joaquin County,3902,Lodi,,,,,45-402
+39,San Joaquin County,3903,Manteca,,,,,45-432
+39,San Joaquin County,3904,Ripon,,,,,45-620
+39,San Joaquin County,3905,Stockton,,,,,45-768
+39,San Joaquin County,3906,Tracy,,,,,45-795
+39,San Joaquin County,3909,Santa Fe RR - San Joaquin,,12/31/1990,,Stopped reporting due to budget cuts,45-928
+39,San Joaquin County,3910,Southern Pacific RR - San Joaquin,,12/31/1996,,Merged with San Joaquin UP RR (3921),45-927
+39,San Joaquin County,3912,Union Pacific RR - San Joaquin,,12/31/1996,,Merged with 3921,45-926
+39,San Joaquin County,3914,Stockton Developmental Center,,12/31/1997,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,45-924
+39,San Joaquin County,3915,Stockton Unified School District,1/1/1991,,,,
+39,San Joaquin County,391A,ABC Stockton,1/1/2003,12/31/03,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+39,San Joaquin County,3921,Union Pacific RR - San Joaquin,1/1/1997,,,,
+39,San Joaquin County,3923,CSU Stockton,1/1/1999,6/30/2002,,,
+39,San Joaquin County,3998,CA State Police - San Joaquin,,6/30/1995,,CA State Police merged with CHP in July 1995.,45-904
+39,San Joaquin County,3999,CA Highway Patrol - San Joaquin,,,,,45-001
+40,San Luis Obispo County,4000,San Luis Obispo Co. Sheriff's Department,,,,,62-000
+40,San Luis Obispo County,4001,Arroyo Grande,,,,,62-034
+40,San Luis Obispo County,4002,Grover Beach,,,,,62-303
+40,San Luis Obispo County,4003,Morro Bay,,,,,62-478
+40,San Luis Obispo County,4004,Paso Robles,,,,,62-554
+40,San Luis Obispo County,4005,Pismo Beach,,,,,62-571
+40,San Luis Obispo County,4006,San Luis Obispo,,,,,62-691
+40,San Luis Obispo County,4007,Cal Poly San Luis Obispo,,,,,62-980
+40,San Luis Obispo County,4008,Atascadero,,,,,62-038
+40,San Luis Obispo County,4009,Southern Pacific RR - San Luis Obispo,,12/31/1996,,Merged with San Luis Obispo UP RR (4018),62-927
+40,San Luis Obispo County,4012,San Simeon DPR,,12/31/2004,,Consolidated reporting with SLO Coast DPR (4013),62-931
+40,San Luis Obispo County,4013,San Luis Obispo Coast DPR,,,,,62-930
+40,San Luis Obispo County,4014,Oceano Dunes DPR,,,,Name change in 2001 from Pismo Dunes,62-932
+40,San Luis Obispo County,4016,Atascadero State Hospital,1/1/1991,,,,
+40,San Luis Obispo County,4018,Union Pacific RR - San Luis Obispo,1/1/1997,,,,
+40,San Luis Obispo County,4019,Cuesta College,7/1/1999,,,,
+40,San Luis Obispo County,401A,ABC San Luis Obispo,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+40,San Luis Obispo County,4099,CA Highway Patrol - San Luis Obispo,,,,,62-001
+41,San Mateo County,4100,San Mateo Co. Sheriff's Department,,,,"2011 is first year as a MIP because absorbed Half Moon Bay, Millbrae, and San Carlos",33-000
+41,San Mateo County,4101,Atherton,,,,,33-037
+41,San Mateo County,4102,Belmont,,,,,33-065
+41,San Mateo County,4103,Brisbane,,,,,33-099
+41,San Mateo County,4104,Burlingame,,,,,33-102
+41,San Mateo County,4105,Colma,,,,,33-153
+41,San Mateo County,4106,Daly City,,,,,33-192
+41,San Mateo County,4107,Half Moon Bay,,6/30/2011,,Defunct.  Statistics included in San Mateo SD.,33-309
+41,San Mateo County,4108,Hillsborough,,,,,33-331
+41,San Mateo County,4109,Menlo Park,,,,,33-450
+41,San Mateo County,4110,Millbrae,,2/29/2012,,Defunct.  Statistics included in San Mateo SD.,33-455
+41,San Mateo County,4111,Pacifica,,,,,33-535
+41,San Mateo County,4113,Redwood City,,,,,33-607
+41,San Mateo County,4114,San Bruno,,,,,33-655
+41,San Mateo County,4115,San Carlos,,10/31/2010,,Defunct.  Statistics included in San Mateo SD.,33-658
+41,San Mateo County,4116,San Mateo,,,,"2014 is first year population estimate exceeded 100,000",33-697
+41,San Mateo County,4117,South San Francisco,,,,,33-765
+41,San Mateo County,4119,Broadmoor,,,,,33-096
+41,San Mateo County,4120,Foster City,,,,,33-240
+41,San Mateo County,4123,San Mateo BART,,,,,33-990
+41,San Mateo County,4124,Union Pacific RR - San Mateo,,,,Name change from Southern Pacific to Union Pacific (1997),33-927
+41,San Mateo County,4126,Bay Area DPR,,,,,33-930
+41,San Mateo County,4127,East Palo Alto,7/1/1985,,,,33-225
+41,San Mateo County,4198,CA State Police - San Mateo,,6/30/1995,,CA State Police merged with CHP in July 1995.,33-904
+41,San Mateo County,4199,CA Highway Patrol - San Mateo,,,,,33-001
+42,Santa Barbara County,4200,Santa Barbara Co. Sheriff's Department,,,,,15-000
+42,Santa Barbara County,4201,Guadalupe,,,,,15-304
+42,Santa Barbara County,4202,Lompoc,,,,,15-405
+42,Santa Barbara County,4203,Santa Barbara,,,,,15-708
+42,Santa Barbara County,4204,Santa Maria,,,,"2011 is first year population estimate exceeded 100,000",15-717
+42,Santa Barbara County,4205,Carpinteria,,,C,Contracts to SD,15-119
+42,Santa Barbara County,4207,Union Pacific RR - Santa Barbara,,,,Name change from Southern Pacific to Union Pacific (1997),15-927
+42,Santa Barbara County,4208,Gaviota DPR,,12/31/1992,,Merged with 5615,15-930
+42,Santa Barbara County,4209,La Purisma Mission DPR,,12/31/1992,,Merged with 5615,15-931
+42,Santa Barbara County,4210,Solvang,,,C,Contracts to SD,15-751
+42,Santa Barbara County,4211,Allen Hancock College,1/1/1992,,,,
+42,Santa Barbara County,4212,Buelton,7/1/1992,,C,Contracts to SD,
+42,Santa Barbara County,4214,Goleta,2/1/2002,,C,Contracts to SD,
+42,Santa Barbara County,421A,ABC Santa Barbara,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+42,Santa Barbara County,4297,UC Santa Barbara,,,,,15-955
+42,Santa Barbara County,4298,CA State Police - Santa Barbara,,6/30/1995,,CA State Police merged with CHP in July 1995.,15-904
+42,Santa Barbara County,4299,CA Highway Patrol - Santa Barbara,,,,,15-001
+43,Santa Clara County,4300,Santa Clara Co. Sheriff's Department,,,,,22-000
+43,Santa Clara County,4302,Campbell,,,,,22-115
+43,Santa Clara County,4303,Cupertino,,,C,Contracts to SD,22-190
+43,Santa Clara County,4304,Gilroy,,,,,22-290
+43,Santa Clara County,4305,Los Altos,,,,,22-410
+43,Santa Clara County,4306,Los Altos Hills,,,C,Contracts to SD,22-409
+43,Santa Clara County,4307,Los Gatos,,,,,22-417
+43,Santa Clara County,4308,Milpitas,,,,,22-457
+43,Santa Clara County,4309,Monte Sereno,,,C,Contracts to Los Gatos,22-475
+43,Santa Clara County,4310,Morgan Hill,,,,,22-477
+43,Santa Clara County,4311,Mountain View,,,,,22-480
+43,Santa Clara County,4312,Palo Alto,,,,,22-542
+43,Santa Clara County,4313,San Jose,,,,,22-682
+43,Santa Clara County,4314,Santa Clara,,,,,22-711
+43,Santa Clara County,4315,Saratoga,,,C,Contracts to SD,22-727
+43,Santa Clara County,4316,Sunnyvale,,,,,22-774
+43,Santa Clara County,4317,CSU San Jose,,,,,22-980
+43,Santa Clara County,4319,Southern Pacific RR - Santa Clara,,12/31/1996,,Merged with Santa Clara UP RR (4336),22-927
+43,Santa Clara County,431A,ABC San Jose,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+43,Santa Clara County,4320,San Jose Community College,,,,,22-981
+43,Santa Clara County,4321,West Valley College District,,,,,22-982
+43,Santa Clara County,4324,Agnews Developmental Center,,7/31/2009,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,22-924
+43,Santa Clara County,4325,Union Pacific RR - Santa Clara,,12/31/1996,,Merged with 4336,22-926
+43,Santa Clara County,4327,Foothill College,,,,,22-983
+43,Santa Clara County,4336,Union Pacific RR - Santa Clara,1/1/1997,,,,
+43,Santa Clara County,4395,Santa Clara Transit District,1/1/1992,,C,Contracts to SD,
+43,Santa Clara County,4398,CA State Police - Santa Clara,,6/30/1995,,CA State Police merged with CHP in July 1995.,22-904
+43,Santa Clara County,4399,CA Highway Patrol - Santa Clara,,,,,22-001
+44,Santa Cruz County,4400,Santa Cruz Co. Sheriff's Department,,,,,63-000
+44,Santa Cruz County,4401,Capitola,,,,,63-116
+44,Santa Cruz County,4402,Santa Cruz,,,,,63-714
+44,Santa Cruz County,4403,Watsonville,,,,,63-839
+44,Santa Cruz County,4404,Scotts Valley,,,,,63-730
+44,Santa Cruz County,4405,Cabrillo College,,12/31/1997,,,63-980
+44,Santa Cruz County,4406,Union Pacific RR - Santa Cruz,,,,Name change from Southern Pacific to Union Pacific (1997),63-927
+44,Santa Cruz County,4407,Pajaro Coast DPR,,12/31/1992,,Merged with 4408,63-930
+44,Santa Cruz County,4408,Santa Cruz Mtns. DPR,,,,,63-931
+44,Santa Cruz County,4497,UC Santa Cruz,,,,,63-956
+44,Santa Cruz County,4499,CA Highway Patrol - Santa Cruz,,,,,63-001
+45,Shasta County,4500,Shasta Co. Sheriff's Department,,,,,55-000
+45,Shasta County,4501,Anderson,,,,,55-020
+45,Shasta County,4502,Redding,,,,,55-599
+45,Shasta County,4503,Union Pacific RR - Shasta,,,,Name change from Southern Pacific to Union Pacific (1997),55-927
+45,Shasta County,4505,Cascade DPR,,12/31/1992,,Merged with 0407,55-930
+45,Shasta County,451A,ABC Redding,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+45,Shasta County,4591,Shasta County Marshal,1/1/2010,,,,
+45,Shasta County,4598,CA State Police - Shasta,,6/30/1995,,CA State Police merged with CHP in July 1995.,55-904
+45,Shasta County,4599,CA Highway Patrol - Shasta,,,,,55-001
+46,Sierra County,4600,Sierra Co. Sheriff's Department,,,,,85-000
+46,Sierra County,4601,Loyalton,,prior to 1979,,Unknown if Loyalton ever reported anything.  Nothing on Crimes from 1979-current.  But on BCS Jurisdiction lists from 1970's.,85-420
+46,Sierra County,4602,Union Pacific RR - Sierra,,,,Name change from Southern Pacific to Union Pacific (1997),85-927
+46,Sierra County,4699,CA Highway Patrol - Sierra,,,,,85-001
+47,Siskiyou County,4700,Siskiyou Co. Sheriff's Department,,,,,86-000
+47,Siskiyou County,4701,Dorris,,,C,Contracts to SD,86-209
+47,Siskiyou County,4702,Dunsmuir,,,C,Contracts to SD,86-215
+47,Siskiyou County,4703,Etna,,,C,Contracts to SD,86-242
+47,Siskiyou County,4704,Fort Jones,,,C,Contracts to SD.  Did not report from 1988 to 1996.,86-272
+47,Siskiyou County,4705,Montague,,,C,Contracts to SD,86-465
+47,Siskiyou County,4706,Mount Shasta,,,,,86-483
+47,Siskiyou County,4707,Tulelake,,,C,Contracts to SD,86-806
+47,Siskiyou County,4708,Weed,,,,,86-840
+47,Siskiyou County,4709,Yreka,,,,,86-872
+47,Siskiyou County,4710,Lake Shastina,,,,,86-380
+47,Siskiyou County,4711,Southern Pacific RR - Siskiyou,,12/31/1996,,Merged with Siskiyou UP RR (4716),86-927
+47,Siskiyou County,4713,Union Pacific RR - Siskiyou,,12/31/1996,,Not sure if they ever reported under this number ??,86-926
+47,Siskiyou County,4716,Union Pacific RR - Siskiyou,1/1/1997,,,,
+47,Siskiyou County,4799,CA Highway Patrol - Siskiyou,,,,,86-001
+48,Solano County,4800,Solano Co. Sheriff's Department,,,,,34-000
+48,Solano County,4801,Benicia,,,,,34-070
+48,Solano County,4802,Dixon,,,,,34-206
+48,Solano County,4803,Fairfield,,,,,34-254
+48,Solano County,4804,Rio Vista,,,,,34-619
+48,Solano County,4805,Suisun,,,,,34-771
+48,Solano County,4806,Vacaville,,,,,34-821
+48,Solano County,4807,Vallejo,,,,,34-824
+48,Solano County,4808,Union Pacific RR - Solano,,,,Name change from Southern Pacific to Union Pacific (1997),34-927
+48,Solano County,4809,Delta/Brandon Island DPR,1/1/1985,12/31/1989,,Name change from Delta to Delta/Brandon Island (unknown year). Changed to Twin Cities (3433) in 1990.,34-930
+48,Solano County,4813,Solano Community College,1/1/2003,,,,
+48,Solano County,4898,CA State Police - Solano,,6/30/1995,,CA State Police merged with CHP in July 1995.,34-904
+48,Solano County,4899,CA Highway Patrol - Solano,,,,,34-001
+49,Sonoma County,4900,Sonoma Co. Sheriff's Department,,,,,35-000
+49,Sonoma County,4901,Cloverdale,,,,,35-138
+49,Sonoma County,4902,Cotati,,,,,35-184
+49,Sonoma County,4903,Healdsburg,,,,,35-319
+49,Sonoma County,4904,Rohnert Park,,,,,35-627
+49,Sonoma County,4905,Santa Rosa,,,,,35-726
+49,Sonoma County,4906,Sebastopol,,,,,35-735
+49,Sonoma County,4907,Sonoma,,,C,Contracts to SD,35-753
+49,Sonoma County,4908,Petaluma,,,,,35-563
+49,Sonoma County,4909,CSU Sonoma,,,,,35-980
+49,Sonoma County,4910,Union Pacific RR - Sonoma,,,,Name change from Southern Pacific to Union Pacific (1997),35-927
+49,Sonoma County,4911,Silverado DPR,,,,,35-930
+49,Sonoma County,4912,Russian River/Mendocino DPR,,,,Name change in 2001 from Russian River,35-931
+49,Sonoma County,4913,Sonoma Developmental Center,,,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,35-924
+49,Sonoma County,4914,Sonoma Co. Junior College,,,,,35-981
+49,Sonoma County,4915,Windsor,1/1/1993,,C,Contracts to SD,
+49,Sonoma County,491A,ABC Santa Rosa,1/1/2003,12/31/2003,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+49,Sonoma County,4998,CA State Police - Sonoma,,6/31/1995,,CA State Police merged with CHP in July 1995.,35-904
+49,Sonoma County,4999,CA Highway Patrol - Sonoma,,,,,35-001
+50,Stanislaus County,5000,Stanislaus Co. Sheriff's Department,,,,,46-000
+50,Stanislaus County,5001,Ceres,,,,,46-120
+50,Stanislaus County,5002,Modesto,,,,,46-459
+50,Stanislaus County,5003,Newman,,,,,46-498
+50,Stanislaus County,5004,Oakdale,,,,,46-509
+50,Stanislaus County,5005,Patterson,,,C,Contracts to SD,46-557
+50,Stanislaus County,5006,Riverbank,,,C,Contracts to SD,46-622
+50,Stanislaus County,5007,Turlock,,,,,46-809
+50,Stanislaus County,5008,Waterford,,,C,Contracts to SD,46-838
+50,Stanislaus County,5009,Hughson,,,C,Contracts to SD,46-339
+50,Stanislaus County,5010,CSU Stanislaus,,,,,46-980
+50,Stanislaus County,5011,Santa Fe RR - Stanislaus,,12/31/1990,,Stopped reporting due to budget cuts,46-928
+50,Stanislaus County,5012,Union Pacific RR - Stanislaus,,,,Name change from Southern Pacific to Union Pacific (1997),46-927
+50,Stanislaus County,5014,Union Pacific RR - Stanislaus,,12/31/1996,,Merged with 5012,46-926
+50,Stanislaus County,5015,Yosemite Community College,6/1/1985,10/31/1988,,Reported Crimes 1986-1988.  Reported Arrests 1985-1988.,
+50,Stanislaus County,5098,CA State Police - Stanislaus,,6/30/1995,,CA State Police merged with CHP in July 1995.,46-904
+50,Stanislaus County,5099,CA Highway Patrol - Stanislaus,,,,,46-001
+51,Sutter County,5100,Sutter Co. Sheriff's Department,,,,,56-000
+51,Sutter County,5101,Live Oak,,12/31/1979,,,56-393
+51,Sutter County,5102,Yuba City,,,,,56-875
+51,Sutter County,5104,Union Pacific RR - Sutter,,,,,56-926
+51,Sutter County,511A,ABC Yuba City,1/1/2003,12/31/03,,MACR only.  Management decision to discontinue collection of Dept. of ABC data.,
+51,Sutter County,5199,CA Highway Patrol - Sutter,,,,,56-001
+52,Tehama County,5200,Tehama Co. Sheriff's Department,,,,,57-000
+52,Tehama County,5201,Corning,,,,,57-171
+52,Tehama County,5202,Red Bluff,,,,,57-596
+52,Tehama County,5203,Tehama,,prior to 1979,,Unknown if Tehama ever reported anything.  Nothing on Crimes from 1979-current.  But on BCS Jurisdiction lists from 1970's.,57-789
+52,Tehama County,5204,Union Pacific RR - Tehama,,,,Name change from Southern Pacific to Union Pacific (1997),57-927
+52,Tehama County,5299,CA Highway Patrol - Tehama,,,,,57-001
+53,Trinity County,5300,Trinity Co. Sheriff's Department,,,,,87-000
+53,Trinity County,5301,Union Pacific RR - Trinity,,,,Name change from Southern Pacific to Union Pacific (1997),87-927
+53,Trinity County,5399,CA Highway Patrol - Trinity,,,,,87-001
+54,Tulare County,5400,Tulare Co. Sheriff's Department,,,,,47-000
+54,Tulare County,5401,Dinuba,,,,,47-203
+54,Tulare County,5402,Exeter,,,,,47-248
+54,Tulare County,5403,Farmersville,,,,,47-255
+54,Tulare County,5404,Lindsay,,,,,47-391
+54,Tulare County,5405,Porterville,,,,,47-593
+54,Tulare County,5406,Tulare,,,,,47-803
+54,Tulare County,5407,Visalia,,,,,47-833
+54,Tulare County,5408,Woodlake,,,,,47-866
+54,Tulare County,5409,Santa Fe RR - Tulare,,12/31/1990,,Stopped reporting due to budget cuts,47-928
+54,Tulare County,5410,Union Pacific RR - Tulare,,,,Name change from Southern Pacific to Union Pacific (1997),47-927
+54,Tulare County,5411,College of the Sequoias,,,,,47-980
+54,Tulare County,5498,CA State Police - Tulare,1/1/1979,12/31/1979,,"Only reported negative MACR reports for one year.  Could only find the name of the agency on FBI's ""UCR only"" list.",
+54,Tulare County,5499,CA Highway Patrol - Tulare,,,,,47-001
+55,Tuolumne County,5500,Tuolumne Co. Sheriff's Department,,,,,88-000
+55,Tuolumne County,5501,Sonora,,,,,88-756
+55,Tuolumne County,5502,Columbia DPR,,12/31/1992,,Merged with 0503,88-930
+55,Tuolumne County,5599,CA Highway Patrol - Tuolumne,,,,,88-001
+56,Ventura County,5600,Ventura Co. Sheriff's Department,,,,,16-000
+56,Ventura County,5601,Camarillo,,,C,Contracts to SD,16-113
+56,Ventura County,5602,Fillmore,,,C,Contracts to SD,16-260
+56,Ventura County,5603,Ojai,,,C,Contracts to SD,16-518
+56,Ventura County,5604,Oxnard,,,,,16-533
+56,Ventura County,5605,Port Hueneme,,,,,16-592
+56,Ventura County,5606,Santa Paula,,,,,16-723
+56,Ventura County,5607,Thousand Oaks,,,C,Contracts to SD,16-793
+56,Ventura County,5608,Ventura,,,,,16-827
+56,Ventura County,5609,Simi Valley,,,,,16-748
+56,Ventura County,5610,Southern Pacific RR - Ventura,,12/31/1996,,Merged with Ventura UP RR (5621),16-927
+56,Ventura County,5613,Angeles DPR,,,,,16-931
+56,Ventura County,5614,Moorpark,,,C,Contracts to SD,16-477
+56,Ventura County,5615,Channel Coast DPR,,,,,16-930
+56,Ventura County,5616,Camarillo Developmental Center,,3/31/1998,,Old jurisdiction lists and publications labeled this agency a State Hospital. Changed to Developmental Center in 2008.,16-924
+56,Ventura County,5617,Hungry Valley DPR,1/1/1990,,,Was 191C from 1985-1989.  Changed to 5617 in 1990.,16-932
+56,Ventura County,5621,Union Pacific RR - Ventura,1/1/1997,,,,
+56,Ventura County,5622,CSU Channel Islands,1/1/2000,,,,
+56,Ventura County,5680,Ventura Community College,1/1/2006,,,,
+56,Ventura County,5691,Ventura Marshal,,9/30/1980,,,16-961
+56,Ventura County,5698,CA State Police - Ventura,,6/30/1995,,CA State Police merged with CHP in July 1995.,16-904
+56,Ventura County,5699,CA Highway Patrol - Ventura,,,,,16-001
+57,Yolo County,5700,Yolo Co. Sheriff's Department,,,,,58-000
+57,Yolo County,5701,Davis,,,,,58-195
+57,Yolo County,5702,Winters,,,,,58-863
+57,Yolo County,5703,Woodland,,,,,58-869
+57,Yolo County,5704,West Sacramento,,,,,58-865
+57,Yolo County,5705,Union Pacific RR - Yolo,,,,Name change from Southern Pacific to Union Pacific (1997),58-927
+57,Yolo County,5706,Union Pacific RR - Yolo,,12/31/1996,,Merged with 5705,58-926
+57,Yolo County,5797,UC Davis,,,,,58-953
+57,Yolo County,5798,CA State Police - Yolo,,6/30/1995,,CA State Police merged with CHP in July 1995.,58-904
+57,Yolo County,5799,CA Highway Patrol - Yolo,,,,,58-001
+58,Yuba County,5800,Yuba Co. Sheriff's Department,,,,,59-000
+58,Yuba County,5801,Marysville,,,,,59-441
+58,Yuba County,5802,Wheatland,,,,,59-848
+58,Yuba County,5803,Union Pacific RR - Yuba,,,,Name change from Southern Pacific to Union Pacific (1997),59-927
+58,Yuba County,5804,Union Pacific RR - Yuba,,12/31/1996,,Merged with 5803,59-926
+58,Yuba County,5899,CA Highway Patrol - Yuba,,,,,59-001

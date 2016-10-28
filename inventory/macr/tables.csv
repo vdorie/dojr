@@ -1,8 +1,13 @@
 name,display_name,file,object,full_summary,main_table,on_load,description
-macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"Words
+macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"The Monthly Arrest and Citation Register compiles monthly arrest reports from all law enforcement agencies in California. The reports are supposed to contain every arrest (and citation until 2005) that an agency makes of juveniles or adults. 
 
+* Each row represents a single arrest, and includes the arrest date, the offense for which the individual was arrested, the individual's age, gender, race or ethnicity, and whether the case was referred to the local prosecutor. Each row also contains a full name and birthdate, which are excluded in these data. 
+* An arrest is defined as detaining an individual with the intention of seeking charges for a specific offense
 * The MACR contains only the most serious offense based on the severity of possible punishment for retention.
 * MACR data began to be stored in a digital format in 1980. The dataset spans 1980 to the present.
+
+
+Law enforcement agencies are instructed to report all persons processed by arrest, citation, or summons for committing an offense within their jurisdiction. They are instructed to include arrests that result in a release without charges (including arrests of juveniles that only result in a warning). 
 
 Historical changes:
 
@@ -19,4 +24,5 @@ Department-specific changes:
 * San Francisco did not update its race_or_ethnicity codes until 2012, when it adoped the FBI's categories: white, black, American Indian, other Asian, and other. San Francisco data since 2012 does not distinguish between Hispanic and non-Hispanic whites."
 bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,,"Not as many words"
 jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,0,,"Love words, best words"
+* Departments that fail to send their data within thirty days of the due date are contacted, with increasing escalation when they reach 60 or 90 days past the due date. 
 

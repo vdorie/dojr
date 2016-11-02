@@ -258,3 +258,71 @@ if (!file.exists(cleanFile)) {
 cat(youngTable, sep = "\n")
 rm(youngTable, cleanFile)
 ```
+
+Old age appears to be handled differently in different years. While the numbers are relatively small, it is difficult to believe that there were spikes in crime for, say, 91 year olds in 1991.
+
+```{r clean_oldAgeByYear, echo=FALSE, results="asis"}
+cleanFile <- file.path("..", imgPath, "clean_oldAgeByYear.pdf")
+if (!file.exists(cleanFile)) {
+  macr.sub <- macr.clean[!is.na(macr.clean$age) & macr.clean$age >= 80L, c("arrest_year", "age")]
+  years <- sort(unique(macr.sub$arrest_year))
+  xRange <- range(macr.sub$age)
+  
+  pdf(cleanFile, 6, 6)
+  par(mfrow = getGridDim(8.5 / 11, length(years)), mar = c(0.9, 0.8, 0, 0), mgp = c(1, 0, 0), tcl = -0.1)
+  for (i in seq_along(years)) {
+    with(macr.sub,
+         discrete.histogram(age[arrest_year == years[i]], xlim = xRange,
+                            border = NA, col = "gray", gap = 0.45, xaxt = "n", yaxt = "n",
+                            main = "", xlab = "", ylab = "", bty = "n"))
+    axis(1L, lwd = 0.75, cex.axis = 0.8)
+    axis(2L, lwd = 0.75, cex.axis = 0.8)
+    title(as.character(years[i]), line = -1L, outer = FALSE, cex.main = 0.95)
+  }
+  dev.off()
+  
+  rm(macr.sub, years, xRange, i)
+}
+rm(cleanFile)
+cat(paste0("![](", file.path(imgPath, "clean_oldAgeByYear.pdf"), ")"), "\n\n", sep = "")
+```
+
+`r if (targetType == "latex") "\n\\newpage\n\n"` Directly examining these rows shows another form of missingness:
+
+```{r clean_oldAge1991, echo=FALSE, results="asis"}
+cleanFile <- file.path("..", txtPath, "clean_oldAge_1.txt")
+if (!file.exists(cleanFile)) {
+  macr.sub <- subset(macr.clean,
+                     arrest_year == 1991L & age >= 89L & age <= 91L,
+                     c("ncic_jurisdiction", "arrest_date", "age", "birth_month", "birth_day", "birth_date"))
+  millenials <- rmdFormat(macr.sub[sample(nrow(macr.sub), 15L),])
+  rm(macr.sub)
+  
+  writeLines(millenials, cleanFile)
+} else {
+  millenials <- readLines(cleanFile)
+}
+
+cat(millenials, sep = "\n")
+rm(millenials, cleanFile)
+```
+
+This spike apparently bubbles through the population until 1992, at which point the practice ended. In 2003, a handful of jurisidctions used an age of 88, together with a birthday of 02/30 to indicate missingness.
+
+```{r clean_oldAge2003, echo=FALSE, results="asis"}
+cleanFile <- file.path("..", txtPath, "clean_oldAge_2.txt")
+if (!file.exists(cleanFile)) {
+  macr.sub <- subset(macr.clean,
+                     arrest_year == 2003 & age == 88L,
+                     c("ncic_jurisdiction", "arrest_date", "age", "birth_month", "birth_day", "birth_date"))
+  eightyEight <- rmdFormat(macr.sub[seq_len(10L),])
+  rm(macr.sub)
+  
+  writeLines(eightyEight, cleanFile)
+} else {
+  eightyEight <- readLines(cleanFile)
+}
+
+cat(eightyEight, sep = "\n")
+rm(eightyEight, cleanFile)
+```

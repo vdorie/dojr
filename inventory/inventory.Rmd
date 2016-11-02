@@ -64,6 +64,7 @@ loadData <- function(tableName = mainTable) {
 ## load some utilities
 commonSrcPath <- file.path("..", "common", "src")
 source(file.path(commonSrcPath, "knitr.R"))
+source(file.path(commonSrcPath, "util.R"))
 
 ## inventory specific
 srcPath <- file.path("src")

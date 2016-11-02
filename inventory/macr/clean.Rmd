@@ -82,8 +82,8 @@ if (!file.exists(cleanFile)) {
   
   writeLines(arrestDate, cleanFile)
   
-  macr.clean$arrest_month[naRows] <- NA
-  macr.clean$arrest_day[naRows]   <- NA
+  #macr.clean$arrest_month[naRows] <- NA
+  #macr.clean$arrest_day[naRows]   <- NA
   
   rm(naRows, naIndices, monthSlippedRows, monthSlipped, dayTransposedRows, i,
      dayTransposed, dayAddedRows, dayAdded, numBadArrestDate)
@@ -112,7 +112,7 @@ cat(arrestDate[seq.int(20L, 28L)], "\n\n", sep = "\n")
 rm(arrestDate)
 ```
 
-As for now determining a 'correct arrest date' requires estimation, we replace those arrest day and month records with `NA`.
+As for now determining a 'correct arrest date' requires estimation, we leave those as is and augment the data with a field `arrest_date` that contains `NA` for all rows where a date cannot be parsed.
 
 ##  Birth Date
 
@@ -132,7 +132,7 @@ if (!file.exists(cleanFile)) {
 
   discrepancyRows <- with(macr.clean, abs(arrest_year - birth_year - age) > 1L)
   discrepancyRows[is.na(discrepancyRows)] <- FALSE
-  numDiscepancyBirthYear <- as.character(sum(discrepancyRows))
+  numDiscrepancyBirthYear <- as.character(sum(discrepancyRows))
   
   offBy100 <- discrepancyRows & with(macr.clean, abs(arrest_year - (birth_year - 100L) - age) <= 1L)
   offBy100[is.na(offBy100)] <- FALSE
@@ -187,77 +187,41 @@ if (!file.exists(cleanFile)) {
 rm(cleanFile)
 ```
 
-Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl == 1L) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age.
+Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl == 1L) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age. `r colFmt("red", "TODO: transition")`
 
 ```{r clean_birthdate_3, echo=FALSE}
 rm(numDiscrepancyBirthYear)
-cleanFile <- file.path("..", txtPath, "clean_birthdate_3.txt")
-if (!file.exists(cleanFile)) {
+cleanTxtFile <- file.path("..", txtPath, "clean_birthdate_3.txt")
+cleanImgFile <- file.path("..", imgPath, "clean_birthmonthHistogram.pdf")
+if (!file.exists(cleanTxtFile) || !file.exists(cleanImgFile)) {
   naRows <- with(macr.clean, is.na(birth_date) & !is.na(birth_month) & !is.na(birth_day))
   
-  numInvalidBirthDates <- sum(naRows)
+  numInvalidBirthDates       <- sum(naRows)
+  numInvalidBirthDates.feb30 <- with(macr.clean, sum(birth_day[naRows] == 30L & birth_month[naRows] == 2L))
+  writeLines(as.character(c(numInvalidBirthDates, numInvalidBirthDates.feb30)), cleanFile)
   
-  birth_day.est  <- macr.clean$birth_day
-  birth_date.est <- macr.clean$birth_date
+  pdf(cleanImgFile, 3, 3)
+  with(macr.clean,
+       discrete.histogram(birth_month[naRows & (birth_day != 30L | birth_month != 2L)],
+                          xlab = "Month", col = "gray", border = NA, main = "Birth Month, Not 02/30"))
+  dev.off()
   
-  invalidRows <- naRows
-  
-  ## we shift down the feb/31 to feb/30 to feb/29 until they're valid dates
-  for (i in seq_len(3)) {
-    birth_day.est[invalidRows] <- birth_day.est[invalidRows] - 1L
-    birth_date.est[invalidRows] <- with(macr.clean, as.Date(paste(
-        birth_year[invalidRows], birth_month[invalidRows], birth_day.est[invalidRows],
-        sep = "-"),
-      format = "%F"))
-  
-    invalidRows <- with(macr.clean, is.na(birth_date.est) & !is.na(birth_month) & !is.na(birth_day))
-  }
-  rm(i)
-  
-  ## load getTimeDifferenceInYears
-  source(file.path("..", commonSrcPath, "time.R"))
-  age.est <- getTimeDifferenceInYears(macr.clean$arrest_date, birth_date.est)
-
-  macr.sub <- macr.clean[c("arrest_month", "arrest_day", "arrest_date", "birth_year", "birth_month", "birth_day", "age")]
-  macr.sub$birth_date.est <- birth_date.est
-  macr.sub$age.est <- age.est
-  
-  discrepancyRows <- with(macr.sub, age.est != age)
-  discrepancyRows[is.na(discrepancyRows)] <- FALSE
-  macr.sub <- macr.sub[discrepancyRows,]
-  
-  numDiscrepancyBirthYear <- sum(discrepancyRows)
-  
-  numAddedDays <- with(macr.sub, sum(arrest_month != birth_month | birth_day <= arrest_day, na.rm = TRUE))
-  macr.sub$arrest_month <- NULL
-  macr.sub$arrest_day   <- NULL
-  addedDays <- rmdFormat(macr.sub[seq_len(5L),])
-  
-  macr.clean$birth_day[naRows]   <- NA
-  macr.clean$birth_month[naRows] <- NA
-  
-  rm(naRows, invalidRows, age.est, macr.sub, discrepancyRows, getTimeDifferenceInYears, birth_day.est, birth_date.est)
-  
-  writeLines(c(as.character(c(numInvalidBirthDates, numDiscrepancyBirthYear, numAddedDays)), addedDays), cleanFile)
 } else {
-  values <- readLines(cleanFile)
-  numInvalidBirthDates <- as.integer(values[1L])
-  numDiscrepancyBirthYear <- as.integer(values[2L])
-  numAddedDays <- as.integer(values[3L])
-  addedDays <- tail(values, -3L)
-  rm(values)
+  lines <- readLines(cleanTxtFile)
+  numInvalidBirthDates <- as.integer(lines[1L])
+  numInvalidBirthDates.feb30 <- as.integer(lines[2L])
+  rm(lines)
 }
-rm(cleanFile)
-```
-  
-There are `r numInvalidBirthDates` remaining rows with invalid birth dates. While in general not true, temporarily assuming that the `birth_month` field is correct and the `birth_day` is possibly incorrect allows for the construction of valid dates by progressively decrementing the `birth_day` field. After doing so, there are `r numDiscrepancyBirthYear` records remaining that show a discrepancy between age and that found by taking the difference between arrest date and birth date. `r if (numAddedDays == 0L) "All" else as.character(numDiscrepancyBirthYear - numAddedDays)` of these can be explained by the fact that the birth month and arrest month are the same, but the arrest happened so late in the month that the only way for a stated age to be valid would be if the month had extra days. For example:
-
-```{r echo=FALSE, results="asis"}
-cat(addedDays, "\n", sep = "\n")
-rm(numInvalidBirthDates, numDiscrepancyBirthYear, numAddedDays, addedDays)
+rm(cleanTxtFile, cleanImgFile)
 ```
 
-This suggests that some clerks used the `birth_day` field to resolve a discrepancy between an arrestee's stated age and birth day/month. Regardless, invalid birth dates are treated by setting the `birth_day` and `birth_month` to `NA`.
+The MACR manual states that if the specific birth date is unknown, the birth month and day should be recorded as February 30th. This accounts for `r numInvalidBirthDates.feb30` of the remaining `r numInvalidBirthDates` records with an invalid birth date. After excluding these records, there are still an anomalous amount of birth dates in February.
+
+```{r clean_birthdate_4, echo=FALSE}
+imgText <- paste0("![](", file.path(imgPath, "clean_birthmonthHistogram.pdf"), ")")
+cat(imgText, "\n\n", sep = "")
+rm(imgText, numInvalidBirthDates, numInvalidBirthDates.feb30)
+```
 
 ## Age
 

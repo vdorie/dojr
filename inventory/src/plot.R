@@ -53,12 +53,13 @@ discrete.histogram <- function(x, gap = 0.5, xlab = xname, ylab = "Freq",
   
   binWidth <- (1 - gap) * (min(diff(xVals)) / 2)
   
+  defaultPlotArgs <- union(names(formals(plot.default)), graphics:::.Pars)
   
   args <- list(NULL, type = "n",
                xlim =  c(min(xVals) - binWidth, max(xVals) + binWidth),
                ylim = c(0, max(yVals)),
                xlab = xlab, ylab = ylab, main = main)
-  plotArgs <- intersect(names(formals(plot.default)), names(dotsList))
+  plotArgs <- intersect(defaultPlotArgs, names(dotsList))
   if (length(plotArgs) > 0L)
     args[names(dotsList[plotArgs])] <- dotsList[plotArgs]
   do.call("plot", args)
@@ -70,4 +71,23 @@ discrete.histogram <- function(x, gap = 0.5, xlab = xname, ylab = "Freq",
     args[names(dotsList[rectArgs])] <- dotsList[rectArgs]
   do.call("rect", args)
   invisible(NULL)
+}
+
+getGridDim <- function(widthToHeight, n) {
+  rows <- sqrt(n / widthToHeight)
+  cols <- widthToHeight * rows
+  
+  result <- matrix(c(
+    floor(rows), floor(cols),
+    floor(rows), ceiling(cols),
+    ceiling(rows), floor(cols),
+    ceiling(rows), ceiling(cols)), 2L)
+  
+  sizes <- apply(result, 2L, prod)
+  validResults <- which(sizes >= n)
+  
+  result <- result[,validResults]
+  sizes  <- sizes[validResults]
+  
+  if (length(sizes) == 1L) result else result[,which.min(sizes)]
 }

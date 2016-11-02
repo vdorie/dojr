@@ -203,7 +203,7 @@ if (!file.exists(cleanTxtFile) || !file.exists(cleanImgFile)) {
   pdf(cleanImgFile, 3, 3)
   with(macr.clean,
        discrete.histogram(birth_month[naRows & (birth_day != 30L | birth_month != 2L)],
-                          xlab = "Month", col = "gray", border = NA, main = "Birth Month, Not 02/30"))
+                          xlab = "Month", col = "gray", border = NA, main = "Birth Date Invalid, Not 02/30"))
   dev.off()
   
 } else {
@@ -217,7 +217,7 @@ rm(cleanTxtFile, cleanImgFile)
 
 The MACR manual states that if the specific birth date is unknown, the birth month and day should be recorded as February 30th. This accounts for `r numInvalidBirthDates.feb30` of the remaining `r numInvalidBirthDates` records with an invalid birth date. After excluding these records, there are still an anomalous amount of birth dates in February.
 
-```{r clean_birthdate_4, echo=FALSE}
+```{r clean_birthdate_4, echo=FALSE, results="asis"}
 imgText <- paste0("![](", file.path(imgPath, "clean_birthmonthHistogram.pdf"), ")")
 cat(imgText, "\n\n", sep = "")
 rm(imgText, numInvalidBirthDates, numInvalidBirthDates.feb30)

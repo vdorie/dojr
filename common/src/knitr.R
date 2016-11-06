@@ -1,11 +1,37 @@
-colFmt <- function(color, x) {
+rmdGetOutputFormat <- function() {
   outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
-  if (is.null(outputFormat)) outputFormat <- rmarkdown::all_output_formats(knitr::current_input())[1L]
+  if (is.null(outputFormat)) {
+    tryResult <- tryCatch(outputFormat <- rmarkdown::all_output_formats(knitr::current_input())[1L], error = function(e) e)
+    if (is(tryResult, "error")) outputFormat <- "latex"
+  }
+  outputFormat
+}
+
+
+rmdColFmt <- function(color, x) {
+  outputFormat <- rmdGetOutputFormat()
   
   switch(outputFormat, 
          latex = paste0("\\textcolor{", color, "}{", x, "}"),
          html  = paste0("<font color='", color, "'>", x, "</font>"),
          x)
+}
+
+rmdImageInline <- function(path) {
+  outputFormat <- rmdGetOutputFormat()
+    
+  switch(outputFormat,
+         latex = paste0("\\begin{center}\n  \\includegraphics{", path, "}\n\\end{center}"),
+         html  = paste0("<img src=\"", path, "\"/>"),
+         paste0("![](", path, ")"))
+}
+
+rmdPageBreak <- function() {
+  outputFormat <- rmdGetOutputFormat()
+  
+  switch(outputFormat,
+         latex = "\n\\newpage\n\n",
+         "")
 }
 
 ## appends a ... if the string is too long

@@ -19,22 +19,22 @@ summarizeVariable <- function(variableName) {
     imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
     if (!file.exists(imgFile)) {
       pdf(imgFile, width = 4, height = 4)
-      discrete.histogram(x, main = variableName, xlab = variableName, col = "gray")
+      discrete.histogram(x, main = variableName, xlab = variableName, col = "gray", border = NA)
       dev.off()
     }
     
     summaryStatistics <- summary(x)
-    variableSummary <- c(rmdFormat(summaryStatistics), "", paste0("![](", imgFile, ")"), "")
+    variableSummary <- c(rmdFormat(summaryStatistics), "", rmdImageInline(imgFile), "")
   } else if (is.numeric(x)) {
     imgFile <- file.path(imgPath, paste0(cleanVariableName, "_summary.pdf"))
     if (!file.exists(imgFile)) {
       pdf(imgFile, width = 4, height = 4)
-      hist(x, breaks = 20, col = "gray", main = variableName)
+      hist(x, breaks = 20, col = "gray", main = variableName, border = NA)
       dev.off()
     }
     
     summaryStatistics <- summary(x)
-    variableSummary <- c(rmdFormat(summaryStatistics), "", paste0("![](", imgFile, ")"), "")
+    variableSummary <- c(rmdFormat(summaryStatistics), "", rmdImageInline(imgFile), "")
   } else {
     variableSummary <- ""
   }

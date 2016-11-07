@@ -9,17 +9,22 @@ if (any(!file.exists(txtFiles)) || any(!file.exists(imgFiles))) error("all files
 
 counts <- table(macr.clean[,c("ncic_jurisdiction", "arrest_year")])
   
-plotCountsArray <- function(counts, indices, plotAxes = TRUE) {
+plotCountsArray <- function(counts, indices, plotNames = TRUE, plotAxes = TRUE) {
   outputFormat <- rmdGetOutputFormat()
   
   ratio <- if (outputFormat == "latex") 8.5 / 11 else 1.6
   
+  years <- as.integer(colnames(counts))
+  
+  mar <- if (plotAxes) c(1.05, 1.05, 0, 0) else c(0.05, 0.05, 0, 0)
+  if (plotNames) mar[3L] <- 1.2
+  
   par(mfrow = getGridDim(ratio, length(indices)),
-      mar = if (plotAxes) c(1, 1, 0, 0) else c(0.05, 0.05, 0, 0),
+      mar = mar,
       mgp = c(0.8, 0.2, 0))
   
   for (i in seq_along(indices)) {
-    plot(NULL, type = "n", xlim = c(1L, ncol(counts)), ylim = range(counts[indices[i],]),
+    plot(NULL, type = "n", xlim = range(years), ylim = range(counts[indices[i],]),
          xlab = "", ylab = "",
          bty = if (plotAxes) "L" else "n",
          xaxt = if (plotAxes) "s" else "n",
@@ -28,7 +33,10 @@ plotCountsArray <- function(counts, indices, plotAxes = TRUE) {
       axis(1L, lwd = 0.7)
       axis(2L, lwd = 0.7)
     }
-    lines(seq_len(ncol(counts)), counts[indices[i],], lwd = 0.8)
+    if (plotNames)
+      title(getNameForJurisdiction(rownames(counts)[indices[i]]), line = 0)
+    
+    lines(years, counts[indices[i],], lwd = 0.8)
   }
   
   invisible(NULL)
@@ -129,3 +137,26 @@ model <- stan_model(file.path(srcPath, "numArrests.stan"))
 samples <- sampling(model, data = data)
 
 pars <- extract(samples)
+
+gamma.mean <- apply(pars$gamma, 2L, mean)
+gamma.order <- order(gamma.mean)
+
+pdf(file.path("..", imgPath, "clean_numArrestsLowAR.pdf"), 6, 6 * widthToHeightRatio)
+plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L)]])
+dev.off()
+
+pdf(file.path("..", imgPath, "clean_numArrestsHighAR.pdf"), 6, 6 * widthToHeightRatio)
+plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L) + length(gamma.order) - 8L]])
+dev.off()
+
+eta.mean <- apply(pars$eta, 2L, mean)
+eta.order <- order(eta.mean)
+
+pdf(file.path("..", imgPath, "clean_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
+plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L)]])
+dev.off()
+
+pdf(file.path("..", imgPath, "clean_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
+plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L) + length(eta.order) - 8L]])
+dev.off()
+

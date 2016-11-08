@@ -79,8 +79,6 @@ if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath,
 
 # Introduction
 
-# Tables
-
 ```{r tables_summary, echo=FALSE, results="asis"}
 for (i in seq_len(nrow(tables))) {
   cat("### ", tables$display_name[i], "\n\n", sep = "")
@@ -99,6 +97,8 @@ rm(firstFive, variablesSummary)
 ```
 
 `r rmdPageBreak()`
+
+# Tables
 
 # Main Table Variables
 

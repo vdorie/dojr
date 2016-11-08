@@ -5,22 +5,21 @@ macr,"MACR Main Database",macr_pii.Rdata,macr,1,1,,"The Monthly Arrest and Citat
 * An arrest is defined as detaining an individual with the intention of seeking charges for a specific offense
 * The MACR contains only the most serious offense based on the severity of possible punishment for retention.
 * MACR data began to be stored in a digital format in 1980. The dataset spans 1980 to the present.
-* Departments that fail to send their data within thirty days of the due date are contacted, with increasing escalation when they reach 60 or 90 days past the due date.
 
-Law enforcement agencies are instructed to report all persons processed by arrest, citation, or summons for committing an offense within their jurisdiction. They are instructed to include arrests that result in a release without charges (including arrests of juveniles that only result in a warning).  Departments that fail to send their data within thirty days of the due date are contacted, with increasing escalation when they reach 60 or 90 days past the due date. 
+Law enforcement agencies are instructed to report all persons arrested within their jurisdiction. They are instructed to include arrests that result in a release without charges (including arrests of juveniles that only result in a warning).  Departments that fail to send their data within thirty days of the due date are contacted, with increasing escalation when they reach 60 or 90 days past the due date. 
 
 Historical changes:
 
-* The race_or_ethnicity codes for Asian/Pacific Islander expanded in 1991. 
-* The CA DOJ stopped collecting data about arrests or citations made for infractions in 2005.  
+* The race_or_ethnicity codes for Asian/Pacific Islander expanded in 1991.
+* The CA DOJ stopped collecting data about arrests or citations made for infractions in 2005.
 * In 2011, the lower limit of felony theft was raised from $400 to $950, contributing to the decrease in felony theft arrests and increase in misdemeanor theft arrests.
-* In 2011, some misdemeanor marijuana statutes were re-classified to infractions leading to a decrease in misdemeanor marijuana arrests.
+* In 2011, some misdemeanor marijuana offenses were re-classified to infractions leading to a decrease in misdemeanor marijuana arrests.
 * In 2014, California voters passed Proposition 47, which reduced numerous state statutes from felonies to misdemeanors - leading to a reduction in some types of felony arrests. 
 
 
 Department-specific changes:
 
-* Bakersfield Police Department (PD) and Oakland PD were not able to report complete arrest data in 1995.
+* Bakersfield Police Department (PD) and Oakland PD did not report arrest data in 1995.
 * San Francisco did not update its race_or_ethnicity codes until 2012, when it adoped the FBI's categories: white, black, American Indian, other Asian, and other. San Francisco data since 2012 does not distinguish between Hispanic and non-Hispanic whites."
 bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,,"BCS codes combine like statutes for statistical analysis. This table maps statutes to BCS codes to BCS summary codes (groups of BCS codes)."
 jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,0,,"The jurisdiction is the law enforcement agency that made the arrest. This table maps jurisdiction codes to their names and counties. It also details agencies began and stopped reporting, when agencies merged, and whether agencies subcontract to one another."

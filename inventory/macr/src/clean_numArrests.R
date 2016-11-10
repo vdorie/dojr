@@ -5,7 +5,7 @@ imgFiles <- c(
   file.path("..", imgPath, "clean_arrestNumHistogram.pdf"),
   file.path("..", imgPath, "clean_numArrestsZeroCounts.pdf"))
 
-if (any(!file.exists(txtFiles)) || any(!file.exists(imgFiles))) error("all files exist")
+if (all(file.exists(txtFiles)) && all(file.exists(imgFiles))) stop("all files exist")
 
 counts <- table(macr.clean[,c("ncic_jurisdiction", "arrest_year")])
   
@@ -148,8 +148,8 @@ postmean <- function(samples, indices) {
   time <- seq_len(36L)
   time <- (time - mean(time)) / sd(time)
   
-  sapply(indices, function(index) {
-    apply(samples$beta_y[indices[index],1] + samples$beta_y[indices[index],2] * time[seq_len(longestRun)], 2, mean)
+  #sapply(indices, function(index) {
+  #  apply(samples$beta_y[indices[index],1] + samples$beta_y[indices[index],2] * time[seq_len(longestRun)], 2, mean)
 }
 
 

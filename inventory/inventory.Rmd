@@ -148,16 +148,15 @@ rm(pageBreak, variable, variableSummary)
 
 The MACR data are best used for analyses of general trends, they are less reliable for point estimates of numbers of arrests or numbers of people arrested. It is important to keep in mind that these data are heavily conditioned by individual, agency, and county variation in propensity to arrest, how offenses are categorized, and how well data are captured and reported to the CA DOJ. In using these data and preparing them for release, we have come across several anomalies and inconsistencies. They may produce results that are artefacts of data collection and reporting processes. To help researchers avoid potential pitfalls, we summarize our recommendations about data use below.
 
-
 #### age
 
-* Very young and very old ages are suspect. We suggest dropping those 5 or younger and 89 or older. `r rmdColFmt("red", "VD NOTE: the problematic ages are as low as 80 in 1980")`
+* Very young and very old ages are suspect. We suggest dropping those 5 or younger and 89 or older. 
 
 #### bcs_offense_code
 
 * Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
 
-####  bcs_summary_offense_code
+#### bcs_summary_offense_code
 
 * Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
 

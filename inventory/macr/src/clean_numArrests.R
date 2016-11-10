@@ -124,19 +124,34 @@ data <- list(
   logCounts = apply(counts.fit, 1L, function(row) {
     keep <- !is.na(row)
     y <- ifelse(keep, log(row), 0.0)
-    y[keep] <- (y[keep] - y[1L]) / sd(y[keep])
+    y[keep] <- (y[keep] - mean(y[keep])) / sd(y[keep])
     y[!keep] <- 0.0
     y
   }),
-  medianCounts = apply(counts.fit, 1L, function(row) median(row[!is.na(row)])))
+  medianCounts = apply(counts.fit, 1L, function(row) median(row[!is.na(row)])),
+  beta_eta_mean = c(7.0, 0.5),
+  beta_eta_scale = c(12.0, 7.5),
+  eta_scale = 2.0,
+  mu_beta_y = c(0, 0),
+  Sigma_beta_y = diag(5.0, 2))
+
 data$medianCounts <- with(data, (medianCounts - mean(medianCounts)) / sd(medianCounts))
 
 require(rstan)
 model <- stan_model(file.path(srcPath, "numArrests.stan"))
 
 samples <- sampling(model, data = data)
-
 pars <- extract(samples)
+
+
+postmean <- function(samples, indices) {
+  time <- seq_len(36L)
+  time <- (time - mean(time)) / sd(time)
+  
+  sapply(indices, function(index) {
+    apply(samples$beta_y[indices[index],1] + samples$beta_y[indices[index],2] * time[seq_len(longestRun)], 2, mean)
+}
+
 
 gamma.mean <- apply(pars$gamma, 2L, mean)
 gamma.order <- order(gamma.mean)
@@ -146,7 +161,7 @@ plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L)]])
 dev.off()
 
 pdf(file.path("..", imgPath, "clean_numArrestsHighAR.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L) + length(gamma.order) - 8L]])
+plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq.int(length(gamma.order), length(gamma.order) - 8L + 1L)]])
 dev.off()
 
 eta.mean <- apply(pars$eta, 2L, mean)
@@ -157,6 +172,27 @@ plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L)]])
 dev.off()
 
 pdf(file.path("..", imgPath, "clean_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L) + length(eta.order) - 8L]])
+plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq.int(length(eta.order), length(eta.order) - 8L + 1L)]])
 dev.off()
 
+macr.sub <- subset(macr.clean, disposition == "released", c("ncic_jurisdiction", "arrest_year"))
+macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
+numArrested <- table(macr.sub)
+
+counts.fit <- t(sapply(which(fitJurisdictions), function(index)
+  c(counts[index, seq.int(longestRuns[index,1L], longestRuns[index,2L])], rep(NA_integer_, numYears - runLengths[index]))))
+
+
+numArrested.fit <- 
+
+data <- list(
+  numGroups = nrow(counts.fit),
+  numYears  = ncol(counts.fit),
+  numNonZeroYears = apply(counts.fit, 1L, function(row) sum(!is.na(row))),
+  numReleased = table(macr.sub),
+  numArrested = t(counts[fitJurisdictions,]))
+
+model <- stan_model(file.path(srcPath, "releasedProportions.stan"))
+
+samples <- sampling(model, data = data)
+  

@@ -6,39 +6,65 @@ data {
   
   matrix[numYears, numGroups] logCounts;
   vector[numGroups] medianCounts;
+ 
+  
+  vector[2] beta_eta_mean;
+  vector[2] beta_eta_scale;
+  
+  vector[2] mu_beta_y;
+  matrix[2,2] Sigma_beta_y;
+  
+  real eta_scale;
 }
 transformed data {
-  vector[numYears - 1] time;
+  vector[numYears] time;
   
-  for (t in 1:(numYears - 1)) time[t] = t;
+  {
+    real mu;
+    real sigma;
+    
+    for (t in 1:numYears) time[t] = t;
+    mu = mean(time);
+    sigma = sd(time);
+    time = (time - mu) / sigma;
+  }
 }
 parameters {
-  vector<lower = -1.0, upper = 1.0>[numGroups] gamma;
-  vector[numGroups] beta_y;
+  // vector<lower = -1.0, upper = 1.0>[numGroups] gamma;
   
+  vector[2] beta_y[numGroups];
   vector[numGroups] eta;
   
-  real alpha_eta;
-  real beta_eta;
+  vector[2] beta_eta;
 }
 model {
+  vector[2] beta_eta_st;
+  
+  beta_eta_st = (beta_eta - beta_eta_mean) ./ beta_eta_scale;
   for (j in 1:numGroups) {
     int T;
-    real sigma;
+    real sigma_j;
+    // vector[numNonZeroYears[j] - 1] mu_jt;
+    vector[numNonZeroYears[j]] mu_jt;
     
     T = numNonZeroYears[j];
     
-    sigma = exp((alpha_eta - 7.0) / 12.0 + (beta_eta - 0.5) * medianCounts[j] / 7.5 + eta[j] / 2.0);
-    logCounts[2:T,j] ~ normal(gamma[j] * logCounts[1:(T - 1),j] + beta_y[j] * time[1:(T - 1)] / 95.0, sigma);
+    sigma_j = exp(beta_eta_st[1] + beta_eta_st[2] * medianCounts[j] + eta[j] / eta_scale);
+    
+    // treat the first year as at time 0
+    // mu_jt = beta_y[j][1] + gamma[j] * (logCounts[1:(T - 1),j] - beta_y[j][1]) + beta_y[j][2] * time[1:(T - 1)] / 9.5;
+    mu_jt = beta_y[j][1] + beta_y[j][2] * time[1:T] / 95.0;
+    
+    // logCounts[2:T,j] ~ normal(mu_jt, sigma_j);
+    logCounts[1:T,j] ~ normal(mu_jt, sigma_j);
   }
   
   // slight preference for positive, close to 1
-  target += beta_lpdf(0.5 * (gamma + 1.0) | 1.1, 1.05); // can skip jacobian
+  // target += beta_lpdf(0.5 * (gamma + 1.0) | 1.1, 1.05); // can skip jacobian
   
-  beta_y ~ student_t(3.0, 0.0, 5.0);
+  beta_y ~ multi_student_t(3.0, mu_beta_y, Sigma_beta_y);
   
   eta ~ student_t(3.0, 0.0, 2.5);
   
   beta_eta ~ student_t(3.0, 0.0, 5.0);
-  alpha_eta ~ student_t(3.0, 0.0, 5.0);
 }

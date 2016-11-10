@@ -8,9 +8,8 @@ output:
   html_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r 'setup', include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-targetType <- if (is.null(targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to"))) "latex" else targetType
 
 ## This file is written from the assumption that it sits in a folder structure such as:
 ## root \
@@ -75,12 +74,29 @@ dataSrcPath <- file.path(datasetDir, "src")
 if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))
 ```
 
+```{r 'run_clean', echo = FALSE, include = FALSE, results = "hide"}
+## if the clean rmd file exists, this runs just the source in it
+## technically, it constructs the output twice, but all the computations
+## are cached
+cleanRmdFile <- file.path(datasetDir, "clean.Rmd")
+if (file.exists(cleanRmdFile)) {
+  sourceFile <- file.path(datasetDir, "clean.R")
+  knitr::purl(file.path(datasetDir, "clean.Rmd"), sourceFile)
+  setwd(datasetDir)
+  source("clean.R")
+  unlink("clean.R")
+  setwd("..")
+}
+rm(cleanRmdFile, sourceFile)
+```
+
 # Abstract
+
 The Monthly Arrest and Citations Record (MACR) database describes arrests in California from 1980 to the present. Each row includes the race, age, and gender of the individual arrested, the most serious offense for which he or she was arrested, the year of the arrest, and the county in which the arrest took place. This version of the data only contains arrests of adults (18+). The data have been de-identified using suppression and re-sampling, which means that any individual arrest may not appear in the data and counts may not match published statistics exactly. 
 
 # Introduction
 
-```{r tables_summary, echo=FALSE, results="asis"}
+```{r 'tables_summary', echo = FALSE, results = "asis"}
 for (i in seq_len(nrow(tables))) {
   cat("### ", tables$display_name[i], "\n\n", sep = "")
   if (tables$description[i] != "")
@@ -101,14 +117,15 @@ rm(firstFive, variablesSummary)
 
 # Tables
 
-# Main Table Variables
+## Main Table Variables
 
 ```{r main_table_variables, echo=FALSE, results="asis"}
 variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv")),
                       stringsAsFactors = FALSE)
-
+pageBreak <- rmdPageBreak()
 for (i in seq_len(nrow(variables))) {
-  if (targetType == "latex" && i > 1L) cat("\n\\newpage\n\n")
+  cat(pageBreak)
+  
   variable <- variables[i,]
   cat("### ", variable[["name"]], "\n\n", sep = "")
   if (variable[["value_labels"]] != "") cat("#### Labels\n\n", variable[["value_labels"]], "\n\n", sep = "")
@@ -124,37 +141,51 @@ for (i in seq_len(nrow(variables))) {
     cat("\n")
   }
 }
-rm(variable, variableSummary)
+rm(pageBreak, variable, variableSummary)
 ```
+
 # Recommendations for Data Use
 
 The MACR data are best used for analyses of general trends, they are less reliable for point estimates of numbers of arrests or numbers of people arrested. It is important to keep in mind that these data are heavily conditioned by individual, agency, and county variation in propensity to arrest, how offenses are categorized, and how well data are captured and reported to the CA DOJ. In using these data and preparing them for release, we have come across several anomalies and inconsistencies. They may produce results that are artefacts of data collection and reporting processes. To help researchers avoid potential pitfalls, we summarize our recommendations about data use below.
 
-age
-* Very young and very old ages are suspect. We suggest dropping those 5 or younger and 89 or older. 
 
-bcs_offense_code
+#### age
+
+* Very young and very old ages are suspect. We suggest dropping those 5 or younger and 89 or older. `r rmdColFmt("red", "VD NOTE: the problematic ages are as low as 80 in 1980")`
+
+#### bcs_offense_code
+
 * Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
 
-bcs_summary_offense_code
+####  bcs_summary_offense_code
+
 * Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
 
-county
+#### county
+
 * County totals may be affected by reporting irregularities, such as large drops in reported arrests in one jurisdiction. See the Variation in Number of Arrests section for an explanation and use the VarArrestsFlag indicator variable to keep track of jurisdictions or counties that may have been affected by reporting problems in a particular year. 
 
-disposition
+#### disposition
+
 * While these data appear to be overall reliable, we suggest analysts interested in particular counties examine disposition data by offense and year to ensure that trends appear reasonable. 
 
-ncic_jurisdiction
+#### ncic_jurisdiction
+
 * Some jurisdictions have implausible data for certain years, such as a drop from a few hundred or a few thousand arrests to zero. See the Variation in Number of Arrests section for an explanation and use the VarArrestsFlag indicator variable to keep track of jurisdictions or counties that may have been affected by reporting problems in a particular year. Note that jurisdictions that report zero arrests in one year will not have any records in the data - they can be found by looking at trend data or at the List of Missing Jurisdiction-Years in the Variation in Number of Arrests section. 
 
-race_or_ethnicity
+#### race_or_ethnicity
+
 * More specific codes for Asian/Pacific Islander were added in 1991. Researchers may want to map these to a more general category. 
 * Post 2012, San Francisco does not count arrests of Hispanics separately. Researchers may want to treat San Francisco separately in addressing questions about race or ethnicity. 
 
-status_type
+#### status_type
+
 * Booking data appears to be unreliable overall. We recommend not using it. 
 
+```{r 'clean_include', child = if (file.exists(cleanFile <- file.path(datasetDir, "clean.Rmd"))) cleanFile else NULL }
+```
 
-```{r child = if (file.exists(cleanFile <- file.path(datasetDir, "clean.Rmd"))) cleanFile else NULL }
+`r if (exists("cleanFile")) { cat("wtf"); rm(cleanFile) }`
+
+```{r 'analysis_include', child = if (file.exists(analysisFile <- file.path(datasetDir, "analysis.Rmd"))) analysisFile else NULL}
 ```

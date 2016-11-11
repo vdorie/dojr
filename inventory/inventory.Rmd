@@ -130,9 +130,15 @@ for (i in seq_len(nrow(variables))) {
   
   variable <- variables[i,]
   cat("### ", variable[["name"]], "\n\n", sep = "")
-  if (variable[["value_labels"]] != "") cat("#### Labels\n\n", variable[["value_labels"]], "\n\n", sep = "")
-  if (variable[["question_text"]] != "") cat("#### Prompt\n\n", variable[["question_text"]], "\n\n", sep = "")
-  if (variable[["notes"]] != "") cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
+  
+  if (!is.null(variable[["description"]]) && variable[["description"]] != "")
+    cat("#### Description\n\n", variable[["description"]], "\n\n", sep = "")
+  if (!is.null(variable[["value_labels"]]) && variable[["value_labels"]] != "")
+    cat("#### Labels\n\n", variable[["value_labels"]], "\n\n", sep = "")
+  if (!is.null(variable[["question_text"]]) && variable[["question_text"]] != "")
+    cat("#### Prompt\n\n", variable[["question_text"]], "\n\n", sep = "")
+  if (!is.null(variable[["notes"]]) && variable[["notes"]] != "")
+    cat("#### Notes\n\n", variable[["notes"]], "\n\n", sep = "")
   
   if (!is.null(variable[["contains_pii"]]) && variable[["contains_pii"]] == 1L) next
   

@@ -1,6 +1,6 @@
-name,display_name,short_description
-offense_code,"Offense Code",
-summary_offense_code,"Summary Offense Code","groups offense codes"
-summary_offense_type,"Summary Offense Type",
-offense_category,"Offense Category",
-new_2013,"New Since 2013","law changed in 2013"
+name,display_name,short_description,description
+offense_code,"Offense Code",,
+summary_offense_code,"Summary Offense Code","groups offense codes",
+summary_offense_type,"Summary Offense Type",,
+offense_category,"Offense Category",,
+new_2013,"New Since 2013","law changed in 2013",

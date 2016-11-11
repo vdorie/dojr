@@ -7,7 +7,7 @@ imgFiles <- c(
 
 if (all(file.exists(txtFiles)) && all(file.exists(imgFiles))) stop("all files exist")
 
-macr <- loadData()
+macr <- loadData(path = "..")
 
 counts <- table(macr[,c("ncic_jurisdiction", "arrest_year")])
   
@@ -55,7 +55,7 @@ counts.order.inv <- counts.order; counts.order.inv[counts.order] <- seq_along(co
 
 percentage <- cumsum(totalCounts[counts.order]) / sum(totalCounts)
   
-minLargeJurisdictions <- totalCounts[totalCount.order[which.max(percentage >= 0.05) - 1L]]
+minLargeJurisdictions <- totalCounts[counts.order[which.max(percentage >= 0.05) - 1L]]
 
 largeJurisdictions <- totalCounts >= minLargeJurisdictions
 numLargeJurisdictions <- sum(largeJurisdictions)
@@ -113,24 +113,32 @@ numShortJurisdictions <- sum(shortJurisdictions)
 
 fitJurisdictions <- largeJurisdictions & !zerosInMiddle & !shortJurisdictions
 
-counts.fit <- t(sapply(which(fitJurisdictions), function(index)
-  c(counts[index, seq.int(longestRuns[index,1L], longestRuns[index,2L])], rep(NA_integer_, numYears - runLengths[index]))))
+counts.fit <- t(sapply(which(fitJurisdictions), function(index) {
+  row <- counts[index,]
+  if (longestRuns[index,1L] > 1L)       row[seq.int(1L, longestRuns[index,1L])] <- NA_integer_
+  if (longestRuns[index,2L] < numYears) row[seq.int(longestRuns[index,2L], numYears)] <- NA_integer_
+  row
+}))
+
+standardize <- function(x) (x - mean(x)) / sd(x)
 
 
 data <- list(
-  numGroups = nrow(counts.fit),
-  numYears  = ncol(counts.fit),
+  J = nrow(counts.fit),
+  T = ncol(counts.fit),
   
-  numNonZeroYears = apply(counts.fit, 1L, function(row) sum(!is.na(row))),
+  start_j = longestRuns[,1L],
+  end_j   = longestRuns[,2L],
   
-  logCounts = apply(counts.fit, 1L, function(row) {
+  y = apply(counts.fit, 1L, function(row) {
     keep <- !is.na(row)
     y <- ifelse(keep, log(row), 0.0)
-    y[keep] <- (y[keep] - mean(y[keep])) / sd(y[keep])
-    y[!keep] <- 0.0
+    y[keep] <- standardize(y[keep])
     y
   }),
-  medianCounts = apply(counts.fit, 1L, function(row) median(row[!is.na(row)])),
+  x_y = cbind(1, standardize(seq_len(numYears)), standardize(seq_len(numYears)^2)),
+  x_j = standardize(apply(counts.fit, 1L, function(row) median(row[!is.na(row)]))),
+  
   beta_eta_mean = c(7.0, 0.5),
   beta_eta_scale = c(12.0, 7.5),
   eta_scale = 2.0,

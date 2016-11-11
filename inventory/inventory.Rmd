@@ -38,10 +38,10 @@ mainTable <- tables$name[which.max(tables$main_table == 1L)]
 dataLoaded <- rep(FALSE, nrow(tables))
 names(dataLoaded) <- tables$name
 
-loadData <- function(tableName = mainTable) {
+loadData <- function(tableName = mainTable, path = ".") {
   tableIndex <- which.max(tables$name == tableName)
   if (!dataLoaded[[tableName]]) {
-    dataFilePath <- file.path(dataPath, tables$file[tableIndex])
+    dataFilePath <- file.path(path, dataPath, tables$file[tableIndex])
     if (grepl("\\.csv$", tables$file[tableIndex])) {
       .GlobalEnv[[tables$object[tableIndex]]] <- read.csv(dataFilePath, stringsAsFactors = FALSE)
     } else if (grepl("\\.Rdata$", tables$file[tableIndex])) {
@@ -98,6 +98,8 @@ The Monthly Arrest and Citations Record (MACR) database describes arrests in Cal
 
 ```{r 'tables_summary', echo = FALSE, results = "asis"}
 for (i in seq_len(nrow(tables))) {
+  if (tables$display[i] == 0) next
+  
   cat("### ", tables$display_name[i], "\n\n", sep = "")
   if (tables$description[i] != "")
     cat(tables$description[i], "\n\n", sep = "")
@@ -124,7 +126,7 @@ variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv"))
                       stringsAsFactors = FALSE)
 pageBreak <- rmdPageBreak()
 for (i in seq_len(nrow(variables))) {
-  cat(pageBreak)
+  if (i > 1) cat(pageBreak)
   
   variable <- variables[i,]
   cat("### ", variable[["name"]], "\n\n", sep = "")

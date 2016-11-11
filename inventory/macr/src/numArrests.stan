@@ -1,70 +1,35 @@
 data {
-  int<lower = 1> numGroups;
-  int<lower = 1> numYears;
+  int<lower = 1> J; // numGroups
+  int<lower = 1> T; // numTimePoints
   
-  int<lower = 0> numNonZeroYears[numGroups];
+  int<lower = 0> t_j[J]; // startTimes
+  int<lower = 0> T_j[J]; // endTimes
   
-  matrix[numYears, numGroups] logCounts;
-  vector[numGroups] medianCounts;
- 
+  matrix[T, J] y;
   
-  vector[2] beta_eta_mean;
-  vector[2] beta_eta_scale;
+  int<lower = 0> P_y; // num individual level predictors
+  int<lower = 0> P_j; // num group level predictors
   
-  vector[2] mu_beta_y;
-  matrix[2,2] Sigma_beta_y;
-  
-  real eta_scale;
-}
-transformed data {
-  vector[numYears] time;
-  
-  {
-    real mu;
-    real sigma;
-    
-    for (t in 1:numYears) time[t] = t;
-    mu = mean(time);
-    sigma = sd(time);
-    time = (time - mu) / sigma;
-  }
+  matrix[T,P_y] x_y;
+  matrix[J,P_j] x_j;
 }
 parameters {
-  // vector<lower = -1.0, upper = 1.0>[numGroups] gamma;
+  vector[P_y] beta[J];
+  vector[P_j] beta_j;
   
-  vector[2] beta_y[numGroups];
-  vector[numGroups] eta;
+  vector[J] theta;
+}
+transformed parameters{
+  vector[J] sigma;
   
-  vector[2] beta_eta;
+  sigma = exp(x_j * beta_j + theta);
 }
 model {
-  vector[2] beta_eta_st;
-  
-  beta_eta_st = (beta_eta - beta_eta_mean) ./ beta_eta_scale;
   for (j in 1:numGroups) {
-    int T;
-    real sigma_j;
-    // vector[numNonZeroYears[j] - 1] mu_jt;
-    vector[numNonZeroYears[j]] mu_jt;
+    int[T_j[j] - t_j[j] + 1] indices;
     
-    T = numNonZeroYears[j];
+    indices = t_j[j]:T_j[t];
     
-    sigma_j = exp(beta_eta_st[1] + beta_eta_st[2] * medianCounts[j] + eta[j] / eta_scale);
-    
-    // treat the first year as at time 0
-    // mu_jt = beta_y[j][1] + gamma[j] * (logCounts[1:(T - 1),j] - beta_y[j][1]) + beta_y[j][2] * time[1:(T - 1)] / 9.5;
-    mu_jt = beta_y[j][1] + beta_y[j][2] * time[1:T] / 95.0;
-    
-    // logCounts[2:T,j] ~ normal(mu_jt, sigma_j);
-    logCounts[1:T,j] ~ normal(mu_jt, sigma_j);
+    y[j,indices] ~ normal(x_y[indices,] * beta[j], sigma[j]);
   }
-  
-  // slight preference for positive, close to 1
-  // target += beta_lpdf(0.5 * (gamma + 1.0) | 1.1, 1.05); // can skip jacobian
-  
-  beta_y ~ multi_student_t(3.0, mu_beta_y, Sigma_beta_y);
-  
-  eta ~ student_t(3.0, 0.0, 2.5);
-  
-  beta_eta ~ student_t(3.0, 0.0, 5.0);
 }

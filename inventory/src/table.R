@@ -1,8 +1,8 @@
 getColumnType <- function(x) { cl <- class(x); if (cl[1L] %in% c("numeric", "integer") && length(unique(x)) == 2L) "binary" else cl }
 getColumnValues <- function(x) {
-  if (is.factor(x)) truncateString(paste0(truncateString(levels(x), 10L), collapse = "/"), 24)
+  if (is.factor(x)) truncateString(paste0(truncateString(levels(x), 8L), collapse = "/"), 20)
   else if (is.numeric(x)) paste0(range(x, na.rm = TRUE), collapse = "-")
-  else if (is.character(x)) truncateString(paste0(truncateString(unique(x), 10L), collapse = "/"), 24)
+  else if (is.character(x)) truncateString(paste0(truncateString(unique(x), 8L), collapse = "/"), 20)
 }
 
 formatFirstFiveRows <- function(tableName) {
@@ -49,7 +49,7 @@ summarizeVariables <- function(tableName) {
     if (!is.null(variables$contains_pii) && variables$contains_pii[variableRow] == 1L) return("pii")
     getColumnValues(data[[variableName]])
   })
-  values <- unname(values[match(variables$name, names(values))])
+  values <- as.character(values[match(variables$name, names(values))])
   variablesSummary <- data.frame(name = variables$name,
                                  type = types,
                                  value = values,

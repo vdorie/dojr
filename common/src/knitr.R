@@ -189,7 +189,7 @@ rmdFormat.table <- function(x, ...)
   if (length(dim(x)) == 1L) {
     df <- data.frame(Name = names(x), Freq = as.numeric(x))
     rmdFormat(df, ...)
-  } else if (length(dim(tab)) == 2L) {
+  } else if (length(dim(x)) == 2L) {
     x.m <- x
     class(x.m) <- NULL
     rmdFormat(x.m, ...)

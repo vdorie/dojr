@@ -3,7 +3,7 @@ cleanDataFile <- file.path("..", dataPath, tables$file[match(mainTable, tables$n
 cleanPerformed <- file.exists(cleanDataFile)
 
 if (!cleanPerformed)
-  macr.clean <- loadData(paste0(mainTable, "_dirty"))
+  macr.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
 ```
 
 # Data Cleaning

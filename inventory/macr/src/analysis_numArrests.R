@@ -1,13 +1,15 @@
 txtFiles <- c(
-  file.path("..", txtPath, "clean_arrestNum_1.txt"),
-  file.path("..", txtPath, "clean_arrestNum_2.txt"))
+  file.path("..", txtPath, "analysis_arrestNum_1.txt"),
+  file.path("..", txtPath, "analysis_arrestNum_2.txt"))
 imgFiles <- c(
-  file.path("..", imgPath, "clean_arrestNumHistogram.pdf"),
-  file.path("..", imgPath, "clean_numArrestsZeroCounts.pdf"))
+  file.path("..", imgPath, "analysis_arrestNumHistogram.pdf"),
+  file.path("..", imgPath, "analysis_numArrestsZeroCounts.pdf"))
 
 if (all(file.exists(txtFiles)) && all(file.exists(imgFiles))) stop("all files exist")
 
-counts <- table(macr.clean[,c("ncic_jurisdiction", "arrest_year")])
+macr <- loadData()
+
+counts <- table(macr[,c("ncic_jurisdiction", "arrest_year")])
   
 plotCountsArray <- function(counts, indices, plotNames = TRUE, plotAxes = TRUE) {
   outputFormat <- rmdGetOutputFormat()
@@ -42,7 +44,7 @@ plotCountsArray <- function(counts, indices, plotNames = TRUE, plotAxes = TRUE) 
   invisible(NULL)
 }
 
-numJurisdictions <- nlevels(macr.clean$ncic_jurisdiction)
+numJurisdictions <- nlevels(macr$ncic_jurisdiction)
 numYears <- ncol(counts)
 totalCounts <- rowSums(counts)
 minCount <- min(totalCounts)
@@ -98,7 +100,7 @@ widthToHeightRatio <- if (rmdGetOutputFormat() == "latex") 8.5 / 11 else 1.6
 
 numZerosInMiddle <- sum(zerosInMiddle)
 
-pdf(file.path("..", imgPath, "clean_numArrestsZeroCounts.pdf"), 6, 6 * widthToHeightRatio)
+pdf(file.path("..", imgPath, "analysis_numArrestsZeroCounts.pdf"), 6, 6 * widthToHeightRatio)
 plotCountsArray(counts, which(zerosInMiddle))
 dev.off()
 
@@ -156,26 +158,26 @@ postmean <- function(samples, indices) {
 gamma.mean <- apply(pars$gamma, 2L, mean)
 gamma.order <- order(gamma.mean)
 
-pdf(file.path("..", imgPath, "clean_numArrestsLowAR.pdf"), 6, 6 * widthToHeightRatio)
+pdf(file.path("..", imgPath, "analysis_numArrestsLowAR.pdf"), 6, 6 * widthToHeightRatio)
 plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L)]])
 dev.off()
 
-pdf(file.path("..", imgPath, "clean_numArrestsHighAR.pdf"), 6, 6 * widthToHeightRatio)
+pdf(file.path("..", imgPath, "analysis_numArrestsHighAR.pdf"), 6, 6 * widthToHeightRatio)
 plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq.int(length(gamma.order), length(gamma.order) - 8L + 1L)]])
 dev.off()
 
 eta.mean <- apply(pars$eta, 2L, mean)
 eta.order <- order(eta.mean)
 
-pdf(file.path("..", imgPath, "clean_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
+pdf(file.path("..", imgPath, "analysis_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
 plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L)]])
 dev.off()
 
-pdf(file.path("..", imgPath, "clean_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
+pdf(file.path("..", imgPath, "analysis_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
 plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq.int(length(eta.order), length(eta.order) - 8L + 1L)]])
 dev.off()
 
-macr.sub <- subset(macr.clean, disposition == "released", c("ncic_jurisdiction", "arrest_year"))
+macr.sub <- subset(macr, disposition == "released", c("ncic_jurisdiction", "arrest_year"))
 macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
 numArrested <- table(macr.sub)
 

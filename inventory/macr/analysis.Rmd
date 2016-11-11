@@ -2,53 +2,54 @@
 
 ## Age
 
-```{r clean_ageHistogram, echo=FALSE, results="asis"}
-ageHistogramFile <- file.path("..", imgPath, "clean_ageHistogram.pdf")
-if (!file.exists(ageHistogramFile)) {
-  macr <- loadData()
+```{r analysis_ageHistogram, echo = FALSE, results = "asis"}
+imgFile <- file.path("..", imgPath, "analysis_ageHistogram.pdf")
+if (!file.exists(imgFile)) {
+  macr <- loadData(path = "..")
   
   tab <- table(macr$age)
   ages <- as.integer(names(tab))
-  pdf(ageHistogramFile, width = 6, height = 3)
+  pdf(imgFile, width = 6, height = 3)
   par(mfrow = c(1L, 2L))
   discrete.histogram(tab[ages <= 10], xlab = "age", col = "gray", main = "age <= 10", border = NA)
   discrete.histogram(tab[ages >= 80], xlab = "age", col = "gray", main = "age >= 80", border = NA)
   dev.off()
   rm(tab, ages)
 }
-
-cat(rmdImageInline(file.path(imgPath, "clean_ageHistogram.pdf")))
+rm(imgFile)
 ```
+
+`r rmdImageInline(file.path(imgPath, "analysis_ageHistogram.pdf"))`
 
 As the above figure shows, there are a large number of arrests for exceptionally young children, and an odd decrease in arrests at age 90. For the young we find:
 
-```{r clean_youngTable, echo=FALSE, results="asis"}
-cleanFile <- file.path("..", txtPath, "clean_youngTable.txt")
-if (!file.exists(cleanFile)) {
-  macr <- loadData()
+```{r analysis_youngTable, echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_youngTable.txt")
+if (!file.exists(txtFile)) {
+  macr <- loadData(path = "..")
   
-  youngTable <- rmdFormat(table(macr[macr$age <= 5, c("offense_level", "age")]))
-  writeLines(youngTable, cleanFile)
+  youngTable <- rmdFormat(table(subset(macr, age <= 5, c("offense_level", "age"))))
+  writeLines(youngTable, txtFile)
 } else {
-  youngTable <- readLines(cleanFile)
+  youngTable <- readLines(txtFile)
 }
 
 cat(youngTable, sep = "\n")
-rm(youngTable, cleanFile)
+rm(youngTable, txtFile)
 ```
 
 Old age appears to be handled differently in different years. While the numbers are relatively small, it is difficult to believe that there were spikes in crime for, say, 91 year olds in 1991.
 
-```{r clean_oldAgeByYear, echo=FALSE, results="asis"}
-cleanFile <- file.path("..", imgPath, "clean_oldAgeByYear.pdf")
-if (!file.exists(cleanFile)) {
-  macr <- loadData()
+```{r analysis_oldAgeByYear, echo = FALSE, results = "asis"}
+imgFile <- file.path("..", imgPath, "analysis_oldAgeByYear.pdf")
+if (!file.exists(imgFile)) {
+  macr <- loadData(path = "..")
   
   macr.sub <- macr[!is.na(macr$age) & macr$age >= 80L, c("arrest_year", "age")]
   years <- sort(unique(macr.sub$arrest_year))
   xRange <- range(macr.sub$age)
   
-  pdf(cleanFile, 6, 6)
+  pdf(imgFile, 6, 6)
   par(mfrow = getGridDim(8.5 / 11, length(years)), mar = c(0.9, 0.8, 0, 0), mgp = c(1, 0, 0), tcl = -0.1)
   for (i in seq_along(years)) {
     with(macr.sub,
@@ -63,19 +64,19 @@ if (!file.exists(cleanFile)) {
   
   rm(macr.sub, years, xRange, i)
 }
-rm(cleanFile)
+rm(imgFile)
 ```
 
-`r rmdImageInline(file.path(imgPath, "clean_oldAgeByYear.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_oldAgeByYear.pdf"))`
 
 `r rmdPageBreak()`
 
 Directly examining these rows shows another form of missingness:
 
-```{r clean_oldAge1991, echo=FALSE, results="asis"}
-cleanFile <- file.path("..", txtPath, "clean_oldAge_1.txt")
-if (!file.exists(cleanFile)) {
-  macr <- loadData()
+```{r analysis_oldAge1991, echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_oldAge_1.txt")
+if (!file.exists(txtFile)) {
+  macr <- loadData(path = "..")
   
   macr.sub <- subset(macr,
                      arrest_year == 1991L & age >= 89L & age <= 91L,
@@ -83,34 +84,34 @@ if (!file.exists(cleanFile)) {
   millenials <- rmdFormat(macr.sub[sample(nrow(macr.sub), 15L),])
   rm(macr.sub)
   
-  writeLines(millenials, cleanFile)
+  writeLines(millenials, txtFile)
 } else {
-  millenials <- readLines(cleanFile)
+  millenials <- readLines(txtFile)
 }
 
 cat(millenials, sep = "\n")
-rm(millenials, cleanFile)
+rm(millenials, txtFile)
 ```
 
 This spike apparently bubbles through the population until 1992, at which point the practice ended. In 2003, a handful of jurisidctions used an age of 88, together with a birthday of 02/30 to indicate missingness.
 
-```{r clean_oldAge2003, echo=FALSE, results="asis"}
-cleanFile <- file.path("..", txtPath, "clean_oldAge_2.txt")
-if (!file.exists(cleanFile)) {
-  macr <- loadData()
+```{r analysis_oldAge2003, echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_oldAge_2.txt")
+if (!file.exists(txtFile)) {
+  macr <- loadData(path = "..")
   macr.sub <- subset(macr,
                      arrest_year == 2003 & age == 88L,
                      c("ncic_jurisdiction", "arrest_date", "age", "birth_month", "birth_day", "birth_date"))
   eightyEight <- rmdFormat(macr.sub[seq_len(10L),])
   rm(macr.sub)
   
-  writeLines(eightyEight, cleanFile)
+  writeLines(eightyEight, txtFile)
 } else {
-  eightyEight <- readLines(cleanFile)
+  eightyEight <- readLines(txtFile)
 }
 
 cat(eightyEight, sep = "\n")
-rm(eightyEight, cleanFile)
+rm(eightyEight, txtFile)
 ```
 
 ### `r rmdColFmt("red", "Recomendations")`
@@ -119,11 +120,12 @@ rm(eightyEight, cleanFile)
 
 ```{r, echo=FALSE}
 ## generate text, image files
-try(source(file.path(srcPath, "clean_numArrests.R"), local = new.env(parent = .GlobalEnv)))
+ignored <- tryCatch(source(file.path(srcPath, "analysis_numArrests.R"), local = new.env(parent = .GlobalEnv)), error = function(e) e)
+rm(ignored)
 ```
 
 ```{r echo=FALSE}
-lines <- readLines(file.path("..", txtPath, "clean_arrestNum_1.txt"))
+lines <- readLines(file.path("..", txtPath, "analysis_arrestNum_1.txt"))
 numJurisdictions <- as.integer(lines[1L])
 minCount <- as.integer(lines[2L])
 maxCount <- as.integer(lines[3L])
@@ -135,17 +137,17 @@ rm(lines)
 
 After removing deleted records, there are `r numJurisdictions` different NCIC jurisdictions. The number of arrests in each varies wildly, from a minimum of `r minCount` arrest across all `r numYears` years to `r maxCount` arrests. The largest `r numLargeJurisdictions` account for 95% of the records, the smallest of which made `r minLargeJurisdictions` arrests.
 
-`r rmdImageInline(file.path(imgPath, "clean_arrestNumHistogram.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_arrestNumHistogram.pdf"))`
 
 ```{r echo=FALSE}
 rm(numJurisdictions, minCount, maxCount, numYears, minLargeJurisdictions, numLargeJurisdictions)
 
-numZerosInMiddle <- as.integer(readLines(file.path("..", txtPath, "clean_arrestNum_2.txt")))
+numZerosInMiddle <- as.integer(readLines(file.path("..", txtPath, "analysis_arrestNum_2.txt")))
 ```
 
 Furthermore, the number arrests within jurisdictions also appears to vary wildly over time. A total of `r numZerosInMiddle` have unexpected years with 0 arrests, in some cases dropping from thousands of arrests to return to that rate immediately after.
 
-`r rmdImageInline(file.path(imgPath, "clean_numArrestsZeroCounts.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsZeroCounts.pdf"))`
 
 ### Variation in Number of Arrests
 
@@ -155,22 +157,22 @@ As a preliminary analysis, an hierarchical autoregressive model was fit to the n
 
 This graph shows those jursidictions with the lowest autoregression coefficients sorted from the lowest in the top left to the highest in the bottom right. A low autoregression essentially implies that knowing the previous year's value does not help in predicting the next, or that sometimes the next year's is much smaller or much larger and no pattern can be discerned. Because the model does not include the ability for the predicted line to bend (i.e. change points), large and sudden dips in the number of arrests cause it to fit poorly and are likely responsible for the worst cases presented.
 
-`r rmdImageInline(file.path(imgPath, "clean_numArrestsLowAR.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsLowAR.pdf"))`
 
 `r rmdPageBreak()`
 
 Conversely, the next graph shows those jurisdictions with the highest autoregression coefficients, sorted with the highest in the top left and the lowest in the bottom right. Large values imply that the previous year's number of arrests was very often an excellent predictor of the current, and these jursidictions often have sequences of time where the number of arrests seems to move very little from an underlying predicted line.
 
-`r rmdImageInline(file.path(imgPath, "clean_numArrestsHighAR.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighAR.pdf"))`
 
 `r rmdPageBreak()`
 
 Another form of variation in this context is how well the regression model predicts the observations, as reality should deviate just by chance. The following graph shows those jursidictions with extremely low variation with respect to what the model expects and with respect to the average number of arrests in that jursidiction. A jurisdiction that shows up here and not with a high autoregression coefficient would have the case that, from the previous year to the next, the number of arrests goes up or down randomly but overall, the number stays relatively close to a line.
 
-`r rmdImageInline(file.path(imgPath, "clean_numArrestsLowVar.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsLowVar.pdf"))`
 
 `r rmdPageBreak()`
 
 Finally, we have those with extremely high levels of variation. Jurisdictions in this category either are simply noisy, or the straight-line plus autoregressive model is a poor fit.
 
-`r rmdImageInline(file.path(imgPath, "clean_numArrestsHighVar.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighVar.pdf"))`

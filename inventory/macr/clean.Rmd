@@ -55,7 +55,7 @@ if (!cleanPerformed || !file.exists(txtFile)) {
   ))
   
   monthSlipped <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[which.max(monthSlippedRows)],
-                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+                             c("ncic_jurisdiction", "arrest_year", "arrest_month", "arrest_day", "arrest_date")])
   
   ## if it looks like maybe a day has transposed digits, it'll be the same month as everything
   ## else but higher than its neighbors
@@ -71,7 +71,7 @@ if (!cleanPerformed || !file.exists(txtFile)) {
   dayTransposedRow <- { for (i in which(dayTransposedRows))
     if (macr.clean$arrest_day[naIndices[i]] == 31L && all(macr.clean$arrest_day[naIndices[i] + c(-1L, 1L)] == 13L)) break ; i }
   dayTransposed <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[dayTransposedRow],
-                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+                             c("ncic_jurisdiction", "arrest_year", "arrest_month", "arrest_day", "arrest_date")])
   
   ## looks like someone just extended february
   dayAddedRows <- with(macr.clean, sapply(naIndices, function(index)
@@ -82,7 +82,7 @@ if (!cleanPerformed || !file.exists(txtFile)) {
   ))
   
   dayAdded <- rmdFormat(macr.clean[0L:6L - 3L + naIndices[which.max(dayAddedRows)],
-                             c("arrest_year", "arrest_month", "arrest_day", "arrest_date", "ncic_jurisdiction")])
+                             c("ncic_jurisdiction", "arrest_year", "arrest_month", "arrest_day", "arrest_date")])
   
   numBadArrestDate <- as.character(sum(naRows))
   arrestDate <- c(numBadArrestDate, monthSlipped, dayTransposed, dayAdded)

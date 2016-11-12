@@ -27,19 +27,26 @@ plotCountsArray <- function(counts, indices, posteriorPredictions, plotNames = T
       mar = mar,
       mgp = c(0.8, 0.2, 0))
   
-  for (i in seq_along(indices)) {
-    plot(NULL, type = "n", xlim = range(years), ylim = range(counts[indices[i],]),
+  for (j in seq_along(indices)) {
+    y_j <- counts[indices[j],]
+    
+    if (!posteriorPredictionsAreMissing) {
+      postPred <- posteriorPredictions[[j]]
+      postMean <- apply(postPred, 1L, mean)
+      
+      limits <- apply(postPred, 1L, quantile, c(0.025, 0.975))
+      ylim <- range(limits, y_j)
+    } else {
+      ylim <- range(y_j)
+    }
+    plot(NULL, type = "n", xlim = range(years), ylim = ylim,
          xlab = "", ylab = "",
          bty = if (plotAxes) "L" else "n",
          xaxt = if (plotAxes) "s" else "n",
          yaxt = if (plotAxes) "s" else "n")
     
     if (!posteriorPredictionsAreMissing) {
-      postPred <- posteriorPredictions[[i]]
-      postMean <- apply(postPred, 1L, mean)
-      
-      limits <- apply(postPred, 1L, quantile, c(0.025, 0.975))
-      polygon(c(years, rev(years)), c(limits[1,], rev(limits[2,])), col = rgb(0.95, 0.95, 0.95), border = "NA")
+      polygon(c(years, rev(years)), c(limits[1L,], rev(limits[2L,])), col = rgb(0.95, 0.95, 0.95), border = "NA")
       lines(years, postMean, col = "gray", lwd = 1.5)
     }
     if (plotAxes) {
@@ -47,9 +54,9 @@ plotCountsArray <- function(counts, indices, posteriorPredictions, plotNames = T
       axis(2L, lwd = 0.7)
     }
     if (plotNames)
-      title(getNameForJurisdiction(rownames(counts)[indices[i]]), line = 0)
+      title(getNameForJurisdiction(rownames(counts)[indices[j]]), line = 0)
     
-    lines(years, counts[indices[i],], lwd = 0.8)
+    lines(years, y_j, lwd = 0.8)
   }
   
   invisible(NULL)
@@ -198,12 +205,20 @@ model <- stan_model(file.path(srcPath, "numArrests.stan"))
 samples <- sampling(model, data = data)
 pars <- extract(samples)
 
-## 384 x 4000
-sigma <- exp(x_j.z %*% t(pars$beta_j) + t(pars$theta[,,4L]))
+## 4000 x 384
+pars$sigma <- exp(tcrossprod(pars$beta_j, x_j.z) + pars$theta[,,ncol(x_y) + 1L])
 
-getPosteriorPredictions <- function(samples, indices) {
+getPosteriorMeans <- function(samples, indices) {
   lapply(indices, function(index) {
-    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * x_y.z %*% t(pars$theta[,index,seq_len(3L)]))
+    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * x_y.z %*% t(pars$theta[,index,seq_len(ncol(x_y))]))
+  })
+}
+getPosteriorPredictions <- function(pars, indices) {
+  lapply(indices, function(index) {
+    mu <- x_y.z %*% t(pars$theta[,index,seq_len(ncol(x_y))])
+    sigma <- pars$sigma[,j]
+    
+    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * matrix(rnorm(length(mu), mu, sigma), nrow(mu)))
   })
 }
 
@@ -212,12 +227,12 @@ eta.order <- order(eta.mean)
 
 pdf(file.path("..", imgPath, "analysis_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- eta.order[seq_len(8L)]
-plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
 pdf(file.path("..", imgPath, "analysis_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- eta.order[seq.int(length(eta.order), length(eta.order) - 8L + 1L)]
-plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
 ## fitted on standardized log scale
@@ -225,7 +240,7 @@ residuals <- t(sapply(seq_len(nrow(counts.fit)), function(j) {
   fitted <- x_y.z %*% t(pars$theta[,j,seq_len(3L)])
   ## fitted is 36 x 4000, transposed makes each column 4000 long, so sigma will get recycled in the
   ## division
-  result <- t(t(data$y[,j] - fitted) / sigma[j,])
+  result <- t(t(data$y[,j] - fitted) / pars$sigma[,j])
   result[is.na(counts.fit[j,]),] <- NA
   
   apply(result, 1L, mean, na.rm = TRUE)
@@ -240,16 +255,15 @@ residual.order <- order(maxResiduals)
 
 pdf(file.path("..", imgPath, "analysis_numArrestsMaxResiduals.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- residual.order[seq.int(length(residual.order), length(residual.order) - 8L + 1L)]
-plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
 
 largestJumps <- t(sapply(seq_len(nrow(counts.fit)), function(i) {
   y <- counts.fit[i,]
   y <- y[!is.na(y)]
-  m <- median(y)
   
-  pct <- y / m
+  pct <- y[-1L] / y[-length(y)]
   
   c(min(pct), max(pct))
 }))
@@ -258,12 +272,12 @@ up.order  <- order(largestJumps[,2L], decreasing = TRUE)
 
 pdf(file.path("..", imgPath, "analysis_numArrestsDownJumps.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- down.order[seq_len(8L)]
-plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
 pdf(file.path("..", imgPath, "analysis_numArrestsUpJumps.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- up.order[seq_len(8L)]
-plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
 macr.sub <- subset(macr, disposition == "released", c("ncic_jurisdiction", "arrest_year"))

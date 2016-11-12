@@ -23,26 +23,24 @@ transformed data {
   for (j in 1:J) T_j[j] = end_j[j] - start_j[j] + 1;
 }
 parameters {
-  matrix[P_y,J] beta;
+  vector[P_y + 1] theta[J];
   vector[P_j] beta_j;
-  
-  vector[J] eta;
 }
 model {
-  vector[J] sigma;
-  
-  vector[P_y + 1] theta[J];
-  
-  sigma = exp(x_j * beta_j + eta);
-  
   for (j in 1:J) {
+    vector[P_y] beta;
+    real eta;
+    real sigma;
     int indices[T_j[j]];
+    
+    beta = theta[j][1:P_y];
+    eta = theta[j][P_y + 1];
+    
+    sigma = exp(x_j[j,] * beta_j + eta);
     
     for (t in 1:T_j[j]) indices[t] = start_j[j] + t - 1;
     
-    y[j,indices] ~ normal(x_y[indices,] * beta[,j], sigma[j]);
-    
-    theta[j] = append_row(beta[,j], eta[j]);
+    y[indices,j] ~ normal(x_y[indices,] * beta, sigma);
   }
   
   theta ~ multi_student_t(nu_theta, mu_theta, Sigma_theta);

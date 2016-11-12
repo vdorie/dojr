@@ -11,7 +11,9 @@ macr <- loadData(path = "..")
 
 counts <- table(macr[,c("ncic_jurisdiction", "arrest_year")])
   
-plotCountsArray <- function(counts, indices, plotNames = TRUE, plotAxes = TRUE) {
+plotCountsArray <- function(counts, indices, posteriorPredictions, plotNames = TRUE, plotAxes = TRUE) {
+  posteriorPredictionsAreMissing <- missing(posteriorPredictions)
+  
   outputFormat <- rmdGetOutputFormat()
   
   ratio <- if (outputFormat == "latex") 8.5 / 11 else 1.6
@@ -31,6 +33,15 @@ plotCountsArray <- function(counts, indices, plotNames = TRUE, plotAxes = TRUE) 
          bty = if (plotAxes) "L" else "n",
          xaxt = if (plotAxes) "s" else "n",
          yaxt = if (plotAxes) "s" else "n")
+    
+    if (!posteriorPredictionsAreMissing) {
+      postPred <- posteriorPredictions[[i]]
+      postMean <- apply(postPred, 1L, mean)
+      
+      limits <- apply(postPred, 1L, quantile, c(0.025, 0.975))
+      polygon(c(years, rev(years)), c(limits[1,], rev(limits[2,])), col = rgb(0.95, 0.95, 0.95), border = "NA")
+      lines(years, postMean, col = "gray", lwd = 1.5)
+    }
     if (plotAxes) {
       axis(1L, lwd = 0.7)
       axis(2L, lwd = 0.7)
@@ -115,20 +126,58 @@ fitJurisdictions <- largeJurisdictions & !zerosInMiddle & !shortJurisdictions
 
 counts.fit <- t(sapply(which(fitJurisdictions), function(index) {
   row <- counts[index,]
-  if (longestRuns[index,1L] > 1L)       row[seq.int(1L, longestRuns[index,1L])] <- NA_integer_
+  if (longestRuns[index,1L] > 1L)       row[seq.int(1L, longestRuns[index,1L])]       <- NA_integer_
   if (longestRuns[index,2L] < numYears) row[seq.int(longestRuns[index,2L], numYears)] <- NA_integer_
   row
 }))
 
 standardize <- function(x) (x - mean(x)) / sd(x)
 
+getTransformationsForMatrix <- function(x) {
+  pars <- sapply(seq_len(ncol(x)), function(j) {
+    u <- unique(x[,j])
+    if (length(u) == 1L) return(c(0, 1))
+    c(mean(x[,j], na.rm = TRUE), sd(x[,j], na.rm = TRUE))
+  })
+  forward <- function(x)
+    sapply(seq_len(ncol(x)), function(j) (x[,j] - mu[j]) / sigma[j])
+  backward <- function(x)
+    sapply(seq_len(ncol(x)), function(j) sigma[j] * x[,j] + mu[j])
+  
+  env <- new.env(parent = baseenv())
+  env$mu <- pars[1,]
+  env$sigma <- pars[2,]
+  
+  environment(forward) <- env
+  environment(backward) <- env
+  
+  list(forward = forward, backward = backward)
+}
+
+x_y <- cbind(1, seq_len(numYears), seq_len(numYears)^2)
+x_j <- cbind(1, apply(counts.fit, 1L, function(row) median(log(row[!is.na(row)]))))
+
+x_y.trans <- getTransformationsForMatrix(x_y)
+x_j.trans <- getTransformationsForMatrix(x_j)
+
+x_y.z <- x_y.trans$forward(x_y)
+x_j.z <- x_j.trans$forward(x_j)
+
+y.log <- log(counts.fit)
+y.pars <- t(sapply(seq_len(nrow(y.log)), function(i) {
+    c(mean(y.log[i,], na.rm = TRUE), sd(y.log[i,], na.rm = TRUE))
+}))
+colnames(y.pars) <- c("mu", "sigma")
 
 data <- list(
   J = nrow(counts.fit),
   T = ncol(counts.fit),
   
-  start_j = longestRuns[,1L],
-  end_j   = longestRuns[,2L],
+  start_j = longestRuns[fitJurisdictions,1L],
+  end_j   = longestRuns[fitJurisdictions,2L],
+  
+  P_y = ncol(x_y),
+  P_j = ncol(x_j),
   
   y = apply(counts.fit, 1L, function(row) {
     keep <- !is.na(row)
@@ -136,16 +185,12 @@ data <- list(
     y[keep] <- standardize(y[keep])
     y
   }),
-  x_y = cbind(1, standardize(seq_len(numYears)), standardize(seq_len(numYears)^2)),
-  x_j = standardize(apply(counts.fit, 1L, function(row) median(row[!is.na(row)]))),
+  x_y = x_y.z,
+  x_j = x_j.z,
   
-  beta_eta_mean = c(7.0, 0.5),
-  beta_eta_scale = c(12.0, 7.5),
-  eta_scale = 2.0,
-  mu_beta_y = c(0, 0),
-  Sigma_beta_y = diag(5.0, 2))
-
-data$medianCounts <- with(data, (medianCounts - mean(medianCounts)) / sd(medianCounts))
+  nu_theta = 3.0,
+  mu_theta = rep(0.0, 4L),
+  Sigma_theta = diag(c(5, rep(2.5, 3L))))
 
 require(rstan)
 model <- stan_model(file.path(srcPath, "numArrests.stan"))
@@ -153,36 +198,72 @@ model <- stan_model(file.path(srcPath, "numArrests.stan"))
 samples <- sampling(model, data = data)
 pars <- extract(samples)
 
+## 384 x 4000
+sigma <- exp(x_j.z %*% t(pars$beta_j) + t(pars$theta[,,4L]))
 
-postmean <- function(samples, indices) {
-  time <- seq_len(36L)
-  time <- (time - mean(time)) / sd(time)
-  
-  #sapply(indices, function(index) {
-  #  apply(samples$beta_y[indices[index],1] + samples$beta_y[indices[index],2] * time[seq_len(longestRun)], 2, mean)
+getPosteriorPredictions <- function(samples, indices) {
+  lapply(indices, function(index) {
+    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * x_y.z %*% t(pars$theta[,index,seq_len(3L)]))
+  })
 }
 
-
-gamma.mean <- apply(pars$gamma, 2L, mean)
-gamma.order <- order(gamma.mean)
-
-pdf(file.path("..", imgPath, "analysis_numArrestsLowAR.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq_len(8L)]])
-dev.off()
-
-pdf(file.path("..", imgPath, "analysis_numArrestsHighAR.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[gamma.order[seq.int(length(gamma.order), length(gamma.order) - 8L + 1L)]])
-dev.off()
-
-eta.mean <- apply(pars$eta, 2L, mean)
+eta.mean <- apply(pars$theta[,,4], 2L, mean)
 eta.order <- order(eta.mean)
 
 pdf(file.path("..", imgPath, "analysis_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq_len(8L)]])
+plotIndices <- eta.order[seq_len(8L)]
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
 dev.off()
 
 pdf(file.path("..", imgPath, "analysis_numArrestsHighVar.pdf"), 6, 6 * widthToHeightRatio)
-plotCountsArray(counts, which(fitJurisdictions)[eta.order[seq.int(length(eta.order), length(eta.order) - 8L + 1L)]])
+plotIndices <- eta.order[seq.int(length(eta.order), length(eta.order) - 8L + 1L)]
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+dev.off()
+
+## fitted on standardized log scale
+residuals <- t(sapply(seq_len(nrow(counts.fit)), function(j) {
+  fitted <- x_y.z %*% t(pars$theta[,j,seq_len(3L)])
+  ## fitted is 36 x 4000, transposed makes each column 4000 long, so sigma will get recycled in the
+  ## division
+  result <- t(t(data$y[,j] - fitted) / sigma[j,])
+  result[is.na(counts.fit[j,]),] <- NA
+  
+  apply(result, 1L, mean, na.rm = TRUE)
+}))
+
+maxResiduals <- apply(residuals, 1L, function(col) max(abs(col), na.rm = TRUE))
+residual.order <- order(maxResiduals)
+
+# smallest residuals not interesting, for reasons explained in Rmd
+#plotIndices <- residual.order[seq_len(8L)]
+#plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+
+pdf(file.path("..", imgPath, "analysis_numArrestsMaxResiduals.pdf"), 6, 6 * widthToHeightRatio)
+plotIndices <- residual.order[seq.int(length(residual.order), length(residual.order) - 8L + 1L)]
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+dev.off()
+
+
+largestJumps <- t(sapply(seq_len(nrow(counts.fit)), function(i) {
+  y <- counts.fit[i,]
+  y <- y[!is.na(y)]
+  m <- median(y)
+  
+  pct <- y / m
+  
+  c(min(pct), max(pct))
+}))
+down.order <- order(largestJumps[,1L])
+up.order  <- order(largestJumps[,2L], decreasing = TRUE)
+
+pdf(file.path("..", imgPath, "analysis_numArrestsDownJumps.pdf"), 6, 6 * widthToHeightRatio)
+plotIndices <- down.order[seq_len(8L)]
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+dev.off()
+
+pdf(file.path("..", imgPath, "analysis_numArrestsUpJumps.pdf"), 6, 6 * widthToHeightRatio)
+plotIndices <- up.order[seq_len(8L)]
+plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
 dev.off()
 
 macr.sub <- subset(macr, disposition == "released", c("ncic_jurisdiction", "arrest_year"))
@@ -192,9 +273,6 @@ numArrested <- table(macr.sub)
 counts.fit <- t(sapply(which(fitJurisdictions), function(index)
   c(counts[index, seq.int(longestRuns[index,1L], longestRuns[index,2L])], rep(NA_integer_, numYears - runLengths[index]))))
 
-
-numArrested.fit <- 
-
 data <- list(
   numGroups = nrow(counts.fit),
   numYears  = ncol(counts.fit),
@@ -202,7 +280,7 @@ data <- list(
   numReleased = table(macr.sub),
   numArrested = t(counts[fitJurisdictions,]))
 
-model <- stan_model(file.path(srcPath, "releasedProportions.stan"))
+#model <- stan_model(file.path(srcPath, "releasedProportions.stan"))
 
-samples <- sampling(model, data = data)
+#samples <- sampling(model, data = data)
   

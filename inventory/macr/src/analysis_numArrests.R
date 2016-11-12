@@ -29,13 +29,14 @@ plotCountsArray <- function(counts, indices, posteriorPredictions, plotNames = T
   
   for (j in seq_along(indices)) {
     y_j <- counts[indices[j],]
+    plotYears <- y_j > 0
     
     if (!posteriorPredictionsAreMissing) {
       postPred <- posteriorPredictions[[j]]
       postMean <- apply(postPred, 1L, mean)
       
       limits <- apply(postPred, 1L, quantile, c(0.025, 0.975))
-      ylim <- range(limits, y_j)
+      ylim <- range(limits[,plotYears], y_j)
     } else {
       ylim <- range(y_j)
     }
@@ -259,8 +260,8 @@ plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredic
 dev.off()
 
 
-largestJumps <- t(sapply(seq_len(nrow(counts.fit)), function(i) {
-  y <- counts.fit[i,]
+largestJumps <- t(sapply(seq_len(nrow(counts.fit)), function(j) {
+  y <- counts.fit[j,]
   y <- y[!is.na(y)]
   
   pct <- y[-1L] / y[-length(y)]

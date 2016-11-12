@@ -151,28 +151,38 @@ Furthermore, the number arrests within jurisdictions also appears to vary wildly
 
 ### Variation in Number of Arrests
 
-As a preliminary analysis, an hierarchical autoregressive model was fit to the number of arrests in each jurisdiction across time. The model included terms for how well the number of arrests in the previous year predicted the number of arrests in the next year (autoregressive coefficient), and terms for how much variability was shown by the jurisdictions after controlling for the average number of arrests. Also included, but not shown, were coefficients for the slopes which allowed jurisdictions to increase or decrease in their number of arrests over time. This is not an ideal model to fit to this kind of data, but should serve to capture the general trends.
+As a preliminary analysis, an hierarchical time series model was fit to the number of arrests in each jurisdiction. Within each jurisdiction, the logarithm of the number of arrests was modeled using a quadratic function of time. In addition, terms were included that control for the size of a jursidiction when modeling how noisy each jursidiction is. This is not an ideal model to fit to this kind of data, but should serve to capture the general trends.
+
+Since the model was fit to logarithms, years with zero arrests were excluded. More specifically, the model was only fit to the "longest runs" of each of the largest jurisdictions, that is the stretch of time when the number was above 0.
+
+In the plots that follow, the black lines are the observed number of arrests, while the solid gray line is what the model predicted. The gray shading shows a point-wise 95% posterior credible interval for the prediction - it can be thought of as the range of predictions that the model believes are consistent with the data. It does not include the residual error term, which is what would cause an observation to be randomly above or below the prediction.
 
 `r rmdPageBreak()`
 
-This graph shows those jursidictions with the lowest autoregression coefficients sorted from the lowest in the top left to the highest in the bottom right. A low autoregression essentially implies that knowing the previous year's value does not help in predicting the next, or that sometimes the next year's is much smaller or much larger and no pattern can be discerned. Because the model does not include the ability for the predicted line to bend (i.e. change points), large and sudden dips in the number of arrests cause it to fit poorly and are likely responsible for the worst cases presented.
+This graph shows those jursidictions with the highest amount of noise relative to their sizes. This indicates either that the underlying observations are simply noisy (i.e. there are frequent changes in the number of arrests), or that the model is simply a poor fit.
 
-`r rmdImageInline(file.path(imgPath, "analysis_numArrestsLowAR.pdf"))`
-
-`r rmdPageBreak()`
-
-Conversely, the next graph shows those jurisdictions with the highest autoregression coefficients, sorted with the highest in the top left and the lowest in the bottom right. Large values imply that the previous year's number of arrests was very often an excellent predictor of the current, and these jursidictions often have sequences of time where the number of arrests seems to move very little from an underlying predicted line.
-
-`r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighAR.pdf"))`
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighVar.pdf"))`
 
 `r rmdPageBreak()`
 
-Another form of variation in this context is how well the regression model predicts the observations, as reality should deviate just by chance. The following graph shows those jursidictions with extremely low variation with respect to what the model expects and with respect to the average number of arrests in that jursidiction. A jurisdiction that shows up here and not with a high autoregression coefficient would have the case that, from the previous year to the next, the number of arrests goes up or down randomly but overall, the number stays relatively close to a line.
+This graph shows those jursidictions with the smallest amount of noise relative to their size. A low amount of variation can either indicate that the number of arrests are too consistent, are naturally not noisy, or that in these circumstances (and not in others), the model fits the data very well. If the model was correct everywhere, then small variance could itself also be a product of chance.
 
 `r rmdImageInline(file.path(imgPath, "analysis_numArrestsLowVar.pdf"))`
 
 `r rmdPageBreak()`
 
-Finally, we have those with extremely high levels of variation. Jurisdictions in this category either are simply noisy, or the straight-line plus autoregressive model is a poor fit.
+The below shows those jurisdictions with the largest standardized residuals, that is those jurisdictions which have an observation for which the model predicts something wildly different than what was observed in a given year, relative to how noisy that jurisdiction is.
 
-`r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighVar.pdf"))`
+Jurisidictions with small standardized residuals are not show, as they can arise by having a large estimated noise term in addition to simply not being very noisy.
+
+`r rmdPageBreak()`
+
+Finally, as the above were based on a fitted model that cannot accurately describe the data in all circumstances, we include an ad-hoc approach that simply looks at those jurisdictions with the largest and smallest increases from an average number of arrests. These plots show those with years that are the smallest percentage-wise from the average.
+
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsDownJumps.pdf"))`
+
+`r rmdPageBreak()`
+
+Conversely, these are those with years having the largest percent increases.
+
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsUpJumps.pdf"))`

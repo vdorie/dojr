@@ -175,6 +175,8 @@ The below shows those jurisdictions with the largest standardized residuals, tha
 
 Jurisidictions with small standardized residuals are not show, as they can arise by having a large estimated noise term in addition to simply not being very noisy.
 
+`r rmdImageInline(file.path(imgPath, "analysis_numArrestsMaxResiduals.pdf"))`
+
 `r rmdPageBreak()`
 
 Finally, as the above were based on a fitted model that cannot accurately describe the data in all circumstances, we include an ad-hoc approach that simply looks at those jurisdictions with the largest and smallest increases from an average number of arrests. These plots show those with years that are the smallest percentage-wise from the average.

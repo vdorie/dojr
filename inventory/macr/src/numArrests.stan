@@ -2,47 +2,82 @@ data {
   int<lower = 1> J; // numGroups
   int<lower = 1> T; // numTimePoints
   
-  int<lower = 0> start_j[J];
-  int<lower = 0> end_j[J];
+  int indices[J,T]; // which years to include in model
+  int numIndices[J];
+  
+  int<lower = 0> P;       // num predictors in response model, constant across groups
+  int<lower = 0> P_j;     // num predictors in response model, vary by group
+  int<lower = 0> P_sigma; // num predictors in residual noise model, constant across groups
   
   matrix[T, J] y;
   
-  int<lower = 0> P_y; // num individual level predictors
-  int<lower = 0> P_j; // num group level predictors
+  matrix[T,P]       x;        // predictors in response model, constant across groups
+  matrix[T,P_j]     x_j;      // predictors in response model, varying across groups
+  matrix[J,P_sigma] x_sigma;  // predictors in residual noise model
+  vector[J] w;                // one for each group, to be used in 
   
-  matrix[T,P_y] x_y;
-  matrix[J,P_j] x_j;
+  // hyperparameters
   
-  real<lower = 0.0> nu_theta;
-  vector[P_y + 1] mu_theta;
-  matrix[P_y + 1, P_y + 1] Sigma_theta;
+  // prior on population fixed effects
+  real<lower = 0.0> nu_beta;
+  vector[P] mu_beta;
+  vector[P] sigma_beta;
+  
+  // prior on residual variance fixed effects
+  real<lower = 0.0> nu_beta_sigma;
+  vector[P_sigma] mu_beta_sigma;
+  vector<lower = 0.0>[P_sigma] sigma_beta_sigma;
+  
+  // prior on random effects covariance
+  real<lower = 0.0> nu_L_sigma_theta;
+  real<lower = 0.0> sigma_L_sigma_theta;
+  real<lower = 0.0> nu_L_Omega_theta;
 }
 transformed data {
-  int T_j[J];
+  vector[P_j + 1] mu_theta;
   
-  for (j in 1:J) T_j[j] = end_j[j] - start_j[j] + 1;
+  for (p in 1:(P_j + 1)) mu_theta[p] = 0.0;
 }
 parameters {
-  vector[P_y + 1] theta[J];
-  vector[P_j] beta_j;
+  vector[P] beta;
+  vector[P_j + 1] theta[J];     // contains beta_j and eta
+  vector[P_sigma] beta_sigma;
+  
+  cholesky_factor_corr[P_j + 1] L_Omega_theta;
+  vector<lower = 0>[P_j + 1] L_sigma_theta;
 }
 model {
+  matrix[P_j + 1, P_j + 1] L_Sigma_theta;
+  
   for (j in 1:J) {
-    vector[P_y] beta;
+    vector[P_j] beta_j;
     real eta;
     real sigma;
-    int indices[T_j[j]];
+    int indices_j[numIndices[j]];
     
-    beta = theta[j][1:P_y];
-    eta = theta[j][P_y + 1];
+    indices_j = indices[j,1:numIndices[j]];
     
-    sigma = exp(x_j[j,] * beta_j + eta);
+    beta_j = theta[j][1:P_j];
+    eta    = theta[j][P_j + 1];
     
-    for (t in 1:T_j[j]) indices[t] = start_j[j] + t - 1;
+    sigma = exp(x_sigma[j,] * beta_sigma + eta);
     
-    y[indices,j] ~ normal(x_y[indices,] * beta, sigma);
+    y[indices_j,j] ~ normal(x[indices_j,] * beta / w[j] + x_j[indices_j,] * beta_j, sigma);
   }
   
-  theta ~ multi_student_t(nu_theta, mu_theta, Sigma_theta);
+  // apply t priors to "fixed effects"
+  beta ~ student_t(nu_beta, mu_beta, sigma_beta);
+  
+  beta_sigma ~ student_t(nu_beta_sigma, mu_beta_sigma, sigma_beta_sigma);
+  
+  
+  // hierarchically model group coefficients (random effects)
+  // give them a normal distribution with a mean of 0 and an unknown covariance
+  
+  L_sigma_theta ~ student_t(nu_L_sigma_theta, 0.0, sigma_L_sigma_theta);
+  L_Omega_theta ~ lkj_corr_cholesky(nu_L_Omega_theta);
+  
+  L_Sigma_theta = diag_pre_multiply(L_sigma_theta, L_Omega_theta);
+  theta ~ multi_normal_cholesky(mu_theta, L_Sigma_theta);
 }
 

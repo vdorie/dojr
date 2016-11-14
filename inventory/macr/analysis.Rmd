@@ -151,17 +151,21 @@ Furthermore, the number arrests within jurisdictions also appears to vary wildly
 
 ### Variation in Number of Arrests
 
-As a preliminary analysis, an hierarchical time series model was fit to the number of arrests in each jurisdiction. Within each jurisdiction, the logarithm of the number of arrests was modeled using a quadratic function of time. In addition, the amount of noise in each jurisdiction was modeled as a function of the size of the jurisdiction. Jurisdiction parameters were directly modeled as "random effects", so that estimates were pooled together and information shared across groups. This is not an ideal model to fit to this kind of data, but should serve to capture the general trends.
+```{r, echo = FALSE}
+# todo: re-run with jursidictions with multiple runs, zeros in middle
+```
 
-Since the model was fit to logarithms, years with zero arrests were excluded. More specifically, the model was only fit to the "longest runs" of each of the largest jurisdictions, that is the stretch of time when the number was above 0.
+As a preliminary analysis, an hierarchical time series model was fit to the number of arrests in each jurisdiction. Within each jurisdiction, the logarithm of the number of arrests was modeled using a quadratic function of time. In addition, the amount of noise in each jurisdiction was modeled as a function of the size of the jurisdiction. Jurisdiction parameters were directly modeled as "random effects", so that estimates were pooled together and information shared across groups. "Fixed effects" included terms that modeled the overall trend in number of arrests as a cubic polynomial, with contributions from jurisdictions weighted by the average number of arrests per jurisdiction. This is not an ideal model to fit to this kind of data, but should serve to capture the general trends.
 
-In the plots that follow, the black lines are the observed number of arrests, while the solid gray line is what the model would predict for a given year (posterior mean). The gray shading shows point-wise 95% central intervals of the posterior predictive distribution prediction - it can be thought of as the range of new obserations that the model deems to be consistent with the data observed.
+Since the model was fit to logarithms, years with zero arrests were excluded.
+
+In the plots that follow, the black lines are the observed number of arrests, while the solid gray line is what the model would predict for a given year (posterior mean). The gray shading shows point-wise 95% central intervals of the posterior predictive distribution prediction - it can be thought of as the range of new obserations that the model deems to be consistent with the observed data, and incorporates both the noise that the observations express as well as uncertainty in the model fit.
 
 `r rmdPageBreak()`
 
 #### High Residual Variance
 
-This graph shows those jursidictions with the highest amount of noise relative to their sizes. This indicates either that the underlying observations are simply noisy (i.e. there are frequent changes in the number of arrests), or that the model is simply a poor fit.
+This graph shows those jursidictions with the highest amount of noise relative to their sizes. This indicates either that the underlying observations are simply noisy (i.e. there are frequent changes in the number of arrests), or that the model is a poor fit.
 
 `r rmdImageInline(file.path(imgPath, "analysis_numArrestsHighVar.pdf"))`
 
@@ -177,7 +181,7 @@ This graph shows those jursidictions with the smallest amount of noise relative 
 
 #### Most Extreme Standardized Residuals
 
-The below shows those jurisdictions with the largest standardized residuals, that is those jurisdictions which have an observation for which the model predicts something wildly different than what was observed in a given year, relative to how noisy that jurisdiction is.
+The below shows those jurisdictions with the largest standardized residuals, that is those jurisdictions which have an observation for which the model predicts something wildly different than what was observed in a given year, relative to how noisy that jurisdiction is. If the model appears a poor fit, that is either because it lacks complexity or that, for smaller jurisdictions, the jurisdiction does not follow the general trend of number arrests within the state.
 
 Jurisidictions with small standardized residuals are not show, as they can arise by having a large estimated noise term in addition to simply not being very noisy.
 
@@ -187,7 +191,7 @@ Jurisidictions with small standardized residuals are not show, as they can arise
 
 #### Sharpest Decreases
 
-Finally, as the above were based on a fitted model that does accurately describe the data in all circumstances, we include an ad-hoc approach that simply looks at those jurisdictions with the largest and smallest increases in the number of arrests going from year to year. These plots show those with years where the number of arrests are the smallest percentage-wise from the previous year.
+Finally, as the above were based on a fitted model that does not accurately describe the data in all circumstances, we include an ad-hoc approach that simply looks at those jurisdictions with the largest and smallest increases in the number of arrests going from year to year. These plots show those with years where the number of arrests are the smallest percentage-wise from the previous year, i.e. the sharpest drops.
 
 `r rmdImageInline(file.path(imgPath, "analysis_numArrestsDownJumps.pdf"))`
 
@@ -203,6 +207,6 @@ Conversely, these are those with years having the largest percent increases goin
 
 #### Further Analysis
 
-As indicated at the start of this section, the model used can be improved in a number of ways. Trivially, more complicated functions could be fit within jurisdictions, including higher order polynomials or change points. Additionally, it makes sense to try to subtract out overall crime rates, possibly including cyclical effects. Errors in the models should be examined for serial correlations and lagged predictors added in response.
+As indicated at the start of this section, the model used can be improved in a number of ways. Trivially, more complicated functions could be fit within jurisdictions, including higher order polynomials or change points. Errors in the models should be examined for serial correlations and lagged predictors added in response.
 
 Finally, it should be addressed that the model is only appropriate for jurisdictions with large numbers of arrests. For the smaller jurisdictions, the most "correct" model would likely be a Poisson regression. In order to also model the larger jurisdictions simultaneously, a finer level of time granularity should be employed.

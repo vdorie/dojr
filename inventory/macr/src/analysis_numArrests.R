@@ -132,12 +132,28 @@ numShortJurisdictions <- sum(shortJurisdictions)
 
 fitJurisdictions <- largeJurisdictions & !zerosInMiddle & !shortJurisdictions
 
-counts.fit <- t(sapply(which(fitJurisdictions), function(index) {
+if (FALSE) counts.fit <- t(sapply(which(fitJurisdictions), function(index) {
   row <- counts[index,]
   if (longestRuns[index,1L] > 1L)       row[seq.int(1L, longestRuns[index,1L])]       <- NA_integer_
   if (longestRuns[index,2L] < numYears) row[seq.int(longestRuns[index,2L], numYears)] <- NA_integer_
   row
 }))
+
+counts.fit <- t(sapply(which(fitJurisdictions), function(index) {
+  row <- counts[index,]
+  row[row == 0] <- NA_integer_
+  row
+}))
+
+indices.fit <- t(sapply(seq_len(nrow(counts.fit)), function(j) {
+  res <- which(!is.na(counts.fit[j,]))
+  res <- c(res, integer(ncol(counts.fit) - length(res)))
+  res
+}))
+numIndices.fit <- sapply(seq_len(nrow(counts.fit)), function(j) {
+  sum(indices.fit[j,] > 0L)
+})
+
 
 standardize <- function(x) (x - mean(x)) / sd(x)
 
@@ -162,14 +178,17 @@ getTransformationsForMatrix <- function(x) {
   list(forward = forward, backward = backward)
 }
 
-x_y <- cbind(1, seq_len(numYears), seq_len(numYears)^2)
-x_j <- cbind(1, apply(counts.fit, 1L, function(row) median(log(row[!is.na(row)]))))
+x <- cbind(1, seq_len(numYears), seq_len(numYears)^2, seq_len(numYears)^3)
+x_j <- x[,1:3]
+x_sigma <- cbind(1, apply(counts.fit, 1L, function(row) median(log(row[!is.na(row)]))))
 
-x_y.trans <- getTransformationsForMatrix(x_y)
+x.trans <- getTransformationsForMatrix(x)
 x_j.trans <- getTransformationsForMatrix(x_j)
+x_sigma.trans <- getTransformationsForMatrix(x_sigma)
 
-x_y.z <- x_y.trans$forward(x_y)
+x.z <- x.trans$forward(x)
 x_j.z <- x_j.trans$forward(x_j)
+x_sigma.z <- x_sigma.trans$forward(x_sigma)
 
 y.log <- log(counts.fit)
 y.pars <- t(sapply(seq_len(nrow(y.log)), function(i) {
@@ -181,11 +200,12 @@ data <- list(
   J = nrow(counts.fit),
   T = ncol(counts.fit),
   
-  start_j = longestRuns[fitJurisdictions,1L],
-  end_j   = longestRuns[fitJurisdictions,2L],
+  indices = indices.fit,
+  numIndices = numIndices.fit,
   
-  P_y = ncol(x_y),
+  P = ncol(x),
   P_j = ncol(x_j),
+  P_sigma = ncol(x_sigma),
   
   y = apply(counts.fit, 1L, function(row) {
     keep <- !is.na(row)
@@ -193,12 +213,26 @@ data <- list(
     y[keep] <- standardize(y[keep])
     y
   }),
-  x_y = x_y.z,
+  x = x.z,
   x_j = x_j.z,
+  x_sigma = x_sigma.z,
+  w = sqrt(exp(x_sigma[,2]) / sum(exp(x_sigma[,2]))),
   
-  nu_theta = 3.0,
-  mu_theta = rep(0.0, 4L),
-  Sigma_theta = diag(c(5, rep(2.5, 3L))))
+  # prior on population fixed effects
+  nu_beta = 3.0,
+  mu_beta = rep(0.0, ncol(x)),
+  sigma_beta = c(5, rep(2.5, ncol(x) - 1L)),
+  
+  # prior on residual variance fixed effects
+  nu_beta_sigma = 3.0,
+  mu_beta_sigma = rep(0.0, ncol(x_sigma)),
+  sigma_beta_sigma = c(5, rep(2.5, ncol(x_sigma) - 1L)),
+  
+  # prior on random effects covariance
+  nu_L_sigma_theta = 3.0,
+  sigma_L_sigma_theta = 2.5,
+  nu_L_Omega_theta = 4.0
+)
 
 require(rstan)
 model <- stan_model(file.path(srcPath, "numArrests.stan"))
@@ -207,23 +241,28 @@ samples <- sampling(model, data = data)
 pars <- extract(samples)
 
 ## 4000 x 384
-pars$sigma <- exp(tcrossprod(pars$beta_j, x_j.z) + pars$theta[,,ncol(x_y) + 1L])
+pars$sigma <- exp(tcrossprod(pars$beta_sigma, x_sigma.z) + pars$theta[,,ncol(x_j) + 1L])
+
+getPosteriorLinearPredictor <- function(samples, index)
+  tcrossprod(x.z, pars$beta) / data$w[index] + tcrossprod(x_j.z, pars$theta[,index,seq_len(ncol(x_j))])
 
 getPosteriorMeans <- function(samples, indices) {
   lapply(indices, function(index) {
-    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * x_y.z %*% t(pars$theta[,index,seq_len(ncol(x_y))]))
+    mu <- getPosteriorLinearPredictor(samples, index)
+
+    exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * mu)
   })
 }
 getPosteriorPredictions <- function(pars, indices) {
   lapply(indices, function(index) {
-    mu <- x_y.z %*% t(pars$theta[,index,seq_len(ncol(x_y))])
+    mu <- getPosteriorLinearPredictor(samples, index)
     sigma <- pars$sigma[,j]
     
     exp(y.pars[index,"mu"] + y.pars[index,"sigma"] * matrix(rnorm(length(mu), mu, sigma), nrow(mu)))
   })
 }
 
-eta.mean <- apply(pars$theta[,,4], 2L, mean)
+eta.mean <- apply(pars$theta[,,ncol(x_j) + 1L], 2L, mean)
 eta.order <- order(eta.mean)
 
 pdf(file.path("..", imgPath, "analysis_numArrestsLowVar.pdf"), 6, 6 * widthToHeightRatio)
@@ -238,10 +277,10 @@ dev.off()
 
 ## fitted on standardized log scale
 residuals <- t(sapply(seq_len(nrow(counts.fit)), function(j) {
-  fitted <- x_y.z %*% t(pars$theta[,j,seq_len(3L)])
+  mu <- getPosteriorLinearPredictor(samples, j)
   ## fitted is 36 x 4000, transposed makes each column 4000 long, so sigma will get recycled in the
   ## division
-  result <- t(t(data$y[,j] - fitted) / pars$sigma[,j])
+  result <- t(t(data$y[,j] - mu) / pars$sigma[,j])
   result[is.na(counts.fit[j,]),] <- NA
   
   apply(result, 1L, mean, na.rm = TRUE)
@@ -252,7 +291,7 @@ residual.order <- order(maxResiduals)
 
 # smallest residuals not interesting, for reasons explained in Rmd
 #plotIndices <- residual.order[seq_len(8L)]
-#plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(samples, plotIndices))
+#plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 
 pdf(file.path("..", imgPath, "analysis_numArrestsMaxResiduals.pdf"), 6, 6 * widthToHeightRatio)
 plotIndices <- residual.order[seq.int(length(residual.order), length(residual.order) - 8L + 1L)]
@@ -281,21 +320,58 @@ plotIndices <- up.order[seq_len(8L)]
 plotCountsArray(counts, which(fitJurisdictions)[plotIndices], getPosteriorPredictions(pars, plotIndices))
 dev.off()
 
-macr.sub <- subset(macr, disposition == "released", c("ncic_jurisdiction", "arrest_year"))
-macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
-numArrested <- table(macr.sub)
+#macr.sub <- subset(macr, c("ncic_jurisdiction", "arrest_year", "disposisition"))
+#macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
+#numArrested <- table(macr.sub)
+#rm(macr.sub)
 
-counts.fit <- t(sapply(which(fitJurisdictions), function(index)
-  c(counts[index, seq.int(longestRuns[index,1L], longestRuns[index,2L])], rep(NA_integer_, numYears - runLengths[index]))))
+tab <- table(macr[,c("ncic_jurisdiction", "arrest_year", "disposition")])
+
+totals.fit <- apply(tab[fitJurisdictions,,], c(1L, 2L), sum)
+numReleased.fit <- apply(tab[fitJurisdictions,,], c(1L, 2L), function(x) x["released"])
+
+indices.fit <- t(sapply(seq_len(nrow(totals.fit)), function(j) {
+  res <- which(totals.fit[j,] > 0L)
+  res <- c(res, integer(ncol(totals.fit) - length(res)))
+  res
+}))
+numIndices.fit <- sapply(seq_len(nrow(totals.fit)), function(j) {
+  sum(indices.fit[j,] > 0L)
+})
+
 
 data <- list(
-  numGroups = nrow(counts.fit),
-  numYears  = ncol(counts.fit),
-  numNonZeroYears = apply(counts.fit, 1L, function(row) sum(!is.na(row))),
-  numReleased = table(macr.sub),
-  numArrested = t(counts[fitJurisdictions,]))
-
-#model <- stan_model(file.path(srcPath, "releasedProportions.stan"))
-
-#samples <- sampling(model, data = data)
+  J = nrow(numReleased.fit),
+  T = ncol(numReleased.fit),
   
+  P = ncol(x),
+  P_j = ncol(x_j),
+  
+  indices = indices.fit,
+  numIndices = numIndices.fit,
+  
+  
+  n = t(totals.fit),
+  y = t(numReleased.fit),
+  
+  x = x.z,
+  x_j = x_j.z,
+  
+  
+  # prior on population fixed effects
+  nu_beta = 3.0,
+  mu_beta = rep(0.0, ncol(x)),
+  sigma_beta = c(5, rep(2.5, ncol(x) - 1L)),
+  
+  # prior on random effects covariance
+  nu_L_sigma_beta_j = 3.0,
+  sigma_L_sigma_beta_j = 2.5,
+  nu_L_Omega_beta_j = 4.0)
+
+model2 <- stan_model(file.path(srcPath, "releasedProportions.stan"))
+
+samples2 <- sampling(model2, data = data)
+
+
+getPosteriorLinearPredictor <- function(samples, index)
+  tcrossprod(x.z, pars$beta) + tcrossprod(x_j.z, pars$theta[,index,seq_len(ncol(x_j))])

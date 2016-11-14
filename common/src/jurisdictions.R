@@ -4,7 +4,21 @@
 
 getNameForJurisdiction <- function(x, jurisdictions = .GlobalEnv$jurisdictions)
 {
-  if (is.null(jurisdictions)) stop("cannot find 'jurisdictions'")
+  if (is.null(jurisdictions)) stop("cannot find variable 'jurisdictions', load jurisdictions.csv first")
   
   with(jurisdictions, Agency[match(x, Code)])
+}
+
+getCountyNameForJurisdiction <- function(x, jurisdictions = .GlobalEnv$jurisdictions)
+{
+  if (is.null(jurisdictions)) stop("cannot find variable 'jurisdictions', load jurisdictions.csv first")
+  
+  with(jurisdictions, County[match(x, Code)])
+}
+
+getCountyNameForCode <- function(x, jurisdictions = .GlobalEnv$jurisdictions)
+{
+  if (is.null(jurisdictions)) stop("cannot find variable 'jurisdictions', load jurisdictions.csv first")
+  
+  with(jurisdictions, County[match(x, CntyCode)[1L]])
 }

@@ -55,6 +55,7 @@ rmdPageBreak <- function() {
     cat("\\", size, sep = "")
   }
   cat("\n")
+  cat("  \\renewcommand{\\arraystretch}{1.25}\n")
   if (!is.null(col))
     cat("  \\rowcolors{2}{", col[1L], "}{", if (length(col) > 1L) col[2L] else "", "}\n", sep = "")
   cat("  \\begin{tabular}{")
@@ -79,6 +80,7 @@ rmdPageBreak <- function() {
     cat(" \\\\\n")
   }
   cat("  \\end{tabular}\n")
+  cat("  \\renewcommand{\\arraystretch}{1.0}\n")
   cat("\\end{center}\n")
   
   sink()

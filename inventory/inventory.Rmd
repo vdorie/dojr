@@ -23,55 +23,10 @@ knitr::opts_chunk$set(echo = TRUE)
 datasetName <- "MACR"
 datasetDir  <- "macr"
 
-dataPath <- file.path("..", "common", "data")
-
-imgPath <- file.path(datasetDir, "img")
-txtPath <- file.path(datasetDir, "txt")
-
-dir.create(imgPath, showWarnings = FALSE, recursive = TRUE)
-dir.create(txtPath, showWarnings = FALSE, recursive = TRUE)
-
-tables <- read.csv(file.path(datasetDir, "tables.csv"), stringsAsFactors = FALSE)
-
-mainTable <- tables$name[which.max(tables$main_table == 1L)]
-
-dataLoaded <- rep(FALSE, nrow(tables))
-names(dataLoaded) <- tables$name
-
-loadData <- function(tableName = mainTable, path = ".") {
-  tableIndex <- which.max(tables$name == tableName)
-  if (!dataLoaded[[tableName]]) {
-    dataFilePath <- file.path(path, dataPath, tables$file[tableIndex])
-    if (grepl("\\.csv$", tables$file[tableIndex])) {
-      .GlobalEnv[[tables$object[tableIndex]]] <- read.csv(dataFilePath, stringsAsFactors = FALSE)
-    } else if (grepl("\\.Rdata$", tables$file[tableIndex])) {
-      load(dataFilePath, envir = .GlobalEnv)
-    } else if (grepl("\\.dta$", tables$file[tableIndex])) {
-      require(foreign)
-      .GlobalEnv[[tables$object[tableIndex]]] <- read.dta(dataFilePath)
-    } else {
-      stop("unrecognized file format: '", tables$file[tableIndex], "'")
-    }
-    if (!is.na(tables$on_load[tableIndex]) && tables$on_load[tableIndex] != "")
-      eval(parse(text = tables$on_load[tableIndex]), .GlobalEnv)
-  }
-  .GlobalEnv$dataLoaded[[tableName]] <- TRUE
-  
-  invisible(get(tables$object[tableIndex]))
-}
-
-## load some utilities
-commonSrcPath <- file.path("..", "common", "src")
-source(file.path(commonSrcPath, "knitr.R"))
-source(file.path(commonSrcPath, "util.R"))
-
-## inventory specific
 srcPath <- file.path("src")
-invisible(sapply(list.files(srcPath, "*.R", full.names = TRUE), source))
 
-## data-set specific
-dataSrcPath <- file.path(datasetDir, "src")
-if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))
+## defines a bunch of path variables, loadData(), stuff like that
+source(file.path(srcPath, "setup.R"), local = TRUE)
 ```
 
 ```{r 'run_clean', echo = FALSE, include = FALSE, results = "hide"}
@@ -112,7 +67,7 @@ for (i in seq_len(nrow(tables))) {
   if (length(variablesSummary) != 1L || variablesSummary != "")
     cat("#### Variable Summary\n\n", rmdFormat(variablesSummary), sep = "\n")
 }
-rm(firstFive, variablesSummary)
+rm(i, firstFive, variablesSummary)
 ```
 
 `r rmdPageBreak()`
@@ -126,7 +81,7 @@ variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv"))
                       stringsAsFactors = FALSE)
 pageBreak <- rmdPageBreak()
 for (i in seq_len(nrow(variables))) {
-  if (i > 1) cat(pageBreak)
+  if (i > 1L) cat(pageBreak)
   
   variable <- variables[i,]
   cat("### ", variable[["name"]], "\n\n", sep = "")
@@ -149,7 +104,7 @@ for (i in seq_len(nrow(variables))) {
     cat("\n")
   }
 }
-rm(pageBreak, variable, variableSummary)
+rm(i, pageBreak, variable, variableSummary)
 ```
 
 # Recommendations for Data Use

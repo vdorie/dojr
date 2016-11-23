@@ -1,8 +1,6 @@
-known quantities,sought quantities,discovery method,database match,population match,external datasets,plan,example
-"quasi identifiers, that arrested",arrested for what,matching on quasi identifiers,key unique,,none,suppress quasi identifiers when key is unique,saw minority neighbor get arrested
-"quasi identifiers, that arrested",arrested for what,matching on quasi identifiers,all matching key have same crime,,none,aggregate into large units; suppress crime when heterogeneous for key,saw minority neighbor get arrested
-"quasi identifiers, that arrested, not successfully prosecuted",arrested for what,"matching on quasi identifiers, eliminating from court records","after eliminating court records, either only one matches key or all matching key have same offense",,court records,assume all non-released records can be obtained from elsewhere and anonymize only that set,saw minority neighbor get arrested
-,,,all records matching key are for serious felonies,,,??,
-"arrest for crime on date, partial quasi identifiers",complete quasi identifiers,matching on quasi identifiers and crime,key unique,key unique in general population,none,suppress quasi identifiers when key is unique (and population is small?),read of crime in local paper
-"arrest for crime on date, partial quasi identifiers, circumstances of arrest",complete quasi identifiers,matching on quasi identifiers and crime,key unique,key unique in population connected to circumstances,social media,,read of crime in paper committed by employee of restaurant
-quasi identifiers,"whether arrested, arrested for what",matching on quasi identifiers,key unique,key unique in general population,"voter rolls, census",,job interview of minority candidate
+known quantities,sought quantities,example
+quasi identifiers,that arrested,job interview of minority from small jurisdiction
+"quasi identifiers, specific individual arrested",arrest code,saw minority neighbor get arrested
+"partial quasi identifiers, unknown individual arrested for offense code",complete quasi identifiers; identification,"crime blotter in local paper mentions age, gender, and crime but not race"
+"unknown individual arrested for offense code, circumstances around crime",quasi identifiers; identification,"crime blotter in local paper mentions crime, place of employment"
+"specific individual arrested for offense",disposition,"local paper publishes name of person and reason for arrest"

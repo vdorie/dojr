@@ -1,0 +1,7 @@
+type,external data,disclosure,risk,remedy
+match on quasi identifiers specific individual,none,sensitive values,personal,suppress qausi identifiers in small cells (k-anonymity)
+match on quasi identifiers specific group,none,sensitive values if are homogeneous in group,personal,aggregate so that groups are large enough to be heterogeneous (l-diversity)
+match on quasi identifiers arbitrary individual/group,none,sensitive values,organization,same as above
+fishing,none,identity,"personal, organization",same as above
+"exclude matches using complete data from another source, perform attack on remaining ","OBTS, court records",meta-attack,,"perform anonymization on a conservatively selected, released subset; prevent complement from adding risk"
+"exclude matches using offense code from another source, perform attack on remaining",social media,meta-attack,,guarantee diversity in quasi identifiers after stratifying on offense codes

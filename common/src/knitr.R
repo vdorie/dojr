@@ -34,6 +34,79 @@ rmdPageBreak <- function() {
          "")
 }
 
+.latexFontSizes <- c(tiny = 5, scriptsize = 7, footnotesize = 8, small = 9,
+                     normalsize = 10, large = 12, Large = 14.4, LARGE = 17.28,
+                     huge = 17.28, huge = 20.74, Huge = 24.88)
+
+.latexFormat.matrix <- function(x, type, colWidths, size, col, ...)
+{
+  stringResult <- NULL
+  stringConnection <- textConnection("stringResult", "w", local = TRUE)
+  sink(stringConnection)
+  
+  cat("\\begin{center}")
+  if (!is.null(size)) {
+    if (is.character(size) && size %not_in% names(.latexFontSizes)) size <- as.numeric(size)
+    if (is.numeric(size)) {
+      if (0 < size && size < 1) size <- size * 10
+      size <- names(.latexFontSizes)[which.min(abs(size - .latexFontSizes))]
+    }
+    if (size %not_in% names(.latexFontSizes)) error("unrecognized font size: ", size)
+    cat("\\", size, sep = "")
+  }
+  cat("\n")
+  if (!is.null(col))
+    cat("  \\rowcolors{2}{", col[1L], "}{", if (length(col) > 1L) col[2L] else "", "}\n", sep = "")
+  cat("  \\begin{tabular}{")
+  
+  if (is.null(colWidths)) colWidths <- 1
+  colWidths <- rep_len(colWidths, ncol(x))
+  ## page width, minus margins, converted into points and subtracted out space between columns
+  colWidths <- round(((8.5 - 2) * 72.27 - (ncol(x) - 1) * 12) * colWidths / sum(colWidths), 3)
+  colWidths <- paste0("p{", colWidths, "pt}") 
+  cat(colWidths, "}\n", sep = "")
+  
+  cat("    ")
+  if (!is.null(colnames(x))) {
+    ## replace dots.in.variables names with spaces
+    headerNames <- gsub("([^.])\\.([^.])", "\\1 \\2", colnames(x), perl = TRUE)
+    cat(paste0("\\textbf{", headerNames, "}"), sep = " & ")
+    cat(" \\\\ \\hline\n")
+  }
+  for (i in seq_len(nrow(x))) {
+    cat("    ")
+    cat(as.character(x[i,]), sep = " & ")
+    cat(" \\\\\n")
+  }
+  cat("  \\end{tabular}\n")
+  cat("\\end{center}\n")
+  
+  sink()
+  close(stringConnection)
+
+  stringResult
+}
+
+nativeFormat <- function(x, type = rmdGetOutputFormat(), ...) { UseMethod("nativeFormat", x) }
+
+nativeFormat.data.frame <- function(x, type = rmdGetOutputFormat(), colWidths = NULL, size = NULL, col = NULL, ...)
+{
+  x.char <- sapply(x, function(x.i) format(x.i, ...))
+  
+  nativeFormat.matrix(x.char, type, colWidths, size, col, ...)
+}
+
+nativeFormat.matrix <- function(x, type = rmdGetOutputFormat(), colWidths = NULL, size = NULL, col = NULL, ...)
+{
+  if (type == "latex") {
+    result <- .latexFormat.matrix(x, type, colWidths, size, col, ...)
+  } else {
+    warning("native format for types other than latex not yet implemented")
+    result <- rmdFormat.matrix(x, colWidths, ...)
+  }
+  result
+}
+
 ## appends a ... if the string is too long
 truncateString <- function(x, length)
   unname(sapply(x, function(x.i) if (nchar(x.i) > length) paste0(substr(x.i, 1L, length - 1L), "...") else x.i))

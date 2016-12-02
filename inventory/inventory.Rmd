@@ -47,7 +47,7 @@ rm(cleanRmdFile, sourceFile)
 
 # Abstract
 
-The Monthly Arrest and Citations Record (MACR) database describes arrests in California from 1980 to the present. Each row includes the race, age, and gender of the individual arrested, the most serious offense for which he or she was arrested, the year of the arrest, and the county in which the arrest took place. This version of the data only contains arrests of adults (18+). The data have been de-identified using suppression and re-sampling, which means that any individual arrest may not appear in the data and counts may not match published statistics exactly. 
+The Monthly Arrest and Citations Record (MACR) database describes arrests in California from 1980 to the present. Each row includes the race, age, and gender of the individual arrested, the most serious offense for which he or she was arrested, the year of the arrest, and the county in which the arrest took place. This version of the data only contains arrests of adults (18+). 
 
 # Introduction
 
@@ -117,7 +117,7 @@ The MACR data are best used for analyses of general trends, they are less reliab
 
 #### bcs_offense_code
 
-* Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
+* Arrest numbers for certain offenses may be more reliable than others. Different jurisdictions (even different law enforcement officers within the same jurisdiction) may report the same type of arrest using different codes.  Generally, it is probably safe to assume that reporting of arrests for more serious offenses is more accurate than it is for arrests of less serious offenses. In some areas with high rates of violent crimes, police may be less willing to invest the time required to make an arrest for a non-violent misdemeanor. In other words, some arrests, particularly for less serious offenses, may be missing. 
 
 #### bcs_summary_offense_code
 

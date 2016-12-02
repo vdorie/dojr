@@ -1,4 +1,5 @@
 .DS_Store
+.Rhistory
 .Rapp.history
 *.swp
 common/data/*.Rdata

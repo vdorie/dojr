@@ -1,7 +1,7 @@
-known quantities,sought quantities,potential attackers,example
-quasi identifiers,that arrested,stalker; blackmailer; shady background check services; unethical employers,"use demographic characteristics to look at arrests in MACR, obtain population data to narrow options"
-"quasi identifiers, specific individual arrested",arrest code,nosy-neighbor; journalist covering celebrity arrests; gossips,saw minority neighbor get arrested
-"partial arrest and demographic data, unknown individual arrested for offense code",complete quasi identifiers; identification,blackmailers; journalists; anyone trying to dig up dirt on someone,"crime blotter in local paper mentions age, gender, and crime but not race"
-arrest details,demographic characteristics,journalist; shady background service,hope that arrest details point to limited demographic profiles
-"unknown individual arrested for offense code, circumstances around crime",quasi identifiers; identification,coworkers,crime blotter in local paper mentions crime by an employee at a business
-specific individual arrested for offense,disposition,journalist; employer,local paper publishes name of person and reason for arrest
+"known quantities","sought quantities","attackers","example"
+"quasi-identifiers","that arrested","stalker, blackmailer, background check, employer","minority job interview in small county"
+"quasi-identifiers, specific individual arrested","arrest code","nosy-neighbor, paparazzi, gossips","saw elderly neighbor get arrested"
+"partial quasi-identifiers, offense code","complete quasi-identifiers","blackmailers, journalists","crime blotter mentions age, gender, and crime but not race"
+"offense code, disposition","quasi-identifiers","journalist, blackmailer / fisher","unusual crime committed by minority"
+"offense code, arrest circumstances","quasi-identifiers","coworkers, gossips","tweet mentions crime by an employee at a business"
+"specific individual, offense code","disposition","journalist, employer","local crime blotter mentions name and crime"

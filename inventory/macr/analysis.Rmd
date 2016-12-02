@@ -38,7 +38,7 @@ cat(youngTable, sep = "\n")
 rm(youngTable, txtFile)
 ```
 
-Old age appears to be handled differently in different years. While the numbers are relatively small, it is difficult to believe that there were spikes in crime for, say, 91 year olds in 1991.
+Old age appears to be handled differently in different years. While the numbers are relatively small, it is difficult to believe that there were spikes in crime for, say, 91 year olds in 1991, 92 year olds in 1992 and so on.
 
 ```{r analysis_oldAgeByYear, echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "analysis_oldAgeByYear.pdf")
@@ -114,7 +114,7 @@ cat(eightyEight, sep = "\n")
 rm(eightyEight, txtFile)
 ```
 
-### `r rmdColFmt("red", "Recomendations")`
+### `r rmdColFmt("red", "Recommendations")`
 
 ## Jurisdictions
 

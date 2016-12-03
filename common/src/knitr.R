@@ -38,50 +38,97 @@ rmdPageBreak <- function() {
                      normalsize = 10, large = 12, Large = 14.4, LARGE = 17.28,
                      huge = 17.28, huge = 20.74, Huge = 24.88)
 
-.latexFormat.matrix <- function(x, type, colWidths, size, col, ...)
+.latexFormat.matrix <- function(x, type, style, alignment, width, colWidths, rowHeight, fontSize, color, ...)
 {
   stringResult <- NULL
   stringConnection <- textConnection("stringResult", "w", local = TRUE)
   sink(stringConnection)
   
-  cat("\\begin{center}")
-  if (!is.null(size)) {
-    if (is.character(size) && size %not_in% names(.latexFontSizes)) size <- as.numeric(size)
-    if (is.numeric(size)) {
-      if (0 < size && size < 1) size <- size * 10
-      size <- names(.latexFontSizes)[which.min(abs(size - .latexFontSizes))]
+  if (!is.null(fontSize)) {
+    if (is.character(fontSize) && fontSize %not_in% names(.latexFontSizes)) fontSize <- as.numeric(fontSize)
+    if (is.numeric(fontSize)) {
+      if (0 < fontSize && fontSize < 1) fontSize <- fontSize * 10
+      fontSize <- names(.latexFontSizes)[which.min(abs(fontSize - .latexFontSizes))]
     }
-    if (size %not_in% names(.latexFontSizes)) error("unrecognized font size: ", size)
-    cat("\\", size, sep = "")
+    if (fontSize %not_in% names(.latexFontSizes)) error("unrecognized font size: ", fontSize)
   }
-  cat("\n")
-  cat("  \\renewcommand{\\arraystretch}{1.25}\n")
-  if (!is.null(col))
-    cat("  \\rowcolors{2}{", col[1L], "}{", if (length(col) > 1L) col[2L] else "", "}\n", sep = "")
-  cat("  \\begin{tabular}{")
+  
+  if (!is.null(alignment) && alignment != "center") error("alignment must be 'center' or NULL")
+  
+  if (0 < width && width <= 1 && style != "Rmd") width <- (8.5 - 2) * width
   
   if (is.null(colWidths)) colWidths <- 1
   colWidths <- rep_len(colWidths, ncol(x))
   ## page width, minus margins, converted into points and subtracted out space between columns
-  colWidths <- round(((8.5 - 2) * 72.27 - (ncol(x) - 1) * 12) * colWidths / sum(colWidths), 3)
-  colWidths <- paste0("p{", colWidths, "pt}") 
-  cat(colWidths, "}\n", sep = "")
+  if (style == "Rmd")
+    colWidths <- 0.8 * width * colWidths / sum(colWidths)
+  else
+    colWidths <- 0.95 * (width * 72.27 - (ncol(x) - 1) * 12) * colWidths / sum(colWidths)
+  colWidths <- round(colWidths, 3)
   
-  cat("    ")
+  indentation <- 0L
+  indentationStr <- ""
+  
+  if (!is.null(alignment)) {
+    cat("\\begin{center}")
+    indentation <- 2L
+    indentationStr <- sprintf("%-*s", indentation, "")
+    if (!is.null(fontSize)) cat("\\", fontSize, sep = "")
+    cat("\n")
+  } else {
+    if (!is.null(fontSize)) cat("\\", fontSize, "\n", sep = "")
+  }
+  if (!is.null(rowHeight))
+    cat(indentationStr, "\\renewcommand{\\arraystretch}{1.25}\n", sep = "")
+  if (!is.null(color))
+    cat(indentationStr, "\\rowcolors{2}{", color[1L], "}{", if (length(color) > 1L) color[2L] else "", "}\n", sep = "")
+  
+  if (style == "Rmd") {
+    cat(indentationStr, "\\begin{longtable}[]{@{}", rep_len("l", ncol(x)), "@{}}\n", sep = "")
+  } else {
+    colWidths <- paste0("p{", colWidths, "pt}")
+    cat(indentationStr, "\\begin{tabular}{")
+    cat(colWidths, "}\n", sep = "")
+  }
+  
+  indentation <- indentation + 2L
+  indentationStr <- sprintf("%-*s", indentation, "")
+  
+  if (style == "Rmd") cat(indentationStr, "\\toprule\n", sep = "")
+  
   if (!is.null(colnames(x))) {
     ## replace dots.in.variables names with spaces
     headerNames <- gsub("([^.])\\.([^.])", "\\1 \\2", colnames(x), perl = TRUE)
-    cat(paste0("\\textbf{", headerNames, "}"), sep = " & ")
-    cat(" \\\\ \\hline\n")
+    if (style == "Rmd")
+      cat(paste0(indentationStr, "\\begin{minipage}[b]{", colWidths, "\\columnwidth}\\raggedright\\strut\n",
+                        indentationStr, headerNames, "\\strut\n\\end{minipage}", collapse = " & "),
+          "\\tabularnewline\n\\midrule\n\\endhead\n", sep = "")
+    else
+      cat(indentationStr, paste0(paste0("\\textbf{", headerNames, "}"), collapse = " & "), " \\\\ \\hline\n", sep = "")
   }
   for (i in seq_len(nrow(x))) {
-    cat("    ")
-    cat(as.character(x[i,]), sep = " & ")
-    cat(" \\\\\n")
+    if (style == "Rmd")
+      cat(paste0(indentationStr, "\\begin{minipage}[t]{", colWidths, "\\columnwidth}\\raggedright\\strut\n",
+                 indentationStr, x[i,], "\\strut\n\\end{minipage}", collapse = " & "),
+          "\\tabularnewline\n", sep = "")
+    else
+      cat(indentationStr, paste0(x[i,], collapse = " & "), " \\\\\n", sep = "")
   }
-  cat("  \\end{tabular}\n")
-  cat("  \\renewcommand{\\arraystretch}{1.0}\n")
-  cat("\\end{center}\n")
+  if (style == "Rmd") cat(indentationStr, "\\bottomrule\n", sep = "")
+  
+  indentation <- indentation - 2L
+  indentationStr <- sprintf("%-*s", indentation, "")
+  
+  if (style == "Rmd")
+    cat(indentationStr, "\\end{longtable}\n", sep = "")
+  else
+    cat(indentationStr, "\\end{tabular}\n", sep = "")
+  
+  if (!is.null(rowHeight))
+    cat(indentationStr, "\\renewcommand{\\arraystretch}{1.0}\n", sep = "")
+  
+  if (!is.null(alignment))
+    cat("\\end{center}\n")
   
   sink()
   close(stringConnection)
@@ -91,17 +138,17 @@ rmdPageBreak <- function() {
 
 nativeFormat <- function(x, type = rmdGetOutputFormat(), ...) { UseMethod("nativeFormat", x) }
 
-nativeFormat.data.frame <- function(x, type = rmdGetOutputFormat(), colWidths = NULL, size = NULL, col = NULL, ...)
+nativeFormat.data.frame <- function(x, type = rmdGetOutputFormat(), style = "classic", alignment = "center", width = 1, colWidths = NULL, rowHeight = NULL, fontSize = NULL, color = NULL, ...)
 {
   x.char <- sapply(x, function(x.i) format(x.i, ...))
   
-  nativeFormat.matrix(x.char, type, colWidths, size, col, ...)
+  nativeFormat.matrix(x.char, type, style, alignment, width, colWidths, rowHeight, fontSize, color, ...)
 }
 
-nativeFormat.matrix <- function(x, type = rmdGetOutputFormat(), colWidths = NULL, size = NULL, col = NULL, ...)
+nativeFormat.matrix <- function(x, type = rmdGetOutputFormat(), style = "classic", alignment = "center", width = 1, colWidths = NULL, rowHeight = NULL, fontSize = NULL, color = NULL, ...)
 {
   if (type == "latex") {
-    result <- .latexFormat.matrix(x, type, colWidths, size, col, ...)
+    result <- .latexFormat.matrix(x, type, style, alignment, width, colWidths, rowHeight, fontSize, color, ...)
   } else {
     warning("native format for types other than latex not yet implemented")
     result <- rmdFormat.matrix(x, colWidths, ...)

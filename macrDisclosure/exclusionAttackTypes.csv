@@ -1,0 +1,5 @@
+"attack type","disclosure when","risk","remedy"
+"exclude prosecuted using court records, perform simple attack on remaining","after exclusion, failure to protect against simple attacks","arrested and released","assume all not released were prosecuted and can be matched; protect released subset when knowledge that arrested is damaging"
+"exclude felony arrests using OBTS, perform simple attack on remaining","after exclusion, failure to protect against simple attacks","arrested for misdemeanor or felony not referred","assume arrests where a complaint was sought for a felony can be matched \emph{from} OBTS; protect complementary subset"
+"\emph{OBTS attack} use felony arrests in MACR to undo suppression in OBTS","OBTS suppressed information, MACR for felonies did not, perform attack on OBTS","OBTS disclosure","assume arrests where a complaint was sought for a felony can be matched \emph{in} OBTS; protect felony arrest subset"
+"exclusion using court records, OBTS","after exclusion, failure to protect against simple attacks","misdemeanor complaint resolved or felony non-prosecution prior to entry into OBTS","none"

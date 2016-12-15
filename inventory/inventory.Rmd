@@ -129,7 +129,7 @@ The MACR data are best used for analyses of general trends, they are less reliab
 
 #### disposition
 
-* While these data appear to be overall reliable, we suggest analysts interested in particular counties examine disposition data by offense and year to ensure that trends appear reasonable. 
+* Whether a complaint was filed tends to be reliable, but whether it was a felony or a misdemeanor complaint tends to be unreliable. We suggest users combine "felony complaint filed" and "misdemeanor complaint filed" into "complaint filed". Users focused on dispositions should first check the data by juridiction and year.
 
 #### ncic_jurisdiction
 

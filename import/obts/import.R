@@ -11,12 +11,17 @@
 # only the superuser needs to be defined, as unprivileged user will be created
 # finally, the superuser can't actually be avoided, since it is needed to COPY files
 # into tables
+
+
+## what we connect to if all else fails
+adminDatabase <- "postgres"
+
 createDatabase <- function(drv, dbname, properties = "")
 {
   credentials <- read.table(file.path("src", "dbCredentials.properties"), sep = "=", strip.white = TRUE, stringsAsFactor = FALSE)
   for (i in seq_len(nrow(credentials))) assign(credentials[i,1L], credentials[i,2L])
   
-  con <- dbConnect(drv, dbname = "postgres",
+  con <- dbConnect(drv, dbname = adminDatabase,
                    host = host, port = port,
                    user = user.su, password = password.su)
   
@@ -61,7 +66,7 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
                   error = function(e) e)
     if (is(connectionResult, "error")) {
       ## let this throw an error if it fails
-      con.su <- dbConnect(drv, dbname = "postgres", host = host, port = port, user = user.su, password = password.su)
+      con.su <- dbConnect(drv, dbname = adminDatabase, host = host, port = port, user = user.su, password = password.su)
       roleString <- paste0(user, " WITH
         LOGIN
         PASSWORD '", password, "' 
@@ -93,10 +98,9 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
 }
 
 dbExistsType <- function(con, name)
-{
   dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM pg_type WHERE typname = '", name, "')"))[[1L]]
-}
 
+## used to reset some stuff for testing purposes
 dropTable <- function(con, tableDef, tableNames)
 {
   ignored <- function(e) invisible(NULL)
@@ -125,6 +129,7 @@ dropTable <- function(con, tableDef, tableNames)
   }
     
   if ("info" %in% tableNames && dbExistsTable(con, "info")) dbExecute(con, "DROP TABLE info")
+  
   invisible(NULL)
 }
 
@@ -224,7 +229,7 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
 
 defineImportFunctions <- function(con, tableDef) {
   dbExecute(con,
-    "CREATE FUNCTION string_to_int(text) RETURNS INT AS $$
+    "CREATE OR REPLACE FUNCTION string_to_int(text) RETURNS INT AS $$
        SELECT CASE
          WHEN trim($1) SIMILAR TO '[0-9]+' THEN CAST(trim($1) AS INT)
          ELSE NULL
@@ -232,7 +237,7 @@ defineImportFunctions <- function(con, tableDef) {
      $$ LANGUAGE SQL")
   
   dbExecute(con,
-    "CREATE FUNCTION is_valid_date(text) RETURNS BOOLEAN LANGUAGE plpgsql IMMUTABLE AS $$
+    "CREATE OR REPLACE FUNCTION is_valid_date(text) RETURNS BOOLEAN LANGUAGE plpgsql IMMUTABLE AS $$
      BEGIN
        RETURN CASE WHEN $1::date IS NULL THEN false ELSE true END;
      exception WHEN others THEN
@@ -240,7 +245,7 @@ defineImportFunctions <- function(con, tableDef) {
      END;$$;")
   
   dbExecute(con,
-    "CREATE FUNCTION string_to_date(text, text) RETURNS date AS $$
+    "CREATE OR REPLACE FUNCTION string_to_date(text, text) RETURNS date AS $$
        SELECT CASE
          WHEN is_valid_date($1) THEN to_date($1, $2) ELSE NULL END;
      $$ LANGUAGE SQL")
@@ -316,8 +321,10 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
 }
 
 deleteDataRowsForEntry <- function(con, entry) {
-  if (entry$id_start != 0L)
-    dbExecute(con, paste0("DELETE FROM obts WHERE id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+  if (entry$id_start != 0L) {
+    dbExecute(con, paste0("DELETE FROM obts_typed WHERE id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+    dbExecute(con, paste0("DELETE FROM obts WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+  }
   
   if (entry$raw_id_start != 0L) {
     rawTableName <- paste0("obts_raw_", entry$format)
@@ -626,4 +633,7 @@ dropImportFunctions(con, tableDef)
 dropTable(con, tableDef, "obts_typed")
 
 dbDisconnect(con)
+
+
+dbUnloadDriver(drv)
 }

@@ -1,9 +1,13 @@
 macr <- read.csv("macr.csv")
 counties <- read.csv("counties.csv")
 
+## replace county codes with names
 macr$county <- counties$name[match(macr$county, counties$code)]
+rm(counties)
 
 macr$disposition <- NULL
+
+## we table using this combined key and then split it out into cells later
 macr$key <- as.factor(with(macr, paste0(year, ":", county, ":", gender, ":", race, ":", age)))
 
 tab <- table(macr[,c("key", "offense_code")], useNA = "ifany")

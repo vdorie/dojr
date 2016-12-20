@@ -1,3 +1,16 @@
+# in order to connect to a database, this requires a properties file in the src folder named
+# 'dbCredentials.properties' with format:
+#
+#   host=host
+#   port=port
+#   user=unprivileged_account_name
+#   password=unprivileged_account_password
+#   user.su=privileged_account_name
+#   password.su=privileged_account_password
+#
+# only the superuser needs to be defined, as unprivileged user will be created
+# finally, the superuser can't actually be avoided, since it is needed to COPY files
+# into tables
 createDatabase <- function(drv, dbname, properties = "")
 {
   credentials <- read.table(file.path("src", "dbCredentials.properties"), sep = "=", strip.white = TRUE, stringsAsFactor = FALSE)
@@ -582,6 +595,7 @@ parseRawColumns <- function(drv, tableDef) {
 
 if (FALSE) {
 ## connects to the database, creates tables and imports raw files
+## change 
 setwd("~/Repositories/dojr/import/obts")
 source("import2.R")
 
@@ -590,6 +604,7 @@ tableDef <- read.csv("tableDef.csv", stringsAsFactor = FALSE)
 require(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
 
+## "input" is the folder with files ACRPTARB00.TXT, ...
 updateInfoTable(drv, tableDef, "input")
 updateRawTables(drv, tableDef, "input")
 splitRawColumns(drv, tableDef)

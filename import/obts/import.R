@@ -594,14 +594,21 @@ parseRawColumns <- function(drv, tableDef) {
 
 
 if (FALSE) {
+
 ## connects to the database, creates tables and imports raw files
-## change 
+## change the path to point to where this file is placed
 setwd("~/Repositories/dojr/import/obts")
-source("import2.R")
+source("import.R")
 
 tableDef <- read.csv("tableDef.csv", stringsAsFactor = FALSE)
 
-require(RPostgreSQL)
+if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
+  repos <- getOption("repos")
+  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
+  install.packages("PostgreSQL", repos, dependencies = TRUE)
+  if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+}
+
 drv <- dbDriver("PostgreSQL")
 
 ## "input" is the folder with files ACRPTARB00.TXT, ...

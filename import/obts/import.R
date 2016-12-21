@@ -12,7 +12,6 @@
 # finally, the superuser can't actually be avoided, since it is needed to COPY files
 # into tables
 
-
 ## what we connect to if all else fails
 adminDatabase <- "postgres"
 
@@ -598,6 +597,45 @@ parseRawColumns <- function(drv, tableDef) {
   invisible(NULL)
 }
 
+checkColumns <- function(con, tableDef)
+{
+  dfMismatch <- function(old, new)
+    data.frame(old = c(names(old), rep("", max(length(new) - length(old), 0))),
+               count.old = c(as.vector(old), rep(NA, max(length(new) - length(old), 0))),
+               new = c(names(new), rep("", max(length(old) - length(new), 0))),
+               count.new = c(as.vector(new), rep(NA, max(length(old) - length(new), 0))))
+  
+  for (i in seq_len(nrow(tableDef))) {
+    if (grepl("serial", tableDef$type[i])) next
+    if (grepl(";", tableDef$type[i])) {
+      ## will fail if multiple categories weren't re-coded
+      old <- sort(table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany"))
+      new <- sort(table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany"))
+      
+      if (length(old) != length(new) || any(sort(old) != sort(new))) {
+        cat("mismatch in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], "):\n", sep = "")
+        print(dfMismatch(old, new))
+      }
+    } else if (grepl("int", tableDef$type[i])) {
+      ## this should only fail if there are more than one codes which fail to parse as an int
+      old <- sort(table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany"))
+      new <- sort(table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany"))
+      
+      if (length(old) != length(new) || any(sort(old) != sort(new))) {
+        cat("mismatch in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], "):\n", sep = "")
+        print(dfMismatch(old, new))
+      }
+    } else if (tableDef$type[i] == "date") {
+      join <- dbGetQuery(con, paste0("SELECT id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
+                                     " FROM obts_typed JOIN obts ON obts_typed.id = obts.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
+      join[[2L]] <- trimws(join[[2L]])
+      tryResult <- tryCatch(badDays <- sapply(join[[2L]], function(x) if (nchar(x) == 6L) (substr(x, 5L, 6L) != "00") else (substr(x, 7L, 8L) != "00")), error = function(e) e)
+      if (is(tryResult, "error")) browser()
+      
+      cat(sum(badDays), " dates failed to parse in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], ") that were not 00\n", sep = "")
+    }
+  }
+}
 
 
 if (FALSE) {

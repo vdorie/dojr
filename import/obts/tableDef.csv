@@ -40,4 +40,4 @@
 "court_disposition_offense","crt_off",149,5,157,5,"int"
 "court_qualifier","crt_qua",154,14,162,14,"character(14)"
 "court_summary_code","crt_sum",168,2,176,2,"smallint"
-"court_edit_error_code","crt_err",170,5,178,5,"int"
+"court_edit_error_code","crt_err",170,5,178,5,"character(5)"

@@ -1,0 +1,24 @@
+# Edit this file to introduce tasks to be run by cron.
+#
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8) and https://www.pantz.org/software/cron/croninfo.html
+#
+
+# email address for cron job maintainer (in case of errors, etc)
+# MAILTO=someone@example.com
+
+# m h  dom mon dow   command
+# run daily crons at midnight
+1 0   *   *   *   /Users/ng/src/data-oasis/scripts/daily.sh
+# run weekly crons at midnight on Sunday
+# 0 0   *   *   0   /Users/ng/src/data-oasis/scripts/weekly.sh

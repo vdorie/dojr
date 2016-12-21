@@ -1,0 +1,6 @@
+.DS_Store
+*.csv
+*.pyc
+*.egg-info
+*__pycache__*
+.env

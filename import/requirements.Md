@@ -57,3 +57,35 @@ In addition to the minimal versions of the data documented above (unchanged and 
 1. A "columnar" view corresponding to the raw files but with the capacity to refer to columns by name and not position (e.g. define `record_id` as a `character(2)` with contents `SUBSTRING(rawRecord, 54, 2)`)
 2. A "clean" view of the typed version with as many corrections to coding errors as possible - to construct this it will likely involve analyzing why the rows of the raw data failed to convert
 3. Anonymized public use files and de-identified scientific use files
+
+# Open Questions
+
+Our solution should accomodate reasonable answers to the following questions:
+
+1. How does CJSC want to access the data?
+2. In what format does CJSC want the data?
+3. Will the virtual server be sufficient for CJSC?
+4. How do we feed things to the web team?
+5. What are the steps to get raw files into the database?
+6. What is the web team's ideal workflow for getting data? How do we make new files available for download?
+7. Do we need notifications about data changes?
+8. What is the scope of people who are directly trying to access the database?
+9. Will the data access for external researchers be handled within DOJ's network or through an external server?
+10. How are we cleaning the data? How does cleaning fit into workflow? Should it run automatically? Should only flag for new data? Do we need cleaning permissions? We need a column in the info table saying that the data is cleaned or awaiting. 
+11. If we want to identify suspect data - do we have a table of columns for data flagging and fixing that refers to unique IDs and columns in the data table itself? 
+12. What are the rules for preserving partial data? For dates, should we split them into their own columns?
+13. Automatically producing a research dataset is easy, but we should check it. 
+14. Automatically updated tables should come with documentation about what was done with the new data
+
+Guiding principles:
+
+1. Preserve the original, raw data as much as possible
+2. Document all data transformations and losses of information
+3. For each potential problem in a dataset, develop a rule for what gets flagged.
+4. Sealed records get a flag. 
+5. 
+
+Do we install a scripting environment on Windows? Should we install Cygwin?
+
+
+

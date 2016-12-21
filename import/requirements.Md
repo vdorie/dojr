@@ -46,7 +46,11 @@ The server needs to be able to:
 
 As most database solutions permit secure connections over encrypted protocols, it would be ideal to be able to connect to the server without taking the additional steps of connecting to a private network. This implies a static IP (or dynamically resolved IP) with an open port.
 
-#  Additional Considerations
+# Data Integrity
+
+Deviations in the structured data from the original should only arise due to known coding errors. In light of this, a post-hoc analysis should be conducted after importation and conversion as a means of quality control, comparing the values of the columns in each.
+
+# Additional Considerations
 
 In addition to the minimal versions of the data documented above (unchanged and structured) as users it would be beneficial to create and store additional views, including:
 

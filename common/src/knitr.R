@@ -158,7 +158,7 @@ nativeFormat.matrix <- function(x, type = rmdGetOutputFormat(), style = "classic
 
 ## appends a ... if the string is too long
 truncateString <- function(x, length)
-  unname(sapply(x, function(x.i) if (nchar(x.i) > length) paste0(substr(x.i, 1L, length - 1L), "...") else x.i))
+  unname(sapply(x, function(x.i) if (nchar(x.i, keepNA = FALSE) > length) paste0(substr(x.i, 1L, length - 1L), "...") else x.i))
 
 rmdFormat <- function(x, ...) { UseMethod("rmdFormat", x) }
 
@@ -167,7 +167,7 @@ rmdFormat.data.frame <- function(x, colWidths = NULL, maxRows = 25L, ...)
   x.char <- sapply(x, function(x.i) format(x.i, ...))
   if (nrow(x) > maxRows)
     x.char[maxRows,] <- "..."
-  printLimit <- if (maxRows < nrow(x)) maxRowsL else nrow(x)
+  printLimit <- if (maxRows < nrow(x)) maxRows else nrow(x)
   
   rmdFormat.matrix(x.char[seq.int(1L, printLimit),], colWidths, ...)
 }

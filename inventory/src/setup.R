@@ -55,8 +55,11 @@ source(file.path(commonSrcPath, "util.R"))
 ## inventory specific
 srcFiles <- list.files(srcPath, "*.R", full.names = TRUE)
 srcFiles <- srcFiles[grepl("src/(?!setup).*\\.R", srcFiles, perl = TRUE)]
-for (srcFile in srcFiles) source(srcFile, local = TRUE)
-rm(srcFiles, srcFiles)
+if (length(srcFiles) > 0L) {
+  for (srcFile in srcFiles) source(srcFile, local = TRUE)
+  rm(srcFile)
+}
+rm(srcFiles)
 
 ## data-set specific
 if (file.exists(file.path(dataSrcPath, "init.R"))) source(file.path(dataSrcPath, "init.R"))

@@ -1,0 +1,36 @@
+# Recommendations for Data Use
+
+The MACR data are best used for analyses of general trends, they are less reliable for point estimates of numbers of arrests or numbers of people arrested. It is important to keep in mind that these data are heavily conditioned by individual, agency, and county variation in propensity to arrest, how offenses are categorized, and how well data are captured and reported to the CA DOJ. In using these data and preparing them for release, we have come across several anomalies and inconsistencies. They may produce results that are artefacts of data collection and reporting processes. To help researchers avoid potential pitfalls, we summarize our recommendations about data use below.
+
+#### age
+
+* Very young and very old ages are suspect. We suggest dropping those 5 or younger and 89 or older. 
+
+#### bcs_offense_code
+
+* Arrest numbers for certain offenses may be more reliable than others. Different jurisdictions (even different law enforcement officers within the same jurisdiction) may report the same type of arrest using different codes.  Generally, it is probably safe to assume that reporting of arrests for more serious offenses is more accurate than it is for arrests of less serious offenses. In some areas with high rates of violent crimes, police may be less willing to invest the time required to make an arrest for a non-violent misdemeanor. In other words, some arrests, particularly for less serious offenses, may be missing. 
+
+#### bcs_summary_offense_code
+
+* Arrest numbers for certain offenses may be more reliable than others. Some arrests, particularly for less serious offenses, may be missing. Different jurisdictions may report the same type of arrest using different codes. 
+
+#### county
+
+* County totals may be affected by reporting irregularities, such as large drops in reported arrests in one jurisdiction. See the Variation in Number of Arrests section for an explanation and use the VarArrestsFlag indicator variable to keep track of jurisdictions or counties that may have been affected by reporting problems in a particular year. 
+
+#### disposition
+
+* Whether a complaint was filed tends to be reliable, but whether it was a felony or a misdemeanor complaint tends to be unreliable. We suggest users combine "felony complaint filed" and "misdemeanor complaint filed" into "complaint filed". Users focused on dispositions should first check the data by juridiction and year.
+
+#### ncic_jurisdiction
+
+* Some jurisdictions have implausible data for certain years, such as a drop from a few hundred or a few thousand arrests to zero. See the Variation in Number of Arrests section for an explanation and use the VarArrestsFlag indicator variable to keep track of jurisdictions or counties that may have been affected by reporting problems in a particular year. Note that jurisdictions that report zero arrests in one year will not have any records in the data - they can be found by looking at trend data or at the List of Missing Jurisdiction-Years in the Variation in Number of Arrests section. 
+
+#### race_or_ethnicity
+
+* More specific codes for Asian/Pacific Islander were added in 1991. Researchers may want to map these to a more general category. 
+* Post 2012, San Francisco does not count arrests of Hispanics separately. Researchers may want to treat San Francisco separately in addressing questions about race or ethnicity. 
+
+#### status_type
+
+* Booking data appears to be unreliable overall. We recommend not using it. 

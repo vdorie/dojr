@@ -1,51 +1,103 @@
-name,display_name,short_description,description,contains_pii,question_text,value_labels,notes
-id,database_id,database id,,0,,,
-cii_record_type,cii_record_type,CII record type,,0,,,
-cii_number,cii_number,CII number,,1,,,
-pdr_record_id,pdr_record_id,record id,,0,,,
-name,name,name,,1,,,
-birth_year,birth_year,birth year,,0,,,
-birth_month,birth_month,birth month,,0,,,
-birth_day,birth_day,birth day,,0,,,
-gender,gender,gender,,0,,,
-race,race,race,,0,,,
-deceased,deceased,deceased,,0,,,
-arrest_record_id,arrest_record_id,record id,,0,,,
-arrest_bypass,arrest_bypass,bypass,,0,,,
-arrest_converted_data,arrest_converted_data,converted data,,0,,,
-arrest_event_year,arrest_event_year,arrest event year,,0,,,
-arrest_event_month,arrest_event_month,arrest event month,,0,,,
-arrest_event_day,arrest_event_day,arrest event day,,0,,,
-arresting_agency,arresting_agency,arresting agency,,0,,,
-local_file_number,local_file_number,local file number,,1,,,
-arrest_charge_type,arrest_charge_type,arrest charge type,,0,,,
-multiple_arrest_charges,multiple_arrest_charges,multiple arrest charges,,0,,,
-arrest_disposition_year,arrest_disposition_year,arrest disposition year,,0,,,
-arrest_disposition_month,arrest_disposition_month,arrest disposition month,,0,,,
-arrest_disposition_day,arrest_disposition_day,arrest disposition day,,0,,,
-arrest_disposition_type,arrest_disposition_type,arrest disposition type,,0,,,
-arrest_multiple_dispositions,arrest_multiple_dispositions,multiple dispositions,,0,,,
-prior_record_code,prior_record_code,prior record code,,0,,,
-arrest_offense,arrest_offense,arrest offense,,0,,,
-arrest_qualifier,arrest_qualifier,arrest qualifier,,0,,,
-arrest_summary_code,arrest_summary_code,arrest summary code,,0,,,
-arrest_edit_error_code,arrest_edit_error_code,edit error code,,0,,,
-court_record_id,court_record_id,record id,,0,,,
-court_bypass,court_bypass,bypass,,0,,,
-court_converted_data,court_converted_data,converted data,,0,,,
-court_event_year,court_event_year,court event year,,0,,,
-court_event_month,court_event_month,court event month,,0,,,
-court_event_day,court_event_day,court event day,,0,,,
-court_judicial_district,court_judicial_district,court judicial district,,0,,,
-court_number,court_number,court number,,1,,,
-court_disposition_type,court_disposition_type,court disposition type,,0,,,
-court_multiple_dispositions,court_multiple_dispositions,court multiple dispositions,,0,,,
-court_proceeding_type,court_proceeding_type,court proceeding type,,0,,,
-sentence_type,sentence_type,sentence type,,0,,,
-sentence,sentence,sentence,,0,,,
-court_charge_type,court_charge_type,court charge type,,0,,,
-court_multiple_disposition_charges,court_multiple_disposition_charges,multiple disposition charges,,0,,,
-court_disposition_offense,court_disposition_offense,disposition offense,,0,,,
-court_qualifier,court_qualifier,qualifer,,0,,,
-court_summary_code,court_summary_code,summary code,,0,,,
-court_edit_error_code,court_edit_error_code,edit error code,,0,,,
+OBTS manual field name,preferred name,display_name,short_description,description,contains_pii,question_text,value_labels,notes
+cii_record_type,cii_record_type,CII record type,CII record type,CII record type,0,,"1 - automated
+2- manual
+3 - OBN (no CII record on file)
+4 - Hybrid (began 1993)",
+cii_number,cii_number,CII number,criminal identification and information number,statewide unique identification number for an individual,1,"Enter the unique state identification number, referred to as the “CII#”, assigned to the subject’s criminal
+history record. If no CII number is available or known to the agency, leave the area blank and continue
+processing the form.",,
+pdr_record_id,pdr_record_id,PDR record ID,personal descriptor record ID,personal descriptor record ID,0,,"00 - new offender (no arrest before 8/23/82)
+01 - current offender (arrested before 8/23/82)
+02 - unknown
+09 - delete CII",DOES THIS DATA GO PAST 1980s?
+name,name,name,individual's name,individual's name,1,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
+date_of_birth,birth_day,birth day,date of birth,day of the month the individual was born,1,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
+date_of_birth,birth_month,birth month,date of birth,month the individual was born,1,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
+date_of_birth,birth_year,birth year,date of birth,year the individual was born,1,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
+gender,gender,gender,individual's gender,individual's gender,0,"Enter the appropriate sex code abbreviation for the subject.
+M = Male
+F = Female
+X = Unknown","M - Male
+F - Female
+X - Unknown",
+race/ethnic_group,race_or_ethnicity,race or ethnicity,individual's race or ethnicity,arrested individual's race or ethnicity,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,SEE race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
+deceased_indicator,deceased,deceased,whether individual is deceased,whether individual is deceased,0,,"0 - not deceased or no information
+1 - deceased
+2 - deceased (homicide)",
+record_ID,last_step,last reported step,last reported step in crim justice process,last reported step in crim justice process,0,,"10 - court disposition
+11 - prosecutor
+12 - police",
+date_of_event,arrest_date,arrest date,date of arrest,date of arrest,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,"EG: MAYBE WE JUST PROVIDE YEAR HERE, BUT INTERNALLY USE THE FULL DATE AS DAY 0 IN THE PROCESS"
+arresting_agency,arresting_agency,arresting agency,arresting or booking agency,arresting or booking agency,0,"Enter the complete name of the agency that arrested, cited, or requested a complaint be filed against the subject. Abbreviates for Type of Agency are acceptable; however, the county or city name should be spelled out followed by SO, PD, etc. ","abbreviations for agency type:
+PD Police Department
+SO Sheriff’s Office (Department)
+CHP California Highway Patrol
+MR Marshal
+INS United States Immigration and Naturalization Service
+FBI Federal Bureau of Investigation
+DA District Attorney
+CA City Attorney
+NTF Narcotic Task Force",may actually be booking and not arresting agency
+type_of_charge,arrest_offense_level,arrest offense level,arrest offense level,arrest offense level,0,,"F - felony
+M - misdemeanor
+I - infraction
+X - unknown",
+multiple_arrest_charges,number_arrest_charges,number arrest charges,number of arrest charges,number of arrest charges,0,, 1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one,
+date_of_arrest_disposition,arrest_disposition_date,date of arrest disposition,number of days after arrest for disposition,"number of days after arrest for law enforcement agency disposition (e.g., release, file complaint with DA, transfer to other agency)",0,,,EG: MAYBE WE SHOULD CALCULATE THIS AS NUMBER OF DAYS AFTER DATE OF ARREEST
+type_of_disposition,release_or_DTP_rationale,release or decline to prosecute rationale,release or decline to prosecute rationale,release or decline to prosecute rationale,0,,see dispositions.csv table,PROSECUTOR REJECTS ONLY FINAL DISPO IF COURT RID IS BLANK
+multiple_arrest_dispositions,number_arrest_dispositions,number of arrest dispositions,number of arrest dispositions,number of arrest dispositions,0,," 0 - subject did not receive all final dispositions at arrest level
+1-9 where 9 is 9+; 
+prior to 1986 only used: 1 - one offense and 2 - more than one",
+prior_record_code,prior_record,prior prison commitments,number of prior prison commitments,number of prior prison commitments,0,,"0 - no prior record
+1 - misc prior record
+7 - one prior prison commitment
+8 - two prior prison commitments
+9 - three or more prior prison commitments
+blank - pre-1982 means lengthy record",
+arrest_offense,arrest_offense,arrest offense,arrest offense,offense for which individual was arrested,0,,SEE CJIS CODE TABLE (to be added),
+qualifier,arrest_offense_qualifier,arrest offense qualifier,arrest offense qualifier,arrest offense qualifier,0,,SEE OBTS MANUAL APPX F,
+summary_code,arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense,0,,see bcs_offense_codes_variables.csv,
+court_record_ID,final_court,final court,court of final disposition,court of final disposition,0,,"20 - final disposition in superior court
+21 - final disposition in lower court",
+date_of_event,court_disposition_date,court disposition date,last date of court proceedings,last date of court proceedings,0,,,EG: MAYBE WE SHOULD CALCULATE THIS AS NUMBER OF DAYS AFTER DATE OF ARREEST
+judicial_district,judicial district,judicial district,judicial district,judicial district,0,,SEE judicial_districts.csv table (TO BE CREATED),
+type_of_disposition,court_disposition,court disposition,outcome of court trial,outcome of court trial,0,,"21 - convicted
+22 - acquitted
+23 - not guilty, insane
+24 - certified to juvenile court
+25 - defendant deceased
+26 - dismissed
+27 - diversion dismissed (begins 1988)",
+multiple_dispositions,number_dispositions,number of court dispositions,number of court dispositions,number of court dispositions,0,,"Pre 1986: 
+1 - one disposition
+2 - more than one
+post 1985: 
+1 - only one 
+2 - 8 - two to eight
+9 - 9+ dispositions",
+type_of_sentence,sentence,sentence,court sentence,court sentence,0,,"01 - death
+02 - prison
+03 - CYA
+04 - CRC
+05 - MDSO
+06 - probation and jail
+07 - probation
+08 - probation
+09 - fine
+10 - other: sentence suspended; work program; volunteer program; no sentence
+11 - prison term suspended (post 1984)",
+type_of_charge,conviction_offense_level,conviction offense level,offense level of conviction crime,offense level of conviction crime,0,,"F - felony
+M - misdemeanor
+I - infraction
+N - place holder codes
+X - unknown level of arrest",
+multiple_disposition_charges,number_court_disposition_charges,number of disposition charges,number of disposition charges,number of disposition charges,0,,"Pre 1986: 
+1 - one offense
+2 - more than one
+post 1985: 
+1 - only one 
+2 - 8 - two to eight
+9 - 9+ offenses",IS THIS ALWAYS NUMBER OF CONVICTION CHARGES? OR ARE THERE CHARGES ASSOCIATED WITH NON-CONVICTION DISPOSITIONS?
+disposition offense,conviction_offense,conviction offense,conviction offense,conviction offense,0,,5-digit CJIS CODE TABLE,
+qualifiers,conviction_offense_qualifiers,conviction offense qualifiers,conviction offense qualifiers,conviction offense qualifiers,0,,SEE qualifier_codes.csv (TO BE ADDED FROM APPX F OF OBTS MANUAL OR ELSEWHERE),
+summary_code,conviction_summary_code,convicted offense summary code,convicted offense summary code,convicted offense summary code,0,,see bcs_offense_codes_variables.csv table,

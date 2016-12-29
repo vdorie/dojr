@@ -165,11 +165,11 @@ rmdFormat <- function(x, ...) { UseMethod("rmdFormat", x) }
 rmdFormat.data.frame <- function(x, colWidths = NULL, maxRows = 25L, ...)
 {
   x.char <- sapply(x, function(x.i) format(x.i, ...))
-  if (nrow(x) > maxRows)
+  if (!is.matrix(x.char)) x.char <- t(as.matrix(x.char))
+  if (!is.na(maxRows) && nrow(x) > maxRows)
     x.char[maxRows,] <- "..."
-  printLimit <- if (maxRows < nrow(x)) maxRows else nrow(x)
-  
-  rmdFormat.matrix(x.char[seq.int(1L, printLimit),], colWidths, ...)
+  printLimit <- if (!is.na(maxRows) && maxRows < nrow(x)) maxRows else nrow(x)
+  rmdFormat.matrix(x.char[seq.int(1L, printLimit),, drop = FALSE], colWidths, ...)
 }
 
 rmdFormat.matrix <- function(x, colWidths = NULL, ...)
@@ -211,6 +211,7 @@ rmdFormat.matrix <- function(x, colWidths = NULL, ...)
   sink(stringConnection)
   
   x.char  <- sapply(seq_len(ncol(x)), function(col) format(x[,col], ...))
+  if (!is.matrix(x.char)) x.char <- t(as.matrix(x.char))
   maxLengths <- sapply(seq_len(ncol(x)), function(col) max(nchar(x.char[1L, col]), nchar(colnames(x))[col]))
   colnames(x.char) <- colnames(x)
   rownames(x.char) <- NULL

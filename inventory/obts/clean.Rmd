@@ -1,0 +1,329 @@
+```{r 'clean_setup', echo = FALSE}
+cleanDataFile <- file.path("..", dataPath, tables$file[match(mainTable, tables$name)])
+cleanPerformed <- file.exists(cleanDataFile)
+
+if (!cleanPerformed)
+  obts.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
+```
+
+`r rmdPageBreak()`
+
+# Data Cleaning
+
+## Court Event Date
+
+```{r 'clean_court_event_date', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "clean_court_event_date.txt")
+if (!cleanPerformed || !file.exists(txtFile)) {
+  minCourtEventYear <- min(obts.clean$court_event_year)
+  maxCourtEventYear <- max(obts.clean$court_event_year)
+  
+  updateRows <- obts.clean$court_event_year < 100L
+  obts.clean$court_event_year[updateRows] <- obts.clean$court_event_year[updateRows] + 1900L
+  rm(updateRows)
+  
+  obts.clean$court_event_date <- with(obts.clean, as.Date(paste(court_event_year, court_event_month, court_event_day, sep = "-"), format = "%F"))
+  
+  invalidDates <- rmdFormat(obts.clean[is.na(obts.clean$court_event_date),c("court_event_year", "court_event_month", "court_event_day", "court_event_date")])
+  numInvalidDates <- sum(is.na(obts.clean$court_event_date))
+  
+  writeLines(c(as.character(c(minCourtEventYear, maxCourtEventYear, numInvalidDates)), invalidDates),
+             txtFile)
+} else {
+  lines <- readLines(txtFile)
+  minCourtEventYear <- as.integer(lines[1L])
+  maxCourtEventYear <- as.integer(lines[2L])
+  numInvalidDates   <- as.integer(lines[3L])
+  invalidDates <- lines[-seq_len(3L)]
+  rm(lines)
+}
+rm(txtFile)
+```
+
+Most of the single-digit birth are from prior to 1992, when years were stored as only 2 digits. For reasons unknown, 1995 is also in a 2- digit year format. The court event year match that of the corresponding file, so that they range from `r minCourtEventYear` to `r maxCourtEventYear`, and the missing digits can be safely added. `r numInvalidDates` are unable to be parsed into a correct date:
+
+`r paste0(invalidDates, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(minCourtEventYear, maxCourtEventYear, numInvalidDates, invalidDates)
+```
+
+## Arrest Event Date
+
+```{r 'clean_arrest_event_date', echo = FALSE, results = "asis"}
+imgFile <- file.path("..", imgPath, "clean_arrest_event_year.png")
+txtFile <- file.path("..", txtPath, "clean_arrest_event_date.txt")
+if (!cleanPerformed || !file.exists(txtFile) || !file.exists(imgFile)) {
+  png(imgFile, 6, 3, units = "in", res = 216L)
+  
+  par(mfrow = c(1, 2))
+  
+  plotRows <- with(obts.clean, court_event_year %in% c(seq.int(1982L, 1991L), 1995L) & arrest_event_year >= 70L)
+  
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$arrest_event_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 2 Year Format", xlab = "court event year", ylab = "arrest event year")
+  abline(-1900, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  
+  plotRows <- with(obts.clean, court_event_year %not_in% c(seq.int(1982L, 1991L), 1995L))
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$arrest_event_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 4 Year Format", xlab = "court event year", ylab = "arrest event year")
+  abline(0, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  dev.off()
+  
+  rm(plotRows, jitter, xVals, yVals)
+  
+  numOutOfRange <- with(obts.clean, sum(arrest_event_year < 70L | (arrest_event_year >= 100L & arrest_event_year < 1970L)))
+  
+  
+  
+  updateRows <- obts.clean$arrest_event_year <= 100L
+  obts.clean$arrest_event_year[updateRows] <- obts.clean$arrest_event_year[updateRows] + 1900L
+  rm(updateRows)
+  
+  obts.clean$arrest_event_date <- with(obts.clean, as.Date(paste(arrest_event_year, arrest_event_month, arrest_event_day, sep = "-"), format = "%F"))
+  
+  invalidDates <- rmdFormat(obts.clean[is.na(obts.clean$arrest_event_date), c("court_event_date", "arrest_event_year", "arrest_event_month", "arrest_event_day", "arrest_event_date")])
+  numInvalidDates <- sum(is.na(obts.clean$arrest_event_date))
+  
+  writeLines(c(as.character(c(numOutOfRange, numInvalidDates)), invalidDates),
+            txtFile)
+} else {
+  lines <- readLines(txtFile)
+  numOutOfRange <- as.integer(lines[1L])
+  numInvalidDates <- as.integer(lines[2L])
+  invalidDates <- lines[-seq_len(2L)]
+  rm(lines)
+}
+rm(txtFile, imgFile)
+```
+
+Arrest event codings appear to be more inconsistent. For all but 1982, arrest years go back no further than 1979. `r numOutOfRange` `r paste0("record", if (numOutOfRange != 1L) "s" else "", " lie", if (numOutOfRange != 1L) "s" else "")` outside of this range. Nevertheless, it appears as if the two-year coded years can safely be converted to four-year codes. After doing so, `r numInvalidDates` `r paste0("record", if (numInvalidDates != 1L) "s" else "")` fail to parse.
+
+`r rmdImageInline(file.path(imgPath, "clean_arrest_event_year.png"))`
+
+`r paste0(invalidDates, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(numOutOfRange, numInvalidDates, invalidDates)
+```
+
+## Birth Date
+
+```{r 'clean_birth_date_1', echo = FALSE, results = "asis"}
+imgFile <- file.path("..", imgPath, "clean_birth_year.png")
+txtFile <- file.path("..", txtPath, "clean_birth_date_1.txt")
+if (!cleanPerformed || !file.exists(txtFile) || !file.exists(imgFile)) {
+  png(imgFile, 6, 3, units = "in", res = 216L)
+  
+  par(mfrow = c(1, 2))
+  
+  plotRows <- with(obts.clean, court_event_year %in% c(seq.int(1982L, 1991L), 1995L))
+  
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$birth_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 2 Year Format", xlab = "court event year", ylab = "birth year")
+  abline(-1900, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  
+  plotRows <- with(obts.clean, court_event_year %not_in% c(seq.int(1982L, 1991L), 1995L))
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$birth_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 4 Year Format", xlab = "court event year", ylab = "birth year")
+  abline(0, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  dev.off()
+  
+  centuryRecords <- table(subset(obts.clean,
+                                 court_event_year <= 1988L & (birth_year >= 95L | birth_year <= 4L),
+                                 c("birth_year", "court_event_year")))[c(5L:1L, 10L:6L),]
+  
+  nearRecords <- table(subset(obts.clean,
+                              abs((court_event_year - 1900L) - birth_year) <= 2L | abs(court_event_year - birth_year) <= 2L,
+                              c("birth_year", "court_event_year")))
+  
+  
+  updateRows <- obts.clean$birth_year <= 100L
+  
+  obts.clean$birth_year[updateRows] <-
+    with(subset(obts.clean, updateRows, c("birth_year", "court_event_year")),
+         birth_year + ifelse(birth_year - (court_event_year - 1900L) > 3L, 1800L, 1900L))
+  
+  rm(updateRows)
+  
+  writeLines(c(rmdFormat(centuryRecords), rmdFormat(nearRecords)), txtFile)
+  
+  rm(plotRows, jitter, xVals, yVals)
+} else {
+  lines <- readLines(txtFile)
+  centuryRecords <- lines[seq_len(24L)]
+  nearRecords    <- lines[seq.int(25L, 50L)]
+  
+  rm(lines)
+}
+rm(txtFile, imgFile)
+```
+
+The coding for birth years has numerous anomalies. 1982 has an abnormally large number of birth years equal to 99, while other years have clusters at 0.
+
+`r rmdImageInline(file.path(imgPath, "clean_birth_year.png"))`
+
+`r paste0(centuryRecords, collapse = "\n")`
+
+In addition, there are a number of records where the birth-year is extraordinarily close to the court-event-year, including in the near-future.
+
+`r paste0(nearRecords, collapse = "\n")`
+
+To impute the century for the birth-year, we follow the rule:
+
+1. If the listed 2-digit birth year is greater than 3 years from the court-event-year minus 1900, then we assume that it is in the 1800s.
+2. Otherwise, we assume that it is in the 1900s.
+
+This scheme allows the birth years that are close to the court years to persist, as that trend exists in the data sets for 4-digit years. These records bear further investigation.
+
+```{r, echo = FALSE}
+rm(centuryRecords, nearRecords)
+```
+
+```{r 'clean_birth_date_2', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "clean_birth_date_2.txt")
+if (!cleanPerformed || !file.exists(txtFile)) {
+  obts.clean$birth_date <- with(obts.clean, as.Date(paste(birth_year, birth_month, birth_day, sep = "-"), format = "%F"))
+  
+  obts.clean$birth_month[obts.clean$birth_month == 0L] <- NA_integer_
+  obts.clean$birth_day[obts.clean$birth_day == 0L] <- NA_integer_
+  
+  numZeroes <- with(obts.clean, sum(is.na(birth_month) | is.na(birth_day)))
+  
+  invalidDates <- subset(obts.clean, is.na(birth_date) & !is.na(birth_month) & !is.na(birth_day),
+                         c("court_event_date", "birth_year", "birth_month", "birth_day"))
+  invalidDates <- rmdFormat(invalidDates, maxRows = 5L)
+  
+  updateRows <- with(obts.clean, birth_year == 1899L & birth_month == 99L & birth_day == 99L)
+  obts.clean$birth_year[updateRows]  <- NA_integer_
+  obts.clean$birth_month[updateRows] <- NA_integer_
+  obts.clean$birth_day[updateRows]   <- NA_integer_
+  
+  writeLines(c(as.character(numZeroes), invalidDates), txtFile)
+} else {
+  lines <- readLines(txtFile)
+  numZeroes <- as.integer(lines[1L])
+  invalidDates <- lines[-1L]
+}
+rm(txtFile)
+```
+
+After making this correction, a number of birth dates still cannot be successfully parsed, largely owing to a number of records that have either the birth month or birth day recorded as 0 (`r numZeroes` rows). The remaining rows all seem to be coded as 99/99/99 and are in the court year 1982, indicating a particular kind of not-available.
+
+`r paste0(invalidDates, collapse = "\n")`
+
+## Arrest Disposition Date
+
+```{r 'clean_arrest_disposition_date', echo = FALSE, results = "asis"}
+imgFile <- file.path("..", imgPath, "clean_arrest_disposition_year.png")
+txtFile <- file.path("..", txtPath, "clean_arrest_disposition_year.txt")
+if (!cleanPerformed || !file.exists(imgFile) || !file.exists(txtFile)) {
+  png(imgFile, 6, 3, units = "in", res = 216L)
+  
+  par(mfrow = c(1, 2))
+  
+  plotRows <- with(obts.clean, court_event_year %in% c(seq.int(1982L, 1991L), 1995L) & !is.na(arrest_disposition_year))
+  
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$arrest_disposition_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 2 Year Format", xlab = "court event year", ylab = "arrest disposition year")
+  abline(-1900, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  plotRows <- with(obts.clean, court_event_year %not_in% c(seq.int(1982L, 1991L), 1995L) & !is.na(arrest_disposition_year))
+  jitter <- matrix(rnorm(sum(plotRows) * 2, 0, 0.05), sum(plotRows))
+  
+  xVals <- obts.clean$court_event_year[plotRows] + jitter[,1L]
+  yVals <- obts.clean$arrest_disposition_year[plotRows] + jitter[,2L]
+  
+  plot(NULL, type = "n", xlim = range(xVals), ylim = range(yVals),
+       main = "Scatterplot 4 Year Format", xlab = "court event year", ylab = "arrest disposition year")
+  abline(0, 1, col = "gray")
+  points(xVals, yVals, pch = 20, col = rgb(0, 0, 0, 0.25))
+  
+  dev.off()
+  
+  rm(plotRows, jitter, xVals, yVals)
+  
+  updateRows <- with(obts.clean, arrest_disposition_year < 100L & !is.na(arrest_disposition_year))
+  obts.clean$arrest_disposition_year[updateRows] <- obts.clean$arrest_disposition_year[updateRows] + 1900L
+  rm(updateRows)
+  
+  obts.clean$arrest_disposition_date <- with(obts.clean, as.Date(paste(arrest_disposition_year, arrest_disposition_month, arrest_disposition_day, sep = "-"), format = "%F"))
+  
+  invalidRows <- with(obts.clean, is.na(arrest_disposition_date) & !is.na(arrest_disposition_year))
+  invalidDates <- subset(obts.clean, invalidRows, c("court_event_year", "court_event_month", "court_event_day", "arrest_disposition_year", "arrest_disposition_month", "arrest_disposition_day"))
+  names(invalidDates) <- sub("court", "crt", names(invalidDates))
+  names(invalidDates) <- sub("arrest", "arr", names(invalidDates))
+  names(invalidDates) <- sub("event", "evt", names(invalidDates))
+  names(invalidDates) <- sub("disposition", "dsp", names(invalidDates))
+  names(invalidDates) <- sub("year", "yr", names(invalidDates))
+  names(invalidDates) <- sub("month", "mo", names(invalidDates))
+  names(invalidDates) <- sub("day", "dy", names(invalidDates))
+  invalidDates <- rmdFormat(invalidDates)
+  numInvalidDates <- sum(invalidRows)
+  rm(invalidRows)
+  
+  writeLines(c(as.character(numInvalidDates), invalidDates),
+            txtFile)
+} else {
+  lines <- readLines(txtFile)
+  numInvalidDates <- as.integer(lines[1L])
+  invalidDates <- lines[-1L]
+  rm(lines)
+}
+rm(txtFile, imgFile)
+```
+
+The disposition dates can all safely be assumed to be in the same century as the court event, as it seems rare that the disposition date happens significantly after. Excluding those that are naturally missing, `r numInvalidDates` dates cannot be parsed.
+
+`r rmdImageInline(file.path(imgPath, "clean_arrest_disposition_year.png"))`
+
+`r paste0(invalidDates, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(numInvalidDates, invalidDates)
+```
+
+```{r 'save_result', echo = FALSE}
+if (!cleanPerformed) {
+  obts <- obts.clean
+  save(obts, file = cleanDataFile)
+  
+  rm(obts.clean, cleanDataFile)
+  invisible(gc(FALSE))
+}
+rm(cleanPerformed)
+```

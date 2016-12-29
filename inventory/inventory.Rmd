@@ -64,7 +64,7 @@ for (i in seq_len(nrow(tables))) {
   
   variablesSummary <- summarizeVariables(tables$name[i])
   if (length(variablesSummary) != 1L || variablesSummary != "")
-    cat("#### Variable Summary\n\n", rmdFormat(variablesSummary), sep = "\n")
+    cat("#### Variable Summary\n\n", rmdFormat(variablesSummary, maxRows = NA), "\n", sep = "\n")
 }
 rm(i, firstFive, variablesSummary)
 ```
@@ -79,10 +79,14 @@ rm(i, firstFive, variablesSummary)
 variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv")),
                       stringsAsFactors = FALSE)
 pageBreak <- rmdPageBreak()
+firstVariable <- TRUE
 for (i in seq_len(nrow(variables))) {
-  if (i > 1L) cat(pageBreak)
-  
   variable <- variables[i,]
+  if (is.numeric(variable[["skip"]]) && variable[["skip"]] == 1L) next
+  
+  if (!firstVariable) cat(pageBreak)
+  else firstVariable <- FALSE
+  
   cat("### ", variable[["name"]], "\n\n", sep = "")
   
   if (is.character(variable[["description"]]) && !is.na(variable[["description"]]) && variable[["description"]] != "")
@@ -104,7 +108,7 @@ for (i in seq_len(nrow(variables))) {
     cat("\n")
   }
 }
-rm(i, pageBreak, variable, variableSummary)
+rm(i, pageBreak, firstVariable, variable, variableSummary)
 ```
 
 ```{r 'recommendations_include', child = if (file.exists(recommendationsFile <- file.path(datasetDir, "recommendations.Rmd"))) recommendationsFile else NULL }
@@ -112,8 +116,6 @@ rm(i, pageBreak, variable, variableSummary)
 
 ```{r 'clean_include', child = if (file.exists(cleanFile <- file.path(datasetDir, "clean.Rmd"))) cleanFile else NULL }
 ```
-
-`r if (exists("cleanFile")) { cat("wtf"); rm(cleanFile) }`
 
 ```{r 'analysis_include', child = if (file.exists(analysisFile <- file.path(datasetDir, "analysis.Rmd"))) analysisFile else NULL}
 ```

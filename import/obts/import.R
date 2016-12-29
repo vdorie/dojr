@@ -721,9 +721,15 @@ con <- connectToDatabase(drv, "obts")
 
 obts <- dbGetQuery("SELECT * FROM obts_typed")
 
-for (name in c("cii_record_type", "pdr_record_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence", "court_charge_type"))
-  obts[[name]] <- as.factor(obts[[name]])
+## enum types in obts
+for (variableName in c("cii_record_type", "pdr_record_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence", "court_charge_type"))
+  obts[[variableName]] <- as.factor(obts[[variableName]])
 
-save(obts, file = "../../common/data/obts.Rdata")
+## integer types that are really categorical
+for (variableName in c("arresting_agency", "multiple_arrest_charges", "arrest_disposition_type", "arrest_multiple_dispositions", "arrest_offense", "arrest_summary_code", "court_converted_data", "court_judicial_district", "court_multiple_dispositions", "sentence_type", "court_multiple_disposition_charges", "court_disposition_offense", "court_qualifier", "court_summary_code"))
+  obts[[variableName]] <- as.factor(obts[[variableName]])
+
+
+save(obts, file = file.path("..", "..", "common", "data", "obts.Rdata"))
 
 }

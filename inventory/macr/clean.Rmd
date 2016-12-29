@@ -6,6 +6,8 @@ if (!cleanPerformed)
   macr.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
 ```
 
+`r rmdPageBreak()`
+
 # Data Cleaning
 
 ## Deleted Records

@@ -12,6 +12,7 @@
 # finally, the superuser can't actually be avoided, since it is needed to COPY files
 # into tables
 
+
 ## what we connect to if all else fails
 adminDatabase <- "postgres"
 
@@ -23,7 +24,6 @@ createDatabase <- function(drv, dbname, properties = "")
   con <- dbConnect(drv, dbname = adminDatabase,
                    host = host, port = port,
                    user = user.su, password = password.su)
-  
   connectionResult <- tryCatch(dbExecute(con, paste0("CREATE DATABASE ", dbname, if (properties != "") paste0(" WITH ", properties) else "")), error = function(e) e)
   dbDisconnect(con)
   
@@ -42,42 +42,42 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
     ## if this fails, that likely means that the database does not exist
     connectionResult <-
       tryCatch(con <-
-        dbConnect(drv, dbname = dbname,
-                  host = host, port = port,
-                  user = user.su, password = password.su),
-                  error = function(e) e)
+                 dbConnect(drv, dbname = dbname,
+                           host = host, port = port,
+                           user = user.su, password = password.su),
+               error = function(e) e)
     if (is(connectionResult, "error")) {
       createDatabase(drv, dbname, dbProperties)
       connectionResult <-
         tryCatch(con <-
-          dbConnect(drv, dbname = dbname,
-                    host = host, port = port,
-                    user = user.su, password = password.su),
-                    error = function(e) e)
+                   dbConnect(drv, dbname = dbname,
+                             host = host, port = port,
+                             user = user.su, password = password.su),
+                 error = function(e) e)
     }
   } else {
     ## this can fail when the db doesn't exist or the user doesn't exist
     connectionResult <-
       tryCatch(con <-
-        dbConnect(drv, dbname = dbname,
-                  host = host, port = port,
-                  user = user, password = password),
-                  error = function(e) e)
+                 dbConnect(drv, dbname = dbname,
+                           host = host, port = port,
+                           user = user, password = password),
+               error = function(e) e)
     if (is(connectionResult, "error")) {
       ## let this throw an error if it fails
       con.su <- dbConnect(drv, dbname = adminDatabase, host = host, port = port, user = user.su, password = password.su)
       roleString <- paste0(user, " WITH
-        LOGIN
-        PASSWORD '", password, "' 
-        NOSUPERUSER
-        INHERIT
-        NOCREATEDB
-        NOCREATEROLE
-        NOREPLICATION")
+                           LOGIN
+                           PASSWORD '", password, "' 
+                           NOSUPERUSER
+                           INHERIT
+                           NOCREATEDB
+                           NOCREATEROLE
+                           NOREPLICATION")
       if (nrow(dbGetQuery(con.su, paste0("SELECT * FROM pg_roles WHERE rolname = '", user, "'"))) == 0L) {
-        dbExecute(con, paste0("CREATE USER ", roleString))
+        dbExecute(con.su, paste0("CREATE USER ", roleString))
       } else {
-        dbExecute(con, paste0("ALTER USER ", roleString))
+        dbExecute(con.su, paste0("ALTER USER ", roleString))
       }
       
       createDatabase(drv, dbname, dbProperties)
@@ -86,29 +86,18 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
       
       connectionResult <-
         tryCatch(con <-
-          dbConnect(drv, dbname = dbname,
-                    host = host, port = port,
-                    user = user, password = password),
-                    error = function(e) e)
+                   dbConnect(drv, dbname = dbname,
+                             host = host, port = port,
+                             user = user, password = password),
+                 error = function(e) e)
     }
-  }
+}
   
   connectionResult
-}
+  }
 
 dbExistsType <- function(con, name)
   dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM pg_type WHERE typname = '", name, "')"))[[1L]]
-
-parseEnumType <- function(x) {
-  enumSpec <- strsplit(strsplit(x, "; ")[[1L]], " = ")
-  values <- sapply(enumSpec, function(x) x[2L])
-  names(values) <- sapply(enumSpec, function(y) sub("'(.*)'", "\\1", y[1L]))
-  values
-}
-
-isIntegerType <- function(x) grepl("int$", x)
-isSequenceType <- function(x) grepl("serial", x)
-isEnumType <- function(x) grepl(";", x)
 
 ## used to reset some stuff for testing purposes
 dropTable <- function(con, tableDef, tableNames)
@@ -132,18 +121,16 @@ dropTable <- function(con, tableDef, tableNames)
     if (dbExistsTable(con, "obts")) dbExecute(con, "DROP TABLE obts_typed")
     
     for (i in seq_len(nrow(tableDef))) {
-      if (!isEnumType(tableDef$type[i])) next
+      if (!grepl(";", tableDef$type[i])) next
       typeName <- paste0("obts_", tableDef$full_name[i])
       if (dbExistsType(con, typeName)) dbExecute(con, paste0("DROP TYPE ", typeName))
     }
   }
-    
+  
   if ("info" %in% tableNames && dbExistsTable(con, "info")) dbExecute(con, "DROP TABLE info")
   
   invisible(NULL)
 }
-
-
 
 createTablesIfNonexistent <- function(drv, tableDef, tableNames)
 {
@@ -151,38 +138,38 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
   
   if ("info" %in% tableNames && !dbExistsTable(con, "info")) {
     dbExecute(con,
-      "CREATE TABLE info (
-         file_name      varchar(64),
-         size           bigint,
-         timestamp      timestamp,
-         hash           varchar(32),
-         format         smallint,
-         id_start       bigint,
-         id_end         bigint,
-         raw_id_start   bigint,
-         raw_id_end     bigint
-       )")
+              "CREATE TABLE info (
+              file_name      varchar(64),
+              size           bigint,
+              timestamp      timestamp,
+              hash           varchar(32),
+              format         smallint,
+              id_start       bigint,
+              id_end         bigint,
+              raw_id_start   bigint,
+              raw_id_end     bigint
+    )")
   }
   if ("obts_raw_1" %in% tableNames && !dbExistsTable(con, "obts_raw_1")) {
     dbExecute(con,
-      "CREATE TABLE obts_raw_1 (
-         id         bigserial,
-         record     character(176)
-       )")
+              "CREATE TABLE obts_raw_1 (
+              id         bigserial,
+              record     character(176)
+    )")
   }
   if ("obts_raw_2" %in% tableNames && !dbExistsTable(con, "obts_raw_2")) {
     dbExecute(con,
-      "CREATE TABLE obts_raw_2 (
-         id         bigserial,
-         record     character(184)
-       )")
+              "CREATE TABLE obts_raw_2 (
+              id         bigserial,
+              record     character(184)
+    )")
   }
   if ("obts" %in% tableNames && !dbExistsTable(con, "obts")) {
     createString <- "CREATE TABLE obts (\n"
     nameLength <- 2L + max(nchar(tableDef$abbreviation))
     
     for (i in seq_len(nrow(tableDef))) {
-      if (isSequenceType(tableDef$type[i])) 
+      if (grepl("serial", tableDef$type[i])) 
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$abbreviation[i]), tableDef$type[i], " PRIMARY KEY")
       else
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$abbreviation[i]), "character(", tableDef$length_2[i], ")")
@@ -193,13 +180,16 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
     
     dbExecute(con, createString)
   }
-    
+  
   if ("obts_typed" %in% tableNames && !dbExistsTable(con, "obts_typed")) {
     ## can probably move these typedefs into a schema to help with namespace stuff
     
     for (i in seq_len(nrow(tableDef))) {
-      if (isEnumType(tableDef$type[i])) {
-        enumSpec <- parseEnumType(tableDef$type[i])
+      if (grepl(";", tableDef$type[i])) {
+        enumSpec <- strsplit(strsplit(tableDef$type[i], "; ")[[1L]], " = ")
+        temp <- sapply(enumSpec, function(x) x[2L])
+        names(temp) <- sapply(enumSpec, function(x) sub("'(.*)'", "\\1", x[1L]))
+        enumSpec <- temp; rm(temp)
         
         name <- paste0("obts_", tableDef$full_name[i])
         if (dbExistsType(con, name)) {
@@ -215,10 +205,10 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
     createString <- "CREATE TABLE obts_typed (\n"
     nameLength <- 2L + max(nchar(tableDef$full_name))
     for (i in seq_len(nrow(tableDef))) {
-      if (isSequenceType(tableDef$type[i])) {
+      if (grepl("serial", tableDef$type[i])) {
         keyType <- sub("serial", "int", tableDef$type[i])
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), keyType, " REFERENCES obts(db_id)")
-      } else if (!isEnumType(tableDef$type[i])) {
+      } else if (!grepl(";", tableDef$type[i])) {
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), tableDef$type[i])
       } else {
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), "obts_", tableDef$full_name[i])
@@ -233,40 +223,44 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
   dbDisconnect(con)
   
   invisible(NULL)
-}
+  }
+
 
 defineImportFunctions <- function(con, tableDef) {
   dbExecute(con,
-    "CREATE OR REPLACE FUNCTION string_to_int(text) RETURNS INT AS $$
-       SELECT CASE
-         WHEN trim($1) SIMILAR TO '[0-9]+' THEN CAST(trim($1) AS INT)
-         ELSE NULL
-       END;
-     $$ LANGUAGE SQL")
+            "CREATE OR REPLACE FUNCTION string_to_int(text) RETURNS INT AS $$
+            SELECT CASE
+            WHEN trim($1) SIMILAR TO '[0-9]+' THEN CAST(trim($1) AS INT)
+            ELSE NULL
+            END;
+            $$ LANGUAGE SQL")
   
   dbExecute(con,
-    "CREATE OR REPLACE FUNCTION is_valid_date(text) RETURNS BOOLEAN LANGUAGE plpgsql IMMUTABLE AS $$
-     BEGIN
-       RETURN CASE WHEN $1::date IS NULL THEN false ELSE true END;
-     exception WHEN others THEN
-       RETURN false;
-     END;$$;")
+            "CREATE OR REPLACE FUNCTION is_valid_date(text) RETURNS BOOLEAN LANGUAGE plpgsql IMMUTABLE AS $$
+            BEGIN
+            RETURN CASE WHEN $1::date IS NULL THEN false ELSE true END;
+            exception WHEN others THEN
+            RETURN false;
+            END;$$;")
   
   dbExecute(con,
-    "CREATE OR REPLACE FUNCTION string_to_date(text, text) RETURNS date AS $$
-       SELECT CASE
-         WHEN is_valid_date($1) THEN to_date($1, $2) ELSE NULL END;
-     $$ LANGUAGE SQL")
+            "CREATE OR REPLACE FUNCTION string_to_date(text, text) RETURNS date AS $$
+            SELECT CASE
+            WHEN is_valid_date($1) THEN to_date($1, $2) ELSE NULL END;
+            $$ LANGUAGE SQL")
   
   for (i in seq_len(nrow(tableDef))) {
-    if (!isEnumType(tableDef$type[i])) next
+    if (!grepl(";", tableDef$type[i])) next
     
-    enumSpec <- parseEnumType(tableDef$type[i])
+    enumSpec <- strsplit(strsplit(tableDef$type[i], "; ")[[1L]], " = ")
+    temp <- sapply(enumSpec, function(x) x[2L])
+    names(temp) <- sapply(enumSpec, function(x) sub("'(.*)'", "\\1", x[1L]))
+    enumSpec <- temp; rm(temp)
+    
     enumName <- tableDef$full_name[i]
     
-    fieldLength <- max(tableDef[i,colnames(tableDef)[grepl("length", colnames(tableDef))]])
-    createString <- paste0("CREATE OR REPLACE FUNCTION string_to_", enumName, "(character(", fieldLength, ")) RETURNS obts_", enumName, " AS $$\n",
-      "  SELECT CASE\n")
+    createString <- paste0("CREATE OR REPLACE FUNCTION string_to_", enumName, "(text) RETURNS obts_", enumName, " AS $$\n",
+                           "  SELECT CASE\n")
     hasElse <- FALSE
     for (j in seq_along(enumSpec)) {
       if (names(enumSpec)[j] != "") {
@@ -281,18 +275,18 @@ defineImportFunctions <- function(con, tableDef) {
     createResult <- tryCatch(dbExecute(con, createString), error = function(e) e)
     if (is(createResult, "error")) browser()
   }
-   
+  
   invisible(NULL)
 }
 
 dbExistsFunction <- function(con, name, args)
 {
   dbExecute(con, "CREATE OR REPLACE FUNCTION public.function_arguments(oid)
-                  RETURNS text LANGUAGE sql AS $function$
-                    select string_agg(par, ', ') 
-                      from (select format_type(unnest(proargtypes), null) par 
-                        from pg_proc where oid = $1) x
-                  $function$")
+            RETURNS text LANGUAGE sql AS $function$
+            select string_agg(par, ', ') 
+            from (select format_type(unnest(proargtypes), null) par 
+            from pg_proc where oid = $1) x
+            $function$")
   dbGetQuery(con, paste0("SELECT EXISTS(SELECT * FROM pg_proc WHERE proname = '", name, "' AND function_arguments(oid) = '", args, "')"))[[1L]][[1L]]
 }
 
@@ -302,13 +296,11 @@ dropImportFunctions <- function(con, tableDef) {
   if (dbExistsFunction(con, "is_valid_date", "text")) dbExecute(con, "DROP FUNCTION is_valid_date(text)")
   
   for (i in seq_len(nrow(tableDef))) {
-    if (!isEnumType(tableDef$type[i])) next
+    if (!grepl(";", tableDef$type[i])) next
     
     functionName <- paste0("string_to_", tableDef$full_name[i])
-    fieldLength <- max(tableDef[i,colnames(tableDef)[grepl("length", colnames(tableDef))]])
-    functionArgumentType <- paste0("character(", fieldLength, ")")
-    if (dbExistsFunction(con, functionName, functionArgumentType))
-      dbExecute(con, paste0("DROP FUNCTION ", functionName, "(", functionArgumentType, ")"))
+    if (dbExistsFunction(con, functionName, "text"))
+      dbExecute(con, paste0("DROP FUNCTION ", functionName, "(text)"))
   }
   invisible(NULL)
 }
@@ -320,8 +312,8 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
   
   insertStatement <- paste0(
     "INSERT INTO info VALUES
-      ('", paste(fileName, fileInfo$size, format(fileInfo$mtime, format = "%F %X %z"), hash,
-                 0, 0, 0, 0, 0, sep = "', '"), "')")
+    ('", paste(fileName, fileInfo$size, format(fileInfo$mtime, format = "%F %X %z"), hash,
+               0, 0, 0, 0, 0, sep = "', '"), "')")
   dbExecute(con, insertStatement)
   
   invisible(NULL)
@@ -347,11 +339,11 @@ updateInInfoTableAndDeleteDataRows <- function(con, inputPath, fileName, current
   hash     <- tools:md5sum(file.path(inputPath, fileName))
   
   updateStatement <- paste0("UPDATE info SET ",
-    "timestamp = '", format(fileInfo$mtime, format = "%F %X %z"), "', ",
-    "hash = '", hash, "', ",
-    "size = '", fileInfo$size, "', ",
-    "format = 0, id_start = 0, id_end = 0, raw_id_start = 0, raw_id_end = 0 ",
-    "WHERE file_name = '", fileName, "'")
+                            "timestamp = '", format(fileInfo$mtime, format = "%F %X %z"), "', ",
+                            "hash = '", hash, "', ",
+                            "size = '", fileInfo$size, "', ",
+                            "format = 0, id_start = 0, id_end = 0, raw_id_start = 0, raw_id_end = 0 ",
+                            "WHERE file_name = '", fileName, "'")
   dbExecute(con, updateStatement)
 }
 
@@ -380,22 +372,22 @@ importIntoRawTable <- function(con, inputPath, fileName)
   ## how many rows were added. The table should probably be locked for this.
   rawStartIndex <- dbGetQuery(con, paste0("SELECT nextval('", rawTableName, "_id_seq')"))[[1L]]
   invisible(dbGetQuery(con, paste0("SELECT setval('", rawTableName, "_id_seq', ", rawStartIndex, ", false)")))
- 
+  
   importStatement <- paste0(
     "COPY ", rawTableName, " (record)
-       FROM '", tempFile, "'
-       WITH (FORMAT text)")
+    FROM '", tempFile, "'
+    WITH (FORMAT text)")
   
   rawEndIndex <- rawStartIndex + dbExecute(con, importStatement)[[1L]] - 1L
   unlink(tempFile)
-
+  
   updateStatement <- paste0(
     "UPDATE info SET
-       format = '", inputFormat, "',
-       raw_id_start = ", rawStartIndex, ",
-       raw_id_end = ", rawEndIndex, "
-       WHERE 
-       file_name = '", fileName, "'")
+    format = '", inputFormat, "',
+    raw_id_start = ", rawStartIndex, ",
+    raw_id_end = ", rawEndIndex, "
+    WHERE 
+    file_name = '", fileName, "'")
   dbExecute(con, updateStatement)
 }
 
@@ -418,9 +410,9 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
     currentEntry <- currentEntries[currentEntries$file_name == fileName,]
     
     fileInfo <- file.info(file.path("input", fileName))
-  
+    
     if (fileInfo$mtime == currentEntry$timestamp && fileInfo$size == currentEntry$size) next
-  
+    
     ## only timestamps differ, check the hash
     if (fileInfo$size == currentEntry$size) {
       hash <- tools::md5sum(file.path("input", inputFile))
@@ -428,7 +420,7 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
         cat("updating timestamp for file '", fileName, "' in info table\n", sep = "")
         
         dbExecute(con, paste0("UPDATE info SET timestamp = '", format(fileInfo$mtime, format = "%F %X %z"),
-                            "' WHERE file_name = '", inputFile, "'"))
+                              "' WHERE file_name = '", inputFile, "'"))
         next
       }
     }
@@ -488,37 +480,37 @@ parseRawColumnsForEntry <- function(con, tableDef, entry) {
   for (i in seq_len(nrow(tableDef))) {
     insertStatement <- paste0(insertStatement, sprintf("%-*s", indentLength, ""))
     
-    if (isIntegerType(tableDef$type[i])) {
+    if (grepl("int$", tableDef$type[i])) {
       insertStatement <- paste0(insertStatement, "string_to_int(obts.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
     } else if (tableDef$type[i] == "date") {
       insertStatement <- paste0(insertStatement, "string_to_date(obts.", tableDef$abbreviation[i], ", '",
                                 if (entry$format == 1L) "YYMMDD" else "YYYYMMDD", "') AS ", tableDef$full_name[i])
-    } else if (isEnumType(tableDef$type[i])) {
+    } else if (grepl(";", tableDef$type[i])) {
       insertStatement <- paste0(insertStatement, "string_to_", tableDef$full_name[i], "(obts.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
     } else {
       insertStatement <- paste0(insertStatement, "obts.", tableDef$abbreviation[i], " AS ", tableDef$full_name[i])
     }
-   
+    
     insertStatement <- paste0(insertStatement, if (i != nrow(tableDef)) ",\n" else "\n")
   }
- 
+  
   insertStatement <- paste0(insertStatement, "  FROM obts WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end)
   
   insertResult <- tryCatch(dbExecute(con, insertStatement), error = function(e) e)
   if (is(insertResult, "error")) browser()
-    
+  
   invisible(NULL)
 }
 
 splitRawColumnsForEntry <- function(con, tableDef, entry) {
   startIndex <- dbGetQuery(con, "SELECT nextval('obts_DB_ID_seq')")[[1L]]
   invisible(dbGetQuery(con, paste0("SELECT setval('obts_DB_ID_seq', ", startIndex, ", false)")))
-    
+  
   rawTableName <- paste0("obts_raw_", entry$format)
   
   insertStatement <- "INSERT INTO obts ("
   for (i in seq_len(nrow(tableDef))) {
-    if (isSequenceType(tableDef$type[i])) next
+    if (grepl("serial", tableDef$type[i])) next
     insertStatement <- paste0(insertStatement, tableDef$abbreviation[i])
     if (i != nrow(tableDef)) insertStatement <- paste0(insertStatement, ", ")
   }
@@ -530,7 +522,7 @@ splitRawColumnsForEntry <- function(con, tableDef, entry) {
   indentLength <- 9L
   insertStatement <- paste0(insertStatement, "  SELECT\n")
   for (i in seq_len(nrow(tableDef))) {
-    if (isSequenceType(tableDef$type[i])) next
+    if (grepl("serial", tableDef$type[i])) next
     
     insertStatement <- paste0(insertStatement, sprintf("%-*s", indentLength, ""),
                               "SUBSTRING(record, ", starts[i], ", ", lengths[i], ") AS ", tableDef$abbreviation[i])
@@ -605,131 +597,43 @@ parseRawColumns <- function(drv, tableDef) {
   invisible(NULL)
 }
 
-checkColumns <- function(con, tableDef, columnNames = NULL)
-{
-  dfMismatch <- function(old, new, enumSpec = NULL) {
-    if (!is.null(enumSpec)) {
-      names.old <- names(enumSpec)
-      count.old <- as.vector(old[match(names.old, names(old))])
-      if (any(!(names(old) %in% names.old))) {
-        extraValues <- !(names(old) %in% names.old)
-        names.old <- c(names.old, names(old)[extraValues])
-        count.old <- c(count.old, as.vector(old[extraValues]))
-      }
-      if (anyNA(count.old)) count.old[is.na(count.old)] <- 0L
-      
-      names.new <- unname(enumSpec)
-      count.new <- as.vector(new[match(names.new, names(new))])
-      if (any(!(names(new) %in% names.new))) {
-        extraValues <- !(names(new) %in% names.new)
-        names.new <- c(names.new, names(new)[extraValues])
-        count.new <- c(count.new, as.vector(new[extraValues]))
-      }
-      if (anyNA(count.new)) count.new[is.na(count.new)] <- 0L
-    } else {
-      names.old <- names(old)
-      count.old <- as.vector(old)
-      names.new <- names(new)
-      count.new <- as.vector(new)
-    }
-    length.old <- length(names.old)
-    length.new <- length(names.new)
-     
-    data.frame(old = c(names.old, rep(NA_character_, max(length.new - length.old, 0L))),
-               count.old = c(count.old, rep(NA_integer_, max(length.new - length.old, 0L))),
-               new = c(names.new, rep(NA_character_, max(length.old - length.new, 0L))),
-               count.new = c(count.new, rep(NA_integer_, max(length.old - length.new, 0L))))
-  }
-  
-  columnIndexSet <- if (is.null(columnNames)) seq_len(nrow(tableDef)) else match(columnNames, tableDef$full_name)
-  
-  for (i in columnIndexSet) {
-    if (isSequenceType(tableDef$type[i])) next
-    if (isEnumType(tableDef$type[i])) {
-      ## will fail if multiple categories weren't re-coded
-      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany")
-      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany")
-      
-      enumSpec <- parseEnumType(tableDef$type[i])
-      tableMismatch <- dfMismatch(old, new, enumSpec)
-      if (length(old) != length(new) || any(sort(old) != sort(new)) ||
-          (anyNA(tableMismatch$new) && !grepl("^\\s*$", as.character(tableMismatch$old[is.na(tableMismatch$new)])))) {
-        cat("mismatch in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], "):\n", sep = "")
-        print(tableMismatch)
-      }
-    } else if (isIntegerType(tableDef$type[i])) {
-      ## this should only fail if there are more than one codes which fail to parse as an int
-      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany")
-      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany")
-      
-      if (length(old) != length(new) || any(sort(old) != sort(new))) {
-        cat("mismatch in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], "):\n", sep = "")
-        print(dfMismatch(old, new))
-      }
-    } else if (tableDef$type[i] == "date") {
-      join <- dbGetQuery(con, paste0("SELECT id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
-                                     " FROM obts_typed JOIN obts ON obts_typed.id = obts.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
-      join[[2L]] <- trimws(join[[2L]])
-      tryResult <- tryCatch(badDays <- sapply(join[[2L]], function(x) if (nchar(x) == 6L) (substr(x, 5L, 6L) != "00") else (substr(x, 7L, 8L) != "00")), error = function(e) e)
-      if (is(tryResult, "error")) browser()
-      
-      cat(sum(badDays), " dates failed to parse in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], ") that were not 00\n", sep = "")
-    }
-  }
-}
 
 
 if (FALSE) {
-
-## connects to the database, creates tables and imports raw files
-## change the path to point to where this file is placed
-setwd("~/Repositories/dojr/import/obts")
-source("import.R")
-
-tableDef <- read.csv("tableDef.csv", stringsAsFactor = FALSE)
-
-if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
-  repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
-  install.packages("PostgreSQL", repos, dependencies = TRUE)
-  if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  
+  ## connects to the database, creates tables and imports raw files
+  ## change the path to point to where this file is placed
+  #setwd("~/Repositories/dojr/import/obts")
+  source("import.R")
+  
+  tableDef <- read.csv("tableDef.csv", stringsAsFactor = FALSE)
+  
+  if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
+    repos <- getOption("repos")
+    if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
+    install.packages("RPostgreSQL", repos, dependencies = TRUE)
+    if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  }
+  
+  drv <- dbDriver("PostgreSQL")
+  
+  ## "input" is the folder with files ACRPTARB00.TXT, ...
+  updateInfoTable(drv, tableDef, "input")
+  updateRawTables(drv, tableDef, "input")
+  splitRawColumns(drv, tableDef)
+  parseRawColumns(drv, tableDef)
+  
+  
+  
+  ## useful to delete the current typed table to recreate it
+  con <- connectToDatabase(drv, "obts")
+  
+  dropImportFunctions(con, tableDef)
+  dropTable(con, tableDef, "obts_typed")
+  
+  dbDisconnect(con)
+  
+  
+  dbUnloadDriver(drv)
 }
 
-drv <- dbDriver("PostgreSQL")
-
-## "input" is the folder with files ACRPTARB00.TXT, ...
-updateInfoTable(drv, tableDef, "input")
-updateRawTables(drv, tableDef, "input")
-splitRawColumns(drv, tableDef)
-parseRawColumns(drv, tableDef)
-
-
-
-## useful to delete the current typed table to recreate it
-con <- connectToDatabase(drv, "obts")
-
-dropImportFunctions(con, tableDef)
-dropTable(con, tableDef, "obts_typed")
-
-dbDisconnect(con)
-
-
-dbUnloadDriver(drv)
-
-
-con <- connectToDatabase(drv, "obts")
-
-obts <- dbGetQuery("SELECT * FROM obts_typed")
-
-## enum types in obts
-for (variableName in c("cii_record_type", "pdr_record_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence", "court_charge_type"))
-  obts[[variableName]] <- as.factor(obts[[variableName]])
-
-## integer types that are really categorical
-for (variableName in c("arresting_agency", "multiple_arrest_charges", "arrest_disposition_type", "arrest_multiple_dispositions", "arrest_offense", "arrest_summary_code", "court_converted_data", "court_judicial_district", "court_multiple_dispositions", "sentence_type", "court_multiple_disposition_charges", "court_disposition_offense", "court_qualifier", "court_summary_code"))
-  obts[[variableName]] <- as.factor(obts[[variableName]])
-
-
-save(obts, file = file.path("..", "..", "common", "data", "obts.Rdata"))
-
-}

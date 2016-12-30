@@ -263,6 +263,102 @@ rm(lowJurisdictions)
 invisible(gc(FALSE))
 ```
 
+### Matched ACHS-MACR data
+
+We obtained a probabilistic record linkage for 2014 and 2015 ACHS and MACR data. We use the linked records to estimate the percentage of arrests reported as booked that were actually booked by department. In other words, we use a simple metric: the number of actual bookings (from linked records) divided by the number of reported bookings (from MACR). We believe the matching process misses many true matches (a high false negative rate), which means that we expect the average department to be well below 100%. 
+
+```{r booking_percent_match}
+
+
+intersection <- read.csv(file="intersection.csv")
+intersection <- data.frame(intersection[,c(2)])
+colnames(intersection) <- "MACR_Record"
+intersection$matched <- TRUE
+denominators <- merge(macr, intersection, by.x="CID", by.y="MACR_Record", all.x = TRUE)
+
+class(denominators$matched)
+byCrimeTot  <- aggregate(denominators$matched, by=list(denominators$bcs_summary_offense_code), length)
+
+denominators$matched[is.na(denominators$matched)] <- FALSE
+byCrimeMatch <- aggregate(denominators$matched==TRUE, by = list(denominators$bcs_summary_offense_code), sum)
+
+bookedCrimes <- merge(byCrimeTot, byCrimeMatch, by="Group.1", all.x=TRUE)
+colnames(bookedCrimes) <- c("bcs_summary_offense_code","total","matched")
+bookedCrimes$propByCrime <- bookedCrimes$matched/bookedCrimes$total
+plot(bookedCrimes$bcs_summary_offense_code,bookedCrimes$propByCrime)
+
+jurisd.n <- read.csv(file="matchedRecs.csv")
+
+jurisd.n$arrest_year <- NULL
+jurisd.n$offense_level <- NULL
+jurisd.n$bcs_offense_code <- NULL
+jurisd.n$arrest_month <- NULL
+jurisd.n$birth_date <- NULL
+jurisd.n$Linkage_Number <- NULL
+
+jurisd <- data.frame
+
+felArrestTot <- aggregate(macr$summary_offense_level=="felony", by = list(macr$ncic_jurisdiction), sum)
+colnames(felArrestTot) <- c("ncic_jurisdiction","felArrestTotal")
+jurisd <- merge(felArrestTot, jurisd, by="ncic_jurisdiction")
+
+misdArrestTot <- aggregate(macr$summary_offense_level=="misdemeanor", by = list(macr$ncic_jurisdiction), sum)
+colnames(misdArrestTot) <- c("ncic_jurisdiction","misdArrestTot")
+jurisd <- merge(misdArrestTot, jurisd, by="ncic_jurisdiction")
+
+repBookTot <- aggregate(macr$status_type=="booked", by = list(macr$ncic_jurisdiction), sum)
+colnames(repBookTot) <- c("ncic_jurisdiction","repBookTot")
+jurisd <- merge(repBookTot, jurisd, by="ncic_jurisdiction")
+
+repCiteTot <- aggregate(macr$status_type=="cited", by = list(macr$ncic_jurisdiction), sum)
+colnames(repCiteTot) <- c("ncic_jurisdiction","repCiteTot")
+jurisd <- merge(repCiteTot, jurisd, by="ncic_jurisdiction")
+
+actualBookTot <- aggregate(mupfe$status_type, by = list(mupfe$ncic_jurisdiction), length)
+colnames(actualBookTot) <- c("ncic_jurisdiction","actualBookTot")
+jurisd <- merge(actualBookTot, jurisd, by="ncic_jurisdiction")
+
+repFelRefTot <- aggregate(macr$disposition=="felony complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repFelRefTot) <- c("ncic_jurisdiction","repFelRefTot")
+jurisd <- merge(repFelRefTot, jurisd, by="ncic_jurisdiction")
+
+repMisdRefTot <- aggregate(macr$disposition=="misdemeanor complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repMisdRefTot) <- c("ncic_jurisdiction","repMisdRefTot")
+jurisd <- merge(repMisdRefTot, jurisd, by="ncic_jurisdiction")
+
+repBothRefTot <- aggregate(macr$disposition=="misdemeanor complaint sought" | macr$disposition=="felony complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repBothRefTot) <- c("ncic_jurisdiction","repBothRefTot")
+jurisd <- merge(repBothRefTot, jurisd, by="ncic_jurisdiction")
+
+jurisd <- jurisd[,c(1,8,9,6,7,5,3,4,2)]
+
+quantile(jurisd$felArrestTotal)
+#75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
+stat.jurisd <- subset(jurisd, felArrestTotal >= 95)
+
+#zooming out, we see overall aggregated relationships that we'd expect
+plot(log(stat.jurisd[,2:9]))
+
+stat.jurisd$bookMatchPct <- stat.jurisd$actualBookTot / stat.jurisd$repBookTot 
+# there are two departments with matched booking rates higher than 1 (3623 and 3702). One had 271 fel arrests, the other 3031. This suggests that rather than over-reporting bookings, they are under-reporting bookings. Along with some departments that have 100% or nearly 100% match rates, we suspect these departments had their MACR data created from the ACHS data by CJIS. 
+stat.jurisd$ncic_jurisdiction[stat.jurisd$bookMatchPct>1]
+plot(density(stat.jurisd$bookMatchPct, xlim=c(0,1)))
+# the 5th percentile is 9.1% and the 95th percentile on matched records is 31.0%
+quantile(stat.jurisd$bookMatchPct, .05)
+quantile(stat.jurisd$bookMatchPct, .95)
+
+stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRefTot / stat.jurisd$actualBookTot 
+hist(stat.jurisd$actualBookvsRepRefs)
+
+#an alternative metric is to compare the number of reported felony arrests with the number of matched bookings
+stat.jurisd$repFelArrest_actualBook <- stat.jurisd$felArrestTotal / stat.jurisd$repBookTot 
+quantile(stat.jurisd$repFelArrest_actualBook, .05)
+quantile(stat.jurisd$repFelArrest_actualBook, .95)
+
+#we see very little relationship between total arrests (dept. size) and booking matches
+plot(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1))
+lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1)))
+
 ### Final Visualization
 
 At this point, the `r nrow(br.adult.yearly)` jurisdictions that remain seem to be adequate. Their booking rates for juvenile misdemeanors are:

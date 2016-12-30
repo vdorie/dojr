@@ -48,7 +48,7 @@ As most database solutions permit secure connections over encrypted protocols, i
 
 # Data Integrity
 
-Deviations in the structured data from the original should only arise due to known coding errors. In light of this, a post-hoc analysis should be conducted after importation and conversion as a means of quality control, comparing the values of the columns in each.
+Deviations in the structured data from the original should only arise due to known coding errors. In light of this, a post-hoc analysis should be conducted after importation and conversion as a means of quality control, comparing the values of the columns in each. All changes to data should be documented, even replacement of a few values. 
 
 # Additional Considerations
 

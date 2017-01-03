@@ -106,3 +106,15 @@ Todo:
     1. Example queries
 5. Install SPSS
 6. Workshop / tutorial
+
+Deliverables:
+
+1. Working monthly import of MACR from computers on DOJ network. Let's design this as an arbitrary update size in case CJSC can only provide data every 3 months. 
+2. Produce monthly reports of MACR data, with both data quality and substantive analysis
+    1. e.g., depts that don't report data, that report wildly different data
+    2. Find changes that merit further analysis
+3. Design data cleaning for data that's been imported
+4. Analyses that respond to certain questions
+5. Interactive visualization tools
+6. If desired, convert all database stuff to python
+

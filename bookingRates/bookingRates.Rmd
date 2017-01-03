@@ -377,17 +377,18 @@ plot(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBo
 lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1)))
 
 ### Final Visualization
+```
 
 At this point, the `r nrow(br.adult.yearly)` jurisdictions that remain seem to be adequate. Their booking rates for juvenile misdemeanors are:
 
-```{r misdemeanor_booking_rates_plot}
+```{r 'misdemeanor_booking_rates_plot'}
 br.juv.yearly <- br.juv.yearly[rownames(br.juv.yearly) %in% rownames(br.adult.yearly),]
 plotBookingRateGrid(br.juv.yearly, gridRatio)
 ```
 
 Their (mostly boring) yearly booking rates for serious felonies are:
 
-```{r felony_booking_rates_plot}
+```{r 'felony_booking_rates_plot'}
 plotBookingRateGrid(br.adult.yearly, gridRatio)
 ```
 
@@ -395,7 +396,7 @@ plotBookingRateGrid(br.adult.yearly, gridRatio)
 
 This mammoth function goes over whatever data set is given along with a set of jurisdictions and produces two tables of booking rates by offenses, one for felonies and one for misdemeanors.
 
-```{r booking_rate_function, exec = FALSE}
+```{r 'booking_rate_function', exec = FALSE}
 getOffenseCodeBookingRatesForJurisdictions <- function(macr, jurisdictions)
 {
   macr.sub <- macr[,c("bcs_summary_offence_code", "status_type",
@@ -445,7 +446,7 @@ getOffenseCodeBookingRatesForJurisdictions <- function(macr, jurisdictions)
 }
 ```
 
-```{r booking_rates, exec = FALSE}
+```{r 'booking_rates', exec = FALSE}
 br <- getOffenseCodeBookingRatesForJurisdictions(macr.sub, jurisdictionsToKeep)
 
 ## always sorts using the first column
@@ -459,6 +460,6 @@ rownames(br.misdemeanor) <- substr(rownames(br.misdemeanor), 1, 12)
 round(br.misdemeanor, 2)
 ```
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 invisible(gc(FALSE))
 ```

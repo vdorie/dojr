@@ -37,7 +37,7 @@ rm(uniqueCodes, uniqueCodeNames)
 
 getNameForSummaryOffenseCode <- function(x, bcsSummaryOffenseCodes = .GlobalEnv$bcsSummaryOffenseCodes)
 {
-  if (is.null(bcsOffenseCodes)) stop("cannot find 'bcsSummaryOffenseCodes'")
+  if (is.null(bcsSummaryOffenseCodes)) stop("cannot find 'bcsSummaryOffenseCodes'")
   
   with(bcsSummaryOffenseCodes, summary_offense_type[match(x, summary_offense_code)])
 }

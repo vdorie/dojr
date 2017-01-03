@@ -48,7 +48,7 @@ As most database solutions permit secure connections over encrypted protocols, i
 
 # Data Integrity
 
-Deviations in the structured data from the original should only arise due to known coding errors. In light of this, a post-hoc analysis should be conducted after importation and conversion as a means of quality control, comparing the values of the columns in each.
+Deviations in the structured data from the original should only arise due to known coding errors. In light of this, a post-hoc analysis should be conducted after importation and conversion as a means of quality control, comparing the values of the columns in each. All changes to data should be documented, even replacement of a few values. 
 
 # Additional Considerations
 
@@ -83,9 +83,26 @@ Guiding principles:
 2. Document all data transformations and losses of information
 3. For each potential problem in a dataset, develop a rule for what gets flagged.
 4. Sealed records get a flag. 
-5. 
 
 Do we install a scripting environment on Windows? Should we install Cygwin?
 
+# Notes from Meeting on 12/30
 
+Process to connect to database:
 
+1. If not on DoJ network, connect to VDI
+2. Install postgres client (https://www.postgresql.org/download/windows/) or driver (for R https://cran.r-project.org/package=RPostgreSQL)
+3. Enter server address hdcvmappsvr32.rescs.caldoj.local
+
+Todo:
+
+1. Lock-down with read only users for LAN
+    1. How many user credentials do we want to give out?
+    2. Possibly restrict by IP
+2. Enable access log
+3. Write examples of how to connect
+    1. In examples of connection, have password pop up
+4. Indices
+    1. Example queries
+5. Install SPSS
+6. Workshop / tutorial

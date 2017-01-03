@@ -12,6 +12,7 @@
 # finally, the superuser can't actually be avoided, since it is needed to COPY files
 # into tables
 
+
 ## what we connect to if all else fails
 adminDatabase <- "postgres"
 
@@ -36,7 +37,10 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
   for (i in seq_len(nrow(credentials))) assign(credentials[i,1L], credentials[i,2L])
   
   ## used if we need to create a database
-  dbProperties <- "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C' TABLESPACE = pg_default CONNECTION LIMIT = -1"
+  dbProperties <- if (.Platform$OS.type == "unix")
+    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C' TABLESPACE = pg_default CONNECTION LIMIT = -1"
+  else
+    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF8' LC_CTYPE = 'en_US.UTF8' TABLESPACE = pg_default CONNECTION LIMIT = -1"
   
   if (superuser) {
     ## if this fails, that likely means that the database does not exist
@@ -75,9 +79,9 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
         NOCREATEROLE
         NOREPLICATION")
       if (nrow(dbGetQuery(con.su, paste0("SELECT * FROM pg_roles WHERE rolname = '", user, "'"))) == 0L) {
-        dbExecute(con, paste0("CREATE USER ", roleString))
+        dbExecute(con.su, paste0("CREATE USER ", roleString))
       } else {
-        dbExecute(con, paste0("ALTER USER ", roleString))
+        dbExecute(con.su, paste0("ALTER USER ", roleString))
       }
       
       createDatabase(drv, dbname, dbProperties)
@@ -363,9 +367,14 @@ importIntoRawTable <- function(con, inputPath, fileName)
   
   ## some files have null bytes as padding and they can't be put in character
   ## fields; use tr to replace with spaces
-  system2("tr", args = "'\\000' ' '",
-          stdin = inputFile,
-          stdout = tempFile)
+  if (.Platform$OS.type == "unix")
+    system2("tr", args = "'\\000' ' '",
+            stdin = inputFile,
+            stdout = tempFile)
+  else
+    system2("C:/cygwin/bin/run", args = "tr '\\000' ' '",
+            stdin = inputFile,
+            stdout = tempFile)
   lineLength <- nchar(readLines(tempFile, n = 1L))
   
   inputFormat <- switch(as.character(lineLength), "176" = 1L, "184" = 2L, NULL)
@@ -719,7 +728,7 @@ dbUnloadDriver(drv)
 
 con <- connectToDatabase(drv, "obts")
 
-obts <- dbGetQuery("SELECT * FROM obts_typed")
+obts <- dbGetQuery(con, "SELECT * FROM obts_typed")
 
 ## enum types in obts
 for (variableName in c("cii_record_type", "pdr_record_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence", "court_charge_type"))

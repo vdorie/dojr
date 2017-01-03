@@ -3,3 +3,4 @@
 .Rapp.history
 *.swp
 common/data/*.Rdata
+import/obts/src/dbCredentials.properties

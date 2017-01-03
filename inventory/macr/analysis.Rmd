@@ -2,7 +2,7 @@
 
 ## Age
 
-```{r analysis_ageHistogram, echo = FALSE, results = "asis"}
+```{r 'analysis_ageHistogram', echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "analysis_ageHistogram.pdf")
 if (!file.exists(imgFile)) {
   macr <- loadData(path = "..")
@@ -23,7 +23,7 @@ rm(imgFile)
 
 As the above figure shows, there are a large number of arrests for exceptionally young children, and an odd decrease in arrests at age 90. For the young we find:
 
-```{r analysis_youngTable, echo = FALSE, results = "asis"}
+```{r 'analysis_youngTable', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_youngTable.txt")
 if (!file.exists(txtFile)) {
   macr <- loadData(path = "..")
@@ -40,7 +40,7 @@ rm(youngTable, txtFile)
 
 Old age appears to be handled differently in different years. While the numbers are relatively small, it is difficult to believe that there were spikes in crime for, say, 91 year olds in 1991, 92 year olds in 1992 and so on.
 
-```{r analysis_oldAgeByYear, echo = FALSE, results = "asis"}
+```{r 'analysis_oldAgeByYear', echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "analysis_oldAgeByYear.pdf")
 if (!file.exists(imgFile)) {
   macr <- loadData(path = "..")
@@ -73,7 +73,7 @@ rm(imgFile)
 
 Directly examining these rows shows another form of missingness:
 
-```{r analysis_oldAge1991, echo = FALSE, results = "asis"}
+```{r 'analysis_oldAge1991', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_oldAge_1.txt")
 if (!file.exists(txtFile)) {
   macr <- loadData(path = "..")
@@ -95,7 +95,7 @@ rm(millenials, txtFile)
 
 This spike apparently bubbles through the population until 1992, at which point the practice ended. In 2003, a handful of jurisidctions used an age of 88, together with a birthday of 02/30 to indicate missingness.
 
-```{r analysis_oldAge2003, echo = FALSE, results = "asis"}
+```{r 'analysis_oldAge2003', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_oldAge_2.txt")
 if (!file.exists(txtFile)) {
   macr <- loadData(path = "..")
@@ -118,13 +118,13 @@ rm(eightyEight, txtFile)
 
 ## Jurisdictions
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 ## generate text, image files
 ignored <- tryCatch(source(file.path(srcPath, "analysis_numArrests.R"), local = new.env(parent = .GlobalEnv)), error = function(e) e)
 rm(ignored)
 ```
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 lines <- readLines(file.path("..", txtPath, "analysis_arrestNum_1.txt"))
 numJurisdictions <- as.integer(lines[1L])
 minCount <- as.integer(lines[2L])
@@ -139,7 +139,7 @@ After removing deleted records, there are `r numJurisdictions` different NCIC ju
 
 `r rmdImageInline(file.path(imgPath, "analysis_arrestNumHistogram.pdf"))`
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 rm(numJurisdictions, minCount, maxCount, numYears, minLargeJurisdictions, numLargeJurisdictions)
 
 numZerosInMiddle <- as.integer(readLines(file.path("..", txtPath, "analysis_arrestNum_2.txt")))

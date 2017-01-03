@@ -5,6 +5,12 @@ output:
   html_document: default
 ---
 
+  This section examines the reliability of booking data from MACR (the status_type field). We find that booking data appears to be extremely noisy and generally biased upward. In other words, MACR data about whether someone was cited or booked is unreliable; an implausibly high percentage of arrests are booked. We conclude that researchers who decide they want to use these data must be extremely cautious in assessing it for themselves and in deciding how to use it. We create a table describing the quality of booking data by department, but these quality measures are based on heavy assumptions and should not be the only basis for deciding which data to use.
+  The first reliability analyses focus on the plausibilty booking rates given what we know from talking with law enforcement personnal. For instance, we consider whether a jurisdiction reports booking 100% of arrests or whether a jurisdiction tends to book juveniles for misdemeanors. In discussions with law enforcement personnel (officers, IT staff, department analysts), we learned that officers typically cite and release for misdemeanors and book for felonies. Individuals we spoke with said they would be skeptical if a department claimed it booked the majority of misdemeanors (only those which pose potential for immediate harm, such as domestic violence, are candidates for booking). Booking someone takes at least 1.5-2 hours, potentially diverting an officer from responding to calls, and requiring a great deal of tedious paperwork. 
+  The second portion of the reliability analyses are based on a probabilistic matching of reported bookings to actual bookings. The reported bookings come from the MACR, while the actual bookings are drawn from the Automated Criminal History System (ACHS). The records in ACHS are created when someone is fingerprinted during jail intake (i.e., booking). Due to data quality issues and because the matching was probabilistic, there are fewer matched bookings in our analyses than there would be if the matching process matching were perfect. This has the overall effect of reducing the percentage of reports of bookings that appear accurate. Only about one in five reported bookings could be matched to an actual booking. The percentage match by department is normally distributed around this figure. In other words, for the average department, we can ony confirm that one in five reported bookings had a corresponding record in a database of actual bookings. We do not know if one in five therefore reflects "accurate" reporting or whether there are systematic biases that have reduced the match percentage beyond artefacts of the data linkage process. Both systematic biases and data linkage problems may produce the one in five figure. 
+  One way to examine the plausibilty of booking data by department is to consider the severity of the offense. We expected that arrests for more severe crimes would have a higher match percentage because they were more likely to have actually been booked. Arrests for less serious crimes, that were in reality cited, would have a lower percentage match. Surprisingly, the booking match percentage did not vary by the severity of offense. The booking match percentage stays approximately the same from homicide to misdemeanors. One potential explanation is that there is missing data about arrests for less serious crimes. If this is the case, it may be that the design of police record management systems automate reporting of booked arrests, but still require manual entry of cited arrests. Continuing with this hypothetical, we would expect arrests for serious crimes to be closer to the their true number, while arrests for less serious crimes are undercounted, particularly those that are cited. 
+  To sum up, the best tentative explanation we can find for all the booking data discrepancies is that a large proportion of arrests for less serious crimes, which did not result in a booking, are simply missing from the MACR. In other words, we may not know the real denominator of total arrests for less serious crimes. This would affect studies that examine the propensity to book arrested individuals across department, crime, or demographic group. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 targetType <- if (is.null(targetType <- knitr::opts_knit$get("rmarkdown.pandoc.to"))) "latex" else targetType
@@ -24,10 +30,10 @@ gridRatio <- if (targetType == "html") 1.6 else 8.5 / 11
 
 This document uses the `macr_clean.Rdata` file to aggregate and display booking rates for felonies and misdemeanors by first removing jurisdictions with anomalous booking rates.
 
-```{r loading}
-load(file.path(dataPath, "macr_pii.Rdata")) ## defines 'macr' object
+```{r 'loading'}
+load(file.path(dataPath, "macr_clean_pii.Rdata")) ## defines 'macr' object
 ## pull out only the columns that we use later
-macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type",
+macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offense_code", "status_type",
                     "offense_level",     "arrest_year",              "age",
                     "race_or_ethnicity")]
 
@@ -36,7 +42,7 @@ macr.sub <- subset(macr.sub, arrest_year >= 2005)
 numYears <- length(unique(macr.sub$arrest_year))
 
 ## defines function getNamesForOffenseCodes
-bcsOffenseCodes <- read.csv(file.path(dataPath, "bcs_offense_codes.csv"))
+bcsOffenseCodes <- read.csv(file.path(dataPath, "bcs_offense_codes.csv"), stringsAsFactors = FALSE)
 source(file.path(commonSrcPath, "bcsOffenseCodes.R"))
 
 ## hides some ugly plot stuff
@@ -47,9 +53,9 @@ source(file.path(srcPath, "plotFunctions.R"))
 
 ## Sample Size
 
-The first cut we make is to drop jurisdictions that make a small number of arrests overall. By considering the cumulative distribution of the number of arrests, we can set cut points at arbitrary percentages, i.e. including only those jurisdictions responsible for 95% of all arrests.
+The first cut we make is to drop jurisdictions that make a small number of arrests overall. By considering the cumulative distribution of the number of arrests, we can set cut points at arbitrary percentages. Here we include only those jurisdictions responsible for 95% of all arrests.
 
-```{r sample_size}
+```{r 'sample_size'}
 numArrestsByJurisdiction <- table(macr.sub$ncic_jurisdiction)
 
 jurisdictionOrder <- order(unname(numArrestsByJurisdiction))
@@ -66,7 +72,7 @@ macr.sub <- subset(macr.sub, ncic_jurisdiction %in% jurisdictionsToKeep)
 macr.sub$ncic_jurisdiction <- droplevels(macr.sub$ncic_jurisdiction)
 ```
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 ## clean up environment a bit to make sure we don't have accidental name collisions later
 rm(numArrestsByJurisdiction, jurisdictionOrder, numArrestsByJurisdiction.pcnt,
    largeJurisdictionIndices, jurisdictionsToKeep)
@@ -75,15 +81,15 @@ invisible(gc(FALSE))
 
 ## Abnormal Booking Rates
 
-As our goal at this stage is to control for the reliability of jurisdictions in their reporting, we can look for jursidictions that are reporting abornomally high or low rates on crimes with respectively low or high impact. An analysis of booking rates for individual offense codes (not shown) indicates a large amount of variability across years and jursidictions, so we instead consider measures that aggregate arrests *before* computing booking rates. That is, we define rates such as:
+Our goal at this stage is to assess the reliability of jurisdictions in their reporting. We can look for jursidictions that are reporting abornomally high or low rates on crimes of respectively low or high seriousness. We first focus on booking rates of juveniles (less likely to be booked compared to adults) for less serious crimes (less likely to be booked compared to more serious crimes). An analysis of booking rates for individual offense codes (not shown here) indicates a large amount of variability across years and jursidictions, so we instead consider measures that aggregate arrests *before* computing booking rates. That is, we define rates such as:
 
 $$
 \text{mostly-harmless-booking-rate} = \dfrac{\text{num juveniles booked for selected codes}}{\text{total num juveniles arrested for selected codes}}
 $$
 
-We begin by defining some useful functions:
+We define some useful functions:
 
-```{r booking_rate_functions}
+```{r 'booking_rate_functions'}
 computeBookingRate <- function(x) {
   if (sum(x) == 0L) return(NA)
   unname(x["booked"] / sum(x))
@@ -92,24 +98,24 @@ computeBookingRate <- function(x) {
 getJurisdictionalBookingRatesForOffenseCodes <- function(macr, offenseCodes)
 {
   ## drop unnecessary columns
-  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type")]
-  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offense_code", "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offense_code %in% offenseCodes)
   
   tab <- table(macr.sub)
   apply(tab, c(1L, 2L), computeBookingRate)
 }
 getJurisdictionalBookingRatesForOffenseCodesByYear <- function(macr, offenseCodes) {
-  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "arrest_year",
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offense_code", "arrest_year",
                       "status_type")]
-  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  macr.sub <- subset(macr.sub, bcs_summary_offense_code %in% offenseCodes)
   
   tab <- table(macr.sub)
   apply(tab, c(1L, 2L, 3L), computeBookingRate)
 }
 ## aggregates by summing all in set
 getJurisdictionalBookingRatesForOffenseCodeSet <- function(macr, offenseCodes) {
-  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "status_type")]
-  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offense_code", "status_type")]
+  macr.sub <- subset(macr.sub, bcs_summary_offense_code %in% offenseCodes)
   
   tab <- table(macr.sub)
   tab <- apply(tab, c(1L, 3L), sum, na.rm = TRUE)
@@ -117,9 +123,9 @@ getJurisdictionalBookingRatesForOffenseCodeSet <- function(macr, offenseCodes) {
   apply(tab, 1L, computeBookingRate)
 }
 getJurisdictionalBookingRatesForOffenseCodeSetByYear <- function(macr, offenseCodes) {
-  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offence_code", "arrest_year",
+  macr.sub <- macr[,c("ncic_jurisdiction", "bcs_summary_offense_code", "arrest_year",
                       "status_type")]
-  macr.sub <- subset(macr.sub, bcs_summary_offence_code %in% offenseCodes)
+  macr.sub <- subset(macr.sub, bcs_summary_offense_code %in% offenseCodes)
   
   tab <- table(macr.sub)
   tab <- apply(tab, c(1L, 3L, 4L), sum, na.rm = TRUE)
@@ -130,20 +136,20 @@ getJurisdictionalBookingRatesForOffenseCodeSetByYear <- function(macr, offenseCo
 
 ### Mostly-Harmless Misdemeanors
 
-We start by looking at the booking rates for juveniles.
+We begin by examining the booking rates for juveniles arrested for less serious offenses, which we would expect to be very low if the data are accurate and comprehensive. 
 
-```{r misdemeanor_booking_rates_def}
+```{r 'misdemeanor_booking_rates_def'}
 macr.juv <- subset(macr.sub, age < 18)
 
 offenseCodes.juv <- c(31, 32, 34, 44, 46)
-offenseCodeNames.juv <- getNamesForOffenseCodes(offenseCodes.juv)
+offenseCodeNames.juv <- getNameForSummaryOffenseCode(offenseCodes.juv)
 ```
 
 The codes are: `r paste0(paste0(head(offenseCodeNames.juv, -1), collapse = ", "), ", and ", tail(offenseCodeNames.juv, 1))`.
 
-One immediate cause for concern are the number of jursidictions that, for some years, have reported booking rates of 100%.
+One immediate cause for concern is the number of jursidictions that, for some years, have reported booking rates close to 100%.
 
-```{r misdemeanor_booking_rates_1_def}
+```{r `misdemeanor_booking_rates_1_def`}
 br.juv.yearly <-
   getJurisdictionalBookingRatesForOffenseCodeSetByYear(macr.juv, offenseCodes.juv)
 
@@ -153,11 +159,11 @@ highJurisdictions <-
 
 There are `r sum(highJurisdictions)` jursidictions that have a booking rate in excess of 0.99 for at least two years.
 
-```{r misdemeanor_booking_rates_1_plot}
+```{r 'misdemeanor_booking_rates_1_plot'}
 plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
 ```
 
-Some of these we can exclude without further consider (those always at 1), but others look like plausible variation due to small sample sizes. Arbitrarily, we proceed by excluding those that hit the max 3 or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, i.e. that we have only one recorded value and the rest are NA. `r colFmt("I'm not super comfortable with this, and think it makes sense to also look at the min/max sample sizes.", "red")`
+Assuming for a moment that the arrests reported in MACR are representative of all actual arrests, a 100% booking rate is implausible. Some smaller jurisdictions may have very high booking rates due to small sample sizes. Arbitrarily, we proceed by excluding those that hit the max 3 or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, i.e. that we have only one recorded value and the rest are NA. `r colFmt("I think it makes sense to also look at the min/max sample sizes.", "red")`
 
 ```{r misdemeanor_booking_rates_1_exclude}
 highJurisdictions <-
@@ -172,9 +178,9 @@ macr.juv <- subset(macr.juv, ncic_jurisdiction %in% rownames(br.juv.yearly))
 macr.juv$ncic_jurisdiction <- droplevels(macr.juv$ncic_jurisdiction)
 ```
 
-Next, we average each jurisdiction's arrests for the misdemeanor set across the years and look at the empirical distribution of arrests.
+Next, we average each jurisdiction's arrests for misdemeanors across years and look at the empirical distribution of booking rates.
 
-```{r misdemeanor_booking_rates_yearly_aggregate}
+```{r 'misdemeanor_booking_rates_yearly_aggregate'}
 br.juv.agg <- 
   getJurisdictionalBookingRatesForOffenseCodeSet(macr.juv, offenseCodes.juv)
 
@@ -186,38 +192,38 @@ plot(density(br.juv.agg), main = "Density Juv Misdemeanors 2005+", xlab = "Booki
 highJurisdictions <- br.juv.agg >= 0.65
 ```
 
-There appears to be a plausible cutoff around 0.65, which includes `r sum(highJurisdictions)` jurisdictions. Their yearly booking rates appear as:
+If we assume that the data are relatively complete, there appears to be a plausible cutoff around 0.65, which includes `r sum(highJurisdictions)` jurisdictions. Their yearly booking rates appear as:
 
-```{r misdemeanor_booking_rates_high_plot}
+```{r 'misdemeanor_booking_rates_high_plot'}
 plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
 ```
 
 While some of these may certainly be valid, we again arbitrarily exclude them from further analysis. `r colFmt("Again, I don't feel great about excluding all of these, but with 21 jurisdictions it might be OK to look at them individually.", "red")`
 
-```{r misdemeanor_booking_rates_high_exclude}
+```{r 'misdemeanor_booking_rates_high_exclude'}
 jurisdictionsToKeep <- names(br.juv.agg)[!highJurisdictions]
 ```
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 rm(highJurisdictions, missingJurisdictions)
 invisible(gc(FALSE))
 ```
 
 ### Serious Felonies
 
-We repeat the above on the diminished set of jurisdictions while instead looking at arrest rates for serious felonies.
+We repeat the above on the diminished set of jurisdictions, but instead looking at arrest rates for serious felonies. Our goal here is to identify jurisdictions that report implausibly low booking rates for serious felonies. 
 
-```{r felony_booking_rates_def}
+```{r 'felony_booking_rates_def'}
 macr.adult <- subset(macr.sub, age >= 18 & ncic_jurisdiction %in% jurisdictionsToKeep)
 macr.adult$ncic_jurisdiction <- droplevels(macr.adult$ncic_jurisdiction)
 
 offenseCodes.adult <- c(6, 14, 25, 8, 9, 12, 27)
-offenseCodeNames.adult <- getNamesForOffenseCodes(offenseCodes.adult)
+offenseCodeNames.adult <- getNameForSummaryOffenseCode(offenseCodes.adult)
 ```
 
 The codes correspond to: `r paste0(paste0(head(offenseCodeNames.adult, -1), collapse = ", "), ", and ", tail(offenseCodeNames.adult, 1))`.
 
-Because the rates for these felonies should be high, we highlight any jursidiction that, for two or moreyears, had a booking rate of less than 80%.
+Because the rates for these felonies should be high, we highlight any jursidiction that, for two or more years, had a booking rate of less than 80%.
 
 ```{r felony_booking_rates_80_def}
 br.adult.yearly <-
@@ -262,6 +268,113 @@ plot(density(br.adult.agg), main = "Density Adult Felonies 2005+", xlab = "Booki
 rm(lowJurisdictions)
 invisible(gc(FALSE))
 ```
+
+### Matched ACHS-MACR data
+
+We obtained a probabilistic record linkage for 2014 and 2015 ACHS and MACR data. We use the linked records to estimate the percentage of arrests reported as booked (from MACR) that were actually booked by department (from ACHS). In other words, we use a simple metric: the number of actual bookings (MACR records linked to ACHS) divided by the number of reported bookings (total bookings in MACR). 
+
+We do not possess a full count of individuals who appear in ACHS. This would have allowed us to directly compare the total number of reported bookings to the total number of actual bookings. We would also be able to see what percentage of people who were booked did not appear in the MACR (though DOJ CJIS retroactively fills some of these in). The data we use here contain only the records that could plausibly be linked between MACR and ACHS. The total number of matches was about 374,000 and there were about 2M (check) reported bookings over the same period. We believe the matching process misses many true matches (a high false negative rate), which means that we expect that even departments that are accurately reporting bookings would fall well below 100%. 
+
+To summarize, we know that:
+- Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
+
+- What about reported cited, but actually booked?
+- The only hypothesis we have that would explain all these issues is that the MACR reflects under-reporting of arrests that are not booked (typically, those that are less serious), thus shrinking the denominator on booking rates and making it seem that booking rates are very high across all crimes. 
+
+To examine the quality of booking data, we primarily focus on deparments and offenses. Departmental practices and systems are likely responsible for the seemingly small percentage of MACR reported bookings that show up in ACHS. 
+Among the 75% of departments from which we would expect enough bookings to compute statistics (>95 felony arrests), we find large variation in the fraction of reported bookings that could be matched to actual bookings. Apart from deparments reporting bookings incorrectly, this could also be due to department-level variation in the quality of personal data reported on the MACR. If some departments reported poor name and date of birth data, we would find fewer corresponding records in ACHS. 
+
+
+
+```{r 'booking_percent_match'}
+intersection <- read.csv("intersection.csv")
+intersection <- data.frame(intersection[,c(2)])
+colnames(intersection) <- "MACR_Record"
+intersection$matched <- TRUE
+denominators <- merge(macr, intersection, by.x="CID", by.y="MACR_Record", all.x = TRUE)
+
+class(denominators$matched)
+byCrimeTot  <- aggregate(denominators$matched, by=list(denominators$bcs_summary_offense_code), length)
+
+denominators$matched[is.na(denominators$matched)] <- FALSE
+byCrimeMatch <- aggregate(denominators$matched==TRUE, by = list(denominators$bcs_summary_offense_code), sum)
+
+bookedCrimes <- merge(byCrimeTot, byCrimeMatch, by="Group.1", all.x=TRUE)
+colnames(bookedCrimes) <- c("bcs_summary_offense_code","total","matched")
+bookedCrimes$propByCrime <- bookedCrimes$matched/bookedCrimes$total
+plot(bookedCrimes$bcs_summary_offense_code,bookedCrimes$propByCrime)
+
+jurisd.n <- read.csv(file="matchedRecs.csv")
+
+jurisd.n$arrest_year <- NULL
+jurisd.n$offense_level <- NULL
+jurisd.n$bcs_offense_code <- NULL
+jurisd.n$arrest_month <- NULL
+jurisd.n$birth_date <- NULL
+jurisd.n$Linkage_Number <- NULL
+
+jurisd <- data.frame
+
+felArrestTot <- aggregate(macr$summary_offense_level=="felony", by = list(macr$ncic_jurisdiction), sum)
+colnames(felArrestTot) <- c("ncic_jurisdiction","felArrestTotal")
+jurisd <- merge(felArrestTot, jurisd, by="ncic_jurisdiction")
+
+misdArrestTot <- aggregate(macr$summary_offense_level=="misdemeanor", by = list(macr$ncic_jurisdiction), sum)
+colnames(misdArrestTot) <- c("ncic_jurisdiction","misdArrestTot")
+jurisd <- merge(misdArrestTot, jurisd, by="ncic_jurisdiction")
+
+repBookTot <- aggregate(macr$status_type=="booked", by = list(macr$ncic_jurisdiction), sum)
+colnames(repBookTot) <- c("ncic_jurisdiction","repBookTot")
+jurisd <- merge(repBookTot, jurisd, by="ncic_jurisdiction")
+
+repCiteTot <- aggregate(macr$status_type=="cited", by = list(macr$ncic_jurisdiction), sum)
+colnames(repCiteTot) <- c("ncic_jurisdiction","repCiteTot")
+jurisd <- merge(repCiteTot, jurisd, by="ncic_jurisdiction")
+
+actualBookTot <- aggregate(mupfe$status_type, by = list(mupfe$ncic_jurisdiction), length)
+colnames(actualBookTot) <- c("ncic_jurisdiction","actualBookTot")
+jurisd <- merge(actualBookTot, jurisd, by="ncic_jurisdiction")
+
+repFelRefTot <- aggregate(macr$disposition=="felony complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repFelRefTot) <- c("ncic_jurisdiction","repFelRefTot")
+jurisd <- merge(repFelRefTot, jurisd, by="ncic_jurisdiction")
+
+repMisdRefTot <- aggregate(macr$disposition=="misdemeanor complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repMisdRefTot) <- c("ncic_jurisdiction","repMisdRefTot")
+jurisd <- merge(repMisdRefTot, jurisd, by="ncic_jurisdiction")
+
+repBothRefTot <- aggregate(macr$disposition=="misdemeanor complaint sought" | macr$disposition=="felony complaint sought", by = list(macr$ncic_jurisdiction), sum)
+colnames(repBothRefTot) <- c("ncic_jurisdiction","repBothRefTot")
+jurisd <- merge(repBothRefTot, jurisd, by="ncic_jurisdiction")
+
+jurisd <- jurisd[,c(1,8,9,6,7,5,3,4,2)]
+
+quantile(jurisd$felArrestTotal)
+#75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
+stat.jurisd <- subset(jurisd, felArrestTotal >= 95)
+
+#zooming out, we see overall aggregated relationships that we'd expect
+plot(log(stat.jurisd[,2:9]))
+
+stat.jurisd$bookMatchPct <- stat.jurisd$actualBookTot / stat.jurisd$repBookTot 
+# there are two departments with matched booking rates higher than 1 (3623 and 3702). One had 271 fel arrests, the other 3031. This suggests that rather than over-reporting bookings, they are under-reporting bookings. Along with some departments that have 100% or nearly 100% match rates, we suspect these departments had their MACR data created from the ACHS data by CJIS. 
+stat.jurisd$ncic_jurisdiction[stat.jurisd$bookMatchPct>1]
+plot(density(stat.jurisd$bookMatchPct, xlim=c(0,1)))
+# the 5th percentile is 9.1% and the 95th percentile on matched records is 31.0%
+quantile(stat.jurisd$bookMatchPct, .05)
+quantile(stat.jurisd$bookMatchPct, .95)
+
+stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRefTot / stat.jurisd$actualBookTot 
+hist(stat.jurisd$actualBookvsRepRefs)
+
+#an alternative metric is to compare the number of reported felony arrests with the number of matched bookings
+stat.jurisd$repFelArrest_actualBook <- stat.jurisd$felArrestTotal / stat.jurisd$repBookTot 
+quantile(stat.jurisd$repFelArrest_actualBook, .05)
+quantile(stat.jurisd$repFelArrest_actualBook, .95)
+
+#we see very little relationship between total arrests (dept. size) and booking matches
+plot(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1))
+lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1)))
 
 ### Final Visualization
 

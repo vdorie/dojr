@@ -4,16 +4,14 @@ output:
   pdf_document: default
   html_document: default
 ---
-
-This section examines the reliability of booking data from MACR (the status_type field). We find that booking data appears to be extremely noisy and generally biased upward. In other words, MACR data about whether someone was cited or booked is unreliable; an implausibly high percentage of arrests are booked. We conclude that researchers who decide they want to use these data must be extremely cautious in assessing it for themselves and in deciding how to use it. We create a table describing the quality of booking data by department, but these quality measures are based on heavy assumptions and should not be the only basis for deciding which data to use.
   
-The first reliability analyses focus on the plausibilty booking rates given what we know from talking with law enforcement personnal. For instance, we consider whether a jurisdiction reports booking 100% of arrests or whether a jurisdiction tends to book juveniles for misdemeanors. In discussions with law enforcement personnel (officers, IT staff, department analysts), we learned that officers typically cite and release for misdemeanors and book for felonies. Individuals we spoke with said they would be skeptical if a department claimed it booked the majority of misdemeanors (only those which pose potential for immediate harm, such as domestic violence, are candidates for booking). Booking someone takes at least 1.5-2 hours, potentially diverting an officer from responding to calls, and requiring a great deal of tedious paperwork.
+  This section examines the reliability of booking data from the MACR database (the status_type field). We find that booking data appears to be extremely noisy and generally biased upward. In other words, MACR data about whether an individual was cited or booked is unreliable; an implausibly high percentage of arrests are recorded as booked. We conclude that researchers who decide they want to use these data must be extremely cautious in assessing the data for themselves and in deciding how to use them. We provide a variable loosely describing the quality of booking data by department, but these quality measures are based on heavy assumptions and should not be the only basis for deciding which data to use.  
+ 
+  The first reliability analyses focus on the plausibility of booking rates given what we know from talking with law enforcement personnel. For instance, we consider whether a jurisdiction reports booking 100% of arrests or whether a jurisdiction tends to book juveniles for misdemeanors. In discussions with law enforcement personnel (officers, IT staff, department analysts), we learned that officers typically cite and release for misdemeanors and book for felonies. Individuals we spoke with said they would be skeptical if a department claimed it booked the majority of misdemeanors (only those which pose potential for immediate harm, such as domestic violence, are candidates for booking). Booking someone takes at least 1.5-2 hours, potentially diverting an officer from responding to calls, and requiring a great deal of tedious paperwork. Individuals who are on probation or parole who are arrested for a misdemeanor must be booked (roughly 22% of individuals arrested in CA are on probation or parole). In addition, individuals who have a warrant out must be booked, and the MACR will show the new crime for which they were arrested. If an individual was stopped, but not arrested until the officer discovered the outstanding warrant, the warrant offense code will be shown on the MACR. 
   
-The second portion of the reliability analyses are based on a probabilistic matching of reported bookings to actual bookings. The reported bookings come from the MACR, while the actual bookings are drawn from the Automated Criminal History System (ACHS). The records in ACHS are created when someone is fingerprinted during jail intake (i.e., booking). Due to data quality issues and because the matching was probabilistic, there are fewer matched bookings in our analyses than there would be if the matching process matching were perfect. This has the overall effect of reducing the percentage of reports of bookings that appear accurate. Only about one in five reported bookings could be matched to an actual booking. The percentage match by department is normally distributed around this figure. In other words, for the average department, we can ony confirm that one in five reported bookings had a corresponding record in a database of actual bookings. We do not know if one in five therefore reflects "accurate" reporting or whether there are systematic biases that have reduced the match percentage beyond artefacts of the data linkage process. Both systematic biases and data linkage problems may produce the one in five figure.
+  The second portion of the reliability analyses are based on a probabilistic matching of reported bookings to actual bookings. The reported bookings come from the MACR, while the actual bookings are drawn from the Automated Criminal History System (ACHS). Records in ACHS are created when someone is fingerprinted during jail intake (i.e., booking). Due to data quality issues and because the matching was probabilistic, there are fewer matched bookings in our analyses than there would be if the matching process matching were perfect. This has the overall effect of reducing the percentage of reports of bookings that appear accurate. Only about one in five reported bookings could be matched to an actual booking. The percentage match by department is normally distributed around this figure. In other words, for the average department, we can ony confirm that one in five reported bookings had a corresponding record in a database of actual bookings. We do not know if one in five therefore reflects "accurate" reporting or whether there are systematic biases that have reduced the match percentage beyond artefacts of the data linkage process. Both systematic biases and data linkage problems may produce the one in five figure.  
 
-One way to examine the plausibilty of booking data by department is to consider the severity of the offense. We expected that arrests for more severe crimes would have a higher match percentage because they were more likely to have actually been booked. Arrests for less serious crimes, that were in reality cited, would have a lower percentage match. Surprisingly, the booking match percentage did not vary by the severity of offense. The booking match percentage stays approximately the same from homicide to misdemeanors. One potential explanation is that there is missing data about arrests for less serious crimes. If this is the case, it may be that the design of police record management systems automate reporting of booked arrests, but still require manual entry of cited arrests. Continuing with this hypothetical, we would expect arrests for serious crimes to be closer to the their true number, while arrests for less serious crimes are undercounted, particularly those that are cited. 
-
-To sum up, the best tentative explanation we can find for all the booking data discrepancies is that a large proportion of arrests for less serious crimes, which did not result in a booking, are simply missing from the MACR. In other words, we may not know the real denominator of total arrests for less serious crimes. This would affect studies that examine the propensity to book arrested individuals across department, crime, or demographic group. 
+  One way to examine the plausibilty of booking data by department is to consider the severity of the offense. We expected that arrests for more severe crimes would have a higher match percentage because they were more likely to have actually been booked. Arrests for less serious crimes, that were in fact cited, would have a lower percentage match. Surprisingly, the booking match percentage did not vary much by the severity of offense. The booking match percentage only declines slightly from homicide to misdemeanors. One unexplored potential explanation is that there are missing data about arrests for less serious crimes (perhaps due to automatic entry of bookings into the agency's record-management system). In other words, we may not know the real denominator of total arrests for less serious crimes. This would affect studies that examine the propensity to book arrested individuals across department, crime, or demographic group. 
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -85,7 +83,7 @@ invisible(gc(FALSE))
 
 ## Abnormal Booking Rates
 
-Our goal at this stage is to assess the reliability of jurisdictions in their reporting. We can look for jursidictions that are reporting abornomally high or low rates on crimes of respectively low or high seriousness. We first focus on booking rates of juveniles (less likely to be booked compared to adults) for less serious crimes (less likely to be booked compared to more serious crimes). An analysis of booking rates for individual offense codes (not shown here) indicates a large amount of variability across years and jursidictions, so we instead consider measures that aggregate arrests *before* computing booking rates. That is, we define rates such as:
+Our goal at this stage is to assess the reliability of jurisdictions in their reporting. We can look for jursidictions that are reporting abornomally high booking rates for less serious crimes or low booking rates for serious crimes. We first focus on booking rates of juveniles for less serious crimes. An analysis of booking rates for individual offense codes (not shown here) indicates a large amount of variability across years and jursidictions, so we instead consider measures that aggregate arrests *before* computing booking rates. That is, we define rates such as:
 
 $$
 \text{mostly-harmless-booking-rate} = \dfrac{\text{num juveniles booked for selected codes}}{\text{total num juveniles arrested for selected codes}}
@@ -167,7 +165,7 @@ There are `r sum(highJurisdictions)` jursidictions that have a booking rate in e
 plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
 ```
 
-Assuming for a moment that the arrests reported in MACR are representative of all actual arrests, a 100% booking rate is implausible. Some smaller jurisdictions may have very high booking rates due to small sample sizes. Arbitrarily, we proceed by excluding those that hit the max 3 or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, i.e. that we have only one recorded value and the rest are NA. `r rmdColFmt("red", "I think it makes sense to also look at the min/max sample sizes.")`
+Although a 100% booking rate is implausible some smaller jurisdictions may have very high booking rates due to small sample sizes. Arbitrarily, we proceed by excluding those that approach 100% three or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, such as those for which have only one recorded value. `r rmdColFmt("red", "I think it makes sense to also look at the min/max sample sizes.")`
 
 ```{r 'misdemeanor_booking_rates_1_exclude'}
 highJurisdictions <-
@@ -181,7 +179,6 @@ br.juv.yearly <- br.juv.yearly[!missingJurisdictions,]
 macr.juv <- subset(macr.juv, ncic_jurisdiction %in% rownames(br.juv.yearly))
 macr.juv$ncic_jurisdiction <- droplevels(macr.juv$ncic_jurisdiction)
 ```
-
 Next, we average each jurisdiction's arrests for misdemeanors across years and look at the empirical distribution of booking rates.
 
 ```{r 'misdemeanor_booking_rates_yearly_aggregate'}
@@ -215,7 +212,7 @@ invisible(gc(FALSE))
 
 ### Serious Felonies
 
-We repeat the above on the diminished set of jurisdictions, but instead looking at arrest rates for serious felonies. Our goal here is to identify jurisdictions that report implausibly low booking rates for serious felonies. 
+We repeat the above on the diminished set of jurisdictions, but instead looking at arrest rates for serious felonies. Our goal is to identify jurisdictions that report implausibly low booking rates for serious felonies. 
 
 ```{r 'felony_booking_rates_def'}
 macr.adult <- subset(macr.sub, age >= 18 & ncic_jurisdiction %in% jurisdictionsToKeep)
@@ -227,7 +224,7 @@ offenseCodeNames.adult <- getNameForSummaryOffenseCode(offenseCodes.adult)
 
 The codes correspond to: `r paste0(paste0(head(offenseCodeNames.adult, -1), collapse = ", "), ", and ", tail(offenseCodeNames.adult, 1))`.
 
-Because the rates for these felonies should be high, we highlight any jursidiction that, for two or more years, had a booking rate of less than 80%.
+Because the rates for these felonies should be high, we highlight any jursidiction that, for two or more years, had a booking rate lower than 80%.
 
 ```{r 'felony_booking_rates_80_def'}
 br.adult.yearly <-
@@ -277,16 +274,9 @@ invisible(gc(FALSE))
 
 We obtained a probabilistic record linkage for 2014 and 2015 ACHS and MACR data. We use the linked records to estimate the percentage of arrests reported as booked (from MACR) that were actually booked by department (from ACHS). In other words, we use a simple metric: the number of actual bookings (MACR records linked to ACHS) divided by the number of reported bookings (total bookings in MACR). 
 
-We do not possess a full count of individuals who appear in ACHS. This would have allowed us to directly compare the total number of reported bookings to the total number of actual bookings. We would also be able to see what percentage of people who were booked did not appear in the MACR (though DOJ CJIS retroactively fills some of these in). The data we use here contain only the records that could plausibly be linked between MACR and ACHS. The total number of matches was about 374,000 and there were about 2M (check) reported bookings over the same period. We believe the matching process misses many true matches (a high false negative rate), which means that we expect that even departments that are accurately reporting bookings would fall well below 100%. 
+We do not possess a full count of individuals who appear in ACHS. This would have allowed us to directly compare the total number of reported bookings to the total number of actual bookings. We would also be able to see what percentage of people who were booked did not appear in the MACR (though DOJ CJIS retroactively fills some of these in). The data we use here contain only the records that could plausibly be linked between MACR and ACHS. The total number of matches was about 374,000 and there were about 2M reported bookings over the same period (out of 2.9M arrests). We believe the matching process misses many true matches (a high false negative rate), which means that we expect that even departments that are accurately reporting bookings would fall well below 100%. 
 
-To summarize, we know that:
-- Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
-
-- What about reported cited, but actually booked?
-- The only hypothesis we have that would explain all these issues is that the MACR reflects under-reporting of arrests that are not booked (typically, those that are less serious), thus shrinking the denominator on booking rates and making it seem that booking rates are very high across all crimes. 
-
-To examine the quality of booking data, we primarily focus on deparments and offenses. Departmental practices and systems are likely responsible for the seemingly small percentage of MACR reported bookings that show up in ACHS. 
-Among the 75% of departments from which we would expect enough bookings to compute statistics (>95 felony arrests), we find large variation in the fraction of reported bookings that could be matched to actual bookings. Apart from deparments reporting bookings incorrectly, this could also be due to department-level variation in the quality of personal data reported on the MACR. If some departments reported poor name and date of birth data, we would find fewer corresponding records in ACHS. 
+To examine the quality of booking data, we primarily focus on deparments and offenses. Departmental practices and systems may be responsible for the seemingly small percentage of MACR reported bookings that show up in ACHS. Among the 75% of departments from which we would expect enough bookings to compute statistics (>95 felony arrests), we find large variation in the fraction of reported bookings that could be matched to actual bookings. Apart from deparments reporting bookings incorrectly, this could also be due to department-level variation in the quality of personal data reported on the MACR. If some departments reported poor name and date of birth data, we would find fewer corresponding records in ACHS. 
 
 ```{r 'booking_percent_match'}
 intersection <- read.csv("intersection.csv", stringsAsFactors = FALSE)
@@ -383,14 +373,14 @@ lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.j
 
 ### Final Visualization
 
-At this point, the `r nrow(br.adult.yearly)` jurisdictions that remain seem to be adequate. Their booking rates for juvenile misdemeanors are:
+At this point, the `r nrow(br.adult.yearly)` jurisdictions that remain seem to be adequate in terms of variabilty. Their booking rates for juvenile misdemeanors are:
 
 ```{r 'misdemeanor_booking_rates_plot'}
 br.juv.yearly <- br.juv.yearly[rownames(br.juv.yearly) %in% rownames(br.adult.yearly),]
 plotBookingRateGrid(br.juv.yearly, gridRatio)
 ```
 
-Their (mostly boring) yearly booking rates for serious felonies are:
+The yearly booking rates for serious felonies are:
 
 ```{r 'felony_booking_rates_plot'}
 plotBookingRateGrid(br.adult.yearly, gridRatio)
@@ -463,6 +453,11 @@ br.misdemeanor <- br$misdemeanor[order(br$misdemeanor[,1], decreasing = TRUE),]
 rownames(br.misdemeanor) <- substr(rownames(br.misdemeanor), 1, 12)
 round(br.misdemeanor, 2)
 ```
+To summarize, we know that:
+- Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
+- Reported booking rates, even for less serious misdemeanors, appear to be too high 
+- The percentage of individuals arrested who are on parole or probation (22%) is too low to explain these high booking rates
+- The only hypothesis we have that would explain all these issues is that the MACR reflects under-reporting of arrests that are not booked (typically, those that are less serious), thus shrinking the denominator on booking rates and making it seem that booking rates are very high across all crimes. 
 
 ```{r echo = FALSE}
 invisible(gc(FALSE))

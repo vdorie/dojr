@@ -4,3 +4,5 @@
 *.swp
 common/data/*.Rdata
 import/obts/src/dbCredentials.properties
+bookingRates/intersection.csv
+bookingRates/matchedRecs.csv

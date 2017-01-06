@@ -21,6 +21,7 @@ imgFiles <- file.path("..", imgPath, c("analysis_bookingRates_juvenileMisdemeano
                                        "analysis_bookingRates_adultFelonies_1.pdf",
                                        "analysis_bookingRates_adultFelonies_2.pdf",
                                        "analysis_bookingRates_bookingProportions.pdf",
+                                       "analysis_bookingRates_logStat.pdf",
                                        "analysis_bookingRates_bookedMatchedDensity.pdf",
                                        "analysis_bookingRates_actualBookedHist.pdf",
                                        "analysis_bookingRates_repBookedVDiff.pdf",
@@ -422,6 +423,8 @@ if (runAnalysis) {
 }
 ```
 
+`r rmdImageInline(file.path(imgPath, "analysis_bookingRates_logStat.pdf"))`
+
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_bookedMatchedDensity.pdf"))`
 
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_actualBookedHist.pdf"))`
@@ -551,8 +554,6 @@ cat(nativeFormat(tab, size = "scriptsize"), sep = "\n")
 
 rm(tab)
 ```
-
-
 
 To summarize, we know that:
 - Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%

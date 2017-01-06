@@ -34,7 +34,7 @@ if (length(getHook("before.plot.new")) == 0L) setHook("before.plot.new", functio
 })
 
 discrete.histogram <- function(x, gap = 0.5, xlab = xname, ylab = "Freq",
-                               main = paste("Discrete Histogram of", xname), ...) {
+                               main = paste("Histogram of", xname), ...) {
   dotsList <- list(...)
   xname <- paste(deparse(substitute(x), 500), collapse = "\n")
   

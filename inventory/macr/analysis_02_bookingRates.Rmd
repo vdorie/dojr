@@ -159,7 +159,7 @@ if (runAnalysis) {
 }
 ```
 
-The codes are: `r juvenileOffenseCodes`. One immediate cause for concern is the number of jursidictions that, for some years, have reported booking rates close to 100%. Specifically,`r numHighJurisdictions` jursidictions that have a booking rate in excess of 0.99 for at least two years.
+The codes are: `r juvenileOffenseCodes`. One immediate cause for concern is the number of jursidictions that, for some years, have reported booking rates close to 100%. Each line in the figure below represents a separate law enforcement agency's yearly booking rate beginning in 2005. The figure includes the,`r numHighJurisdictions` jursidictions that have a booking rate in excess of 0.99 for at least two years. 
 
 ```{r 'analysis_bookingRates_misdemeanor_booking_rates_1_plot', echo = FALSE}
 if (runAnalysis) {
@@ -171,7 +171,7 @@ if (runAnalysis) {
 
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_juvenileMisdemeanors_1.pdf"))`
 
-Although a 100% booking rate is implausible some smaller jurisdictions may have very high booking rates due to small sample sizes. Arbitrarily, we proceed by excluding those that approach 100% three or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, such as those for which have only one recorded value.
+Although a 100% booking rate is implausible, some smaller jurisdictions may have very high booking rates due to small sample sizes. Arbitrarily, we proceed by excluding those that approach 100% three or more times. Another simple cut can be made by excluding jursidictions that are mostly missing, such as those for which have only one recorded value.
 
 ```{r 'analysis_bookingRates_misdemeanor_booking_rates_1_exclude', echo = FALSE}
 if (runAnalysis) {
@@ -188,7 +188,7 @@ if (runAnalysis) {
 }
 ```
 
-Next, we average each jurisdiction's arrests for misdemeanors across years and look at the empirical distribution of booking rates.
+Next, we average each jurisdiction's arrests of juveniles for misdemeanors across years and look at the empirical distribution of booking rates.
 
 ```{r 'analysis_bookingRates_misdemeanor_booking_rates_yearly_aggregate', echo = FALSE}
 if (runAnalysis) {
@@ -197,7 +197,7 @@ if (runAnalysis) {
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_juvenileMisdemeanors_2.pdf"), 3, 3)
   par(mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
-  hist(br.juv.agg, main = "Histogram Juv Misdemeanors 2005+",
+  hist(br.juv.agg, main = "Hist. Juv. Misd., 2005+",
        xlab = "Booking Rate", breaks = 20)
   dev.off()
   
@@ -227,11 +227,11 @@ If we assume that the data are relatively complete, there appears to be a plausi
 
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_juvenileMisdemeanors_3.pdf"))`
 
-While some of these may certainly be valid, we again arbitrarily exclude them from further analysis.
+While some of these may certainly be valid, we remove them from further analysis because their booking rates are suspiciously high and most appear to have too much year-to-year variation in their booking rates.
 
 #### Serious Felonies
 
-We repeat the above on the diminished set of jurisdictions, but instead looking at arrest rates for serious felonies. Our goal is to identify jurisdictions that report implausibly low booking rates for serious felonies. 
+We repeat the above on the reduced set of jurisdictions, but instead of looking at arrest rates for serious felonies. Our goal is to identify jurisdictions that report implausibly low booking rates for serious felonies. 
 
 ```{r 'analysis_bookingRates_felony_booking_rates_def', echo = FALSE}
 if (runAnalysis) {
@@ -265,11 +265,11 @@ if (runAnalysis) {
 }
 ```
 
-The codes correspond to: `r adultOffenseCodes`. Because the rates for these felonies should be high, we highlight any jursidiction that, for two or more years, had a booking rate lower than 80%. This includes `r numLowJurisdictions` jursidictions:
+The codes correspond to: `r adultOffenseCodes`. Because the rates for these felonies should be high, we highlight any jursidiction that, for two or more years, had a booking rate lower than 80%. This includes `r numLowJurisdictions` jursidictions for which booking rates from 2005 onward are illustrated below:
 
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_adultFelonies_1.pdf"))`
 
-For comparison, the typical jurisdiction has a straight line near 100%. Some of these look categorically low, including the set in the middle which all decline and increase with each other; others seem like the natural variation that might come with small sample sizes. For that reason, we set the threshold at three years. Again we look at the empirical distribution of the aggregate across years.
+For comparison, the typical jurisdiction has a straight line near 100%. Some of these look categorically low, including the set in the middle which all decline and increase with each other; others may reflect the variation associated with small sample sizes. For that reason, we set the threshold at three years. Again we look at booking rates across years.
 
 ```{r 'analysis_bookingRates_felony_booking_rates_80_exclude', echo = FALSE}
 if (runAnalysis) {
@@ -287,7 +287,7 @@ if (runAnalysis) {
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_adultFelonies_2.pdf"), 3, 3)
   par(mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
-  hist(br.adult.agg, main = "Histogram Adult Felonies 2005+",
+  hist(br.adult.agg, main = "Hist. Adult Felonies 2005+",
        xlab = "Booking Rate", breaks = 20)
   dev.off()
   
@@ -309,7 +309,6 @@ if (runAnalysis) {
 We obtained a probabilistic record linkage for 2014 and 2015 ACHS and MACR data. We use the linked records to estimate the percentage of arrests reported as booked (from MACR) that were actually booked by department (from ACHS). In other words, we use a simple metric: the number of actual bookings (MACR records linked to ACHS) divided by the number of reported bookings (total bookings in MACR). 
 
 We do not possess a full count of individuals who appear in ACHS. This would have allowed us to directly compare the total number of reported bookings to the total number of actual bookings. We would also be able to see what percentage of people who were booked did not appear in the MACR (though DOJ CJIS retroactively fills some of these in). The data we use here contain only the records that could plausibly be linked between MACR and ACHS. The total number of matches was about 374,000 and there were about 2M reported bookings over the same period (out of 2.9M arrests). We believe the matching process misses many true matches (a high false negative rate), which means that we expect that even departments that are accurately reporting bookings would fall well below 100%. 
-
 To examine the quality of booking data, we primarily focus on deparments and offenses. Departmental practices and systems may be responsible for the seemingly small percentage of MACR reported bookings that show up in ACHS. Among the 75% of departments from which we would expect enough bookings to compute statistics (>95 felony arrests), we find large variation in the fraction of reported bookings that could be matched to actual bookings. Apart from deparments reporting bookings incorrectly, this could also be due to department-level variation in the quality of personal data reported on the MACR. If some departments reported poor name and date of birth data, we would find fewer corresponding records in ACHS. 
 
 ```{r 'analysis_bookingRates_booking_percent_match_bySumOffenseCode', echo = FALSE}
@@ -348,7 +347,7 @@ if (runAnalysis) {
          ylim = range(lower, p, upper, na.rm = TRUE),
          xlab = "summary offense code",
          ylab = "percentage matched",
-         main = "percentage of MACR bookings matched to ACHS by offense")
+         main = "MACR-ACHS bookings match by offense")
     plotOrder <- order(levels(bcs_summary_offense_code))
     lines(rbind(plotOrder, plotOrder, NA),
           rbind(lower, upper, NA))
@@ -387,10 +386,12 @@ if (runAnalysis) {
   #75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
   stat.jurisd <- subset(jurisd, felArrestTot >= 95)
   
-  #zooming out, we see overall aggregated relationships that we'd expect
-  
+``` 
+One item that gives us some condfidence that the booking data contain useful signal is their scatterplots versus other variables on the MACR. We observe the relationships that we would expect. 
+
+```{r 'booking_percent_match_3', echo = FALSE}   
   pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 6, 6)
-  plot(log(stat.jurisd[,2:9]))
+  plot(log(stat.jurisd[,2:9]), main = "scatterplots of MACR variables")
   dev.off()
 
   stat.jurisd$bookMatchPct <- stat.jurisd$actualBookTot / stat.jurisd$repBookTot
@@ -398,7 +399,7 @@ if (runAnalysis) {
 #stat.jurisd$ncic_jurisdiction[stat.jurisd$bookMatchPct > 1]
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_bookedMatchedDensity.pdf"), 3, 3)
-  plot(density(stat.jurisd$bookMatchPct), xlim=c(0,1))
+  plot(density(stat.jurisd$bookMatchPct), xlim=c(0,1), main="distribution of department booking match averages")
   dev.off()
   # the 5th percentile is 9.1% and the 95th percentile on matched records is 31.0%
   #quantile(stat.jurisd$bookMatchPct, .05)
@@ -407,7 +408,7 @@ if (runAnalysis) {
   stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRefTot / stat.jurisd$actualBookTot 
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_actualBookedHist.pdf"), 3, 3)
-  hist(stat.jurisd$actualBookvsRepRefs)
+  hist(stat.jurisd$actualBookvsRepRefs, main="department ratios of reported to matched bookings", breaks=50, xlab="ratio")
   dev.off()
 
   #an alternative metric is to compare the number of reported felony arrests with the number of matched bookings
@@ -417,7 +418,7 @@ if (runAnalysis) {
   
   #we see very little relationship between total arrests (dept. size) and booking matches
   pdf(file.path("..", imgPath, "analysis_bookingRates_repBookedVDiff.pdf"), 3, 3)
-  plot(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1))
+  plot(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot, ylim=c(0,1), main="proportion of matched bookings by arrest volume", xlab="ln(department arrests)", ylab = "proportion of reported bookings matched")
   lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1)))
   dev.off()
 }
@@ -556,10 +557,11 @@ rm(tab)
 ```
 
 To summarize, we know that:
-- Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
-- Reported booking rates, even for less serious misdemeanors, appear to be too high 
-- The percentage of individuals arrested who are on parole or probation (22%) is too low to explain these high booking rates
-- The only hypothesis we have that would explain all these issues is that the MACR reflects under-reporting of arrests that are not booked (typically, those that are less serious), thus shrinking the denominator on booking rates and making it seem that booking rates are very high across all crimes. 
+* Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
+* Reported booking rates, even for less serious misdemeanors, appear to be too high 
+* The percentage of individuals arrested who are on parole or probation (22%) is too low to explain these high booking rates
+* The scatterplots comparing bookings to other variables seem reasonable, suggesting there is useful information in the status_type field
+* The only hypothesis we have that would explain all these issues is that the MACR reflects under-reporting of arrests that are not booked (typically, those that are less serious), thus shrinking the denominator on booking rates and making it seem that booking rates are very high across all crimes. There may be other explanations and we think it might be worth our calling several different police departments to speak with their records staff. 
 
 ```{r echo = FALSE}
 invisible(gc(FALSE))

@@ -165,7 +165,7 @@ The codes are: `r juvenileOffenseCodes`. One immediate cause for concern is the 
 if (runAnalysis) {
   pdf(file.path("..", imgPath, "analysis_bookingRates_juvenileMisdemeanors_1.pdf"), 6, 7.76)
   plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
-  dev.off()
+  invisible(dev.off())
 }
 ```
 
@@ -195,11 +195,11 @@ if (runAnalysis) {
   br.juv.agg <- 
     getJurisdictionalBookingRatesForOffenseCodeSet(macr.juv, offenseCodes.juv)
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_juvenileMisdemeanors_2.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_juvenileMisdemeanors_2.pdf"), 4.5, 4.5)
   par(mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
   hist(br.juv.agg, main = "Hist. Juv. Misd., 2005+",
        xlab = "Booking Rate", breaks = 20)
-  dev.off()
+  invisible(dev.off())
   
   highJurisdictions <- br.juv.agg >= 0.65
   
@@ -207,7 +207,7 @@ if (runAnalysis) {
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_juvenileMisdemeanors_3.pdf"), 6, 7.76)
   plotBookingRateGrid(br.juv.yearly[highJurisdictions,], gridRatio)
-  dev.off()
+  invisible(dev.off())
   
   writeLines(as.character(numHighJurisdictions),
              file.path("..", txtPath, "analysis_bookingRates_juvenileMisdemeanors_2.txt"))
@@ -253,7 +253,7 @@ if (runAnalysis) {
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_adultFelonies_1.pdf"), 6, 7.76)
   plotBookingRateGrid(br.adult.yearly[lowJurisdictions,], gridRatio)
-  dev.off()
+  invisible(dev.off())
   
   writeLines(c(adultOffenseCodes, as.character(numLowJurisdictions)),
              file.path("..", txtPath, "analysis_bookingRates_adultFelonies.txt"))
@@ -285,11 +285,11 @@ if (runAnalysis) {
   br.adult.agg <- 
     getJurisdictionalBookingRatesForOffenseCodeSet(macr.adult, offenseCodes.adult)
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_adultFelonies_2.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_adultFelonies_2.pdf"), 4.5, 4.5)
   par(mar = c(2.2, 2.2, 2.0, 0.1), mgp = c(1.2, 0.3, 0.0), tcl = -0.5)
   hist(br.adult.agg, main = "Hist. Adult Felonies 2005+",
        xlab = "Booking Rate", breaks = 20)
-  dev.off()
+  invisible(dev.off())
   
   numRemainingJurisdictions <- nrow(br.adult.yearly)
   writeLines(as.character(numRemainingJurisdictions), 
@@ -332,7 +332,7 @@ if (runAnalysis) {
   colnames(bookedCrimes) <- c("bcs_summary_offense_code", "total", "matched")
   bookedCrimes$propByCrime <- with(bookedCrimes, matched / total)
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_bookingProportions.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_bookingProportions.pdf"), 4.5, 4.5)
   with(bookedCrimes, {
     n <- total
     x <- matched
@@ -352,13 +352,13 @@ if (runAnalysis) {
     lines(rbind(plotOrder, plotOrder, NA),
           rbind(lower, upper, NA))
   })
-  dev.off()
+  invisible(dev.off())
 }
 ```
 
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_bookingProportions.pdf"))`
 
-```{r 'booking_percent_match_2', echo = FALSE}
+```{r 'analysis_bookingRates_booking_percent_match_2', echo = FALSE}
 if (runAnalysis) {
   jurisd.n <- read.csv(file.path("data", "matchedRecs.csv"))
   jurisd.n <- jurisd.n[,c("ncic_jurisdiction", "summary_offense_level", "bcs_summary_offense_code", "status_type", "disposition")]
@@ -385,31 +385,32 @@ if (runAnalysis) {
   #quantile(jurisd$felArrestTotal)
   #75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
   stat.jurisd <- subset(jurisd, felArrestTot >= 95)
-  
+}
 ``` 
 One item that gives us some condfidence that the booking data contain useful signal is their scatterplots versus other variables on the MACR. We observe the relationships that we would expect. 
 
-```{r 'booking_percent_match_3', echo = FALSE}   
+```{r 'booking_percent_match_3', echo = FALSE}
+if (runAnalysis) {
   pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 6, 6)
   plot(log(stat.jurisd[,2:9]), main = "scatterplots of MACR variables")
-  dev.off()
+  invisible(dev.off())
 
   stat.jurisd$bookMatchPct <- stat.jurisd$actualBookTot / stat.jurisd$repBookTot
   # there are two departments with matched booking rates higher than 1 (3623 and 3702). One had 271 fel arrests, the other 3031. This suggeststhat rather than over-reporting bookings, they are under-reporting bookings. Along with some departments that have 100% or nearly 100% match rates, we suspect these departments had their MACR data created from the ACHS data by CJIS. 
 #stat.jurisd$ncic_jurisdiction[stat.jurisd$bookMatchPct > 1]
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_bookedMatchedDensity.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_bookedMatchedDensity.pdf"), 4.5, 4.5)
   plot(density(stat.jurisd$bookMatchPct), xlim=c(0,1), main="distribution of department booking match averages")
-  dev.off()
+  invisible(dev.off())
   # the 5th percentile is 9.1% and the 95th percentile on matched records is 31.0%
   #quantile(stat.jurisd$bookMatchPct, .05)
   #quantile(stat.jurisd$bookMatchPct, .95)
 
   stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRefTot / stat.jurisd$actualBookTot 
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_actualBookedHist.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_actualBookedHist.pdf"), 4.5, 4.5)
   hist(stat.jurisd$actualBookvsRepRefs, main="department ratios of reported to matched bookings", breaks=50, xlab="ratio")
-  dev.off()
+  invisible(dev.off())
 
   #an alternative metric is to compare the number of reported felony arrests with the number of matched bookings
   stat.jurisd$repFelArrest_actualBook <- stat.jurisd$felArrestTot / stat.jurisd$repBookTot 
@@ -417,10 +418,14 @@ One item that gives us some condfidence that the booking data contain useful sig
   #quantile(stat.jurisd$repFelArrest_actualBook, .95)
   
   #we see very little relationship between total arrests (dept. size) and booking matches
-  pdf(file.path("..", imgPath, "analysis_bookingRates_repBookedVDiff.pdf"), 3, 3)
-  plot(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot, ylim=c(0,1), main="proportion of matched bookings by arrest volume", xlab="ln(department arrests)", ylab = "proportion of reported bookings matched")
-  lines(loess.smooth(log(stat.jurisd$repBookTot), (stat.jurisd$repBookTot - stat.jurisd$actualBookTot)/stat.jurisd$repBookTot, ylim=c(0,1)))
-  dev.off()
+  pdf(file.path("..", imgPath, "analysis_bookingRates_repBookedVDiff.pdf"), 4.5, 4.5)
+  plot(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot,
+       ylim = c(0, 1),
+       main = "proportion of matched bookings by arrest volume",
+       xlab = "ln(department arrests)",
+       ylab = "proportion of reported bookings matched")
+  lines(loess.smooth(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot, ylim=c(0,1)))
+  invisible(dev.off())
 }
 ```
 
@@ -442,7 +447,7 @@ if (runAnalysis) {
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_remaining_1.pdf"), 6, 7.76)
   plotBookingRateGrid(br.juv.yearly, gridRatio)
-  dev.off()
+  invisible(dev.off())
 }
 ```
 
@@ -454,7 +459,7 @@ The yearly booking rates for serious felonies are:
 if (runAnalysis) {
   pdf(file.path("..", imgPath, "analysis_bookingRates_remaining_2.pdf"), 6, 7.76)
   plotBookingRateGrid(br.adult.yearly, gridRatio)
-  dev.off()
+  invisible(dev.off())
 }
 ```
 
@@ -535,14 +540,23 @@ if (runAnalysis) {
 }
 ```
 
+`r if (rmdGetOutputFormat() == "latex") "\\blandscape" else ""`
+
 ### Juvenile Misdemeanors
+
 ```{r echo = FALSE, results = "asis"}
 tab <- round(br.misdemeanor, 2)
 tab[["offense code"]] <- rownames(tab)
 rownames(tab) <- NULL
 tab <- tab[,c("offense code", setdiff(colnames(tab), "offense code"))]
-cat(nativeFormat(tab, size = "scriptsize"), sep = "\n")
+cat(nativeFormat(tab, size = "footnotesize", width = 9,
+                 colWidths = sapply(seq_along(tab), function(i) max(nchar(tab[[i]]), nchar(colnames(tab)[i])))),
+    sep = "\n")
 ```
+
+`r if (rmdGetOutputFormat() == "latex") "\\elandscape" else ""`
+
+`r if (rmdGetOutputFormat() == "latex") "\\blandscape" else ""`
 
 ### Adult Felonies
 
@@ -551,12 +565,17 @@ tab <- round(br.felony, 2)
 tab[["offense code"]] <- rownames(tab)
 rownames(tab) <- NULL
 tab <- tab[,c("offense code", setdiff(colnames(tab), "offense code"))]
-cat(nativeFormat(tab, size = "scriptsize"), sep = "\n")
+cat(nativeFormat(tab, size = "footnotesize", width = 9,
+                 colWidths = sapply(seq_along(tab), function(i) max(nchar(tab[[i]]), nchar(colnames(tab)[i])))),
+    sep = "\n")
 
 rm(tab)
 ```
 
+`r if (rmdGetOutputFormat() == "latex") "\\elandscape" else ""`
+
 To summarize, we know that:
+
 * Due to the high false negative rate in linking records, the match percentage of a department that accurately reports bookings will be below 100%
 * Reported booking rates, even for less serious misdemeanors, appear to be too high 
 * The percentage of individuals arrested who are on parole or probation (22%) is too low to explain these high booking rates

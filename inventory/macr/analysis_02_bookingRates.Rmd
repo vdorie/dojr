@@ -389,7 +389,7 @@ if (runAnalysis) {
   
   #zooming out, we see overall aggregated relationships that we'd expect
   
-  pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 3, 3)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 6, 6)
   plot(log(stat.jurisd[,2:9]))
   dev.off()
 

@@ -12,7 +12,7 @@ def main():
 
     passwd = getpass.getpass()
 
-    url = urlparse.urlparse("postgress://postgres@localhost:5432/postgres")
+    url = urlparse.urlparse("postgress://postgres@hdcvmappsvr32.rescs.caldoj.local:5432/postgres")
 
     with psycopg2.connect(database=url.path[1:], user=url.username,
         password=passwd, host=url.hostname, port=url.port) as conn:

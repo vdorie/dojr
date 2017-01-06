@@ -2,5 +2,7 @@
 .Rhistory
 .Rapp.history
 *.swp
-common/data/*.Rdata
+*.Rdata
 import/obts/src/dbCredentials.properties
+bookingRates/intersection.csv
+bookingRates/matchedRecs.csv

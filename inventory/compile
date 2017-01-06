@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ "$#" -ne 1 ]; then
+    echo "usage: compile DATANAME"
+    exit -1
+fi
+
+DATANAME=$1
+DATANAME_U=$(echo $DATANAME | tr '[:lower:]' '[:upper:]')
+
+MARKDOWN_FILE="inventory_${DATANAME}.Rmd"
+
+sed -e "s/__DATANAME__/${DATANAME}/" -e "s/__DATANAME_U__/${DATANAME_U}/" inventory.Rmd > "${MARKDOWN_FILE}"
+
+R --no-save -e "rmarkdown::render('$MARKDOWN_FILE')"
+
+rm "$MARKDOWN_FILE"
+
+exit 0
+

@@ -197,7 +197,7 @@ if (!cleanPerformed || !file.exists(txtFile)) {
 rm(txtFile)
 ```
 
-Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age. `r rmdColFmt("red", "TODO: transition")`
+Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age.
 
 ```{r 'clean_birthdate_3', echo = FALSE}
 rm(numDiscrepancyBirthYear); if (exists("pl")) rm(pl)

@@ -1,2 +1,4 @@
 img/*
 txt/*
+data/intersection.csv
+data/matchedRecs.csv

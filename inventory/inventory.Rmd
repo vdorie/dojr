@@ -1,5 +1,5 @@
 ---
-title: "OBTS Data Inventory"
+title: "__DATANAME_U__ Data Inventory"
 output:
   pdf_document:
     includes:
@@ -20,8 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ##
 ## and will look for a target file in ../common/data, which is to be shared by all projects
 
-datasetName <- "OBTS"
-datasetDir  <- "obts"
+datasetName <- "__DATANAME_U__"
+datasetDir  <- "__DATANAME__"
 
 srcPath <- file.path("src")
 
@@ -60,11 +60,11 @@ for (i in seq_len(nrow(tables))) {
   
   firstFive <- formatFirstFiveRows(tables$name[i])
   if (length(firstFive) != 1L || firstFive != "")
-    cat("#### Sample Rows\n\n", firstFive, "\n", sep = "\n")
+    cat("#### Sample Rows\n\n", paste0(firstFive, collapse = "\n"), "\n", sep = "")
   
   variablesSummary <- summarizeVariables(tables$name[i])
   if (length(variablesSummary) != 1L || variablesSummary != "")
-    cat("#### Variable Summary\n\n", rmdFormat(variablesSummary, maxRows = NA), "\n", sep = "\n")
+    cat("#### Variable Summary\n\n", paste0(rmdFormat(variablesSummary, maxRows = NA), collapse = "\n"), "\n\n", sep = "")
 }
 rm(i, firstFive, variablesSummary)
 ```
@@ -117,5 +117,17 @@ rm(i, pageBreak, firstVariable, variable, variableSummary)
 ```{r 'clean_include', child = if (file.exists(cleanFile <- file.path(datasetDir, "clean.Rmd"))) cleanFile else NULL }
 ```
 
-```{r 'analysis_include', child = if (file.exists(analysisFile <- file.path(datasetDir, "analysis.Rmd"))) analysisFile else NULL}
+```{r 'analysis_include', echo = FALSE, results = 'asis'}
+analysisFiles <- list.files(datasetDir, "analysis_")
+if (length(analysisFiles) > 0L) {
+  analysisDir <- file.path(normalizePath(getwd()), datasetDir)
+  
+  for (i in seq_along(analysisFiles)) {
+    if (i > 1L) cat(rmdPageBreak())
+    cat(knitr::knit_child(file.path(analysisDir, analysisFiles[i]), options = list(root.dir = analysisDir), quiet = TRUE), "\n\n", sep = "")
+  }
+  
+  rm(i, analysisDir)
+}
+rm(analysisFiles)
 ```

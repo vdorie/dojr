@@ -1,22 +1,3 @@
-getGridDim <- function(widthToHeight, n) {
-  rows <- sqrt(n / widthToHeight)
-  cols <- widthToHeight * rows
-  
-  result <- matrix(c(
-    floor(rows), floor(cols),
-    floor(rows), ceiling(cols),
-    ceiling(rows), floor(cols),
-    ceiling(rows), ceiling(cols)), 2L)
-  
-  sizes <- apply(result, 2L, prod)
-  validResults <- which(sizes >= n)
-  
-  result <- result[,validResults]
-  sizes  <- sizes[validResults]
-  
-  if (length(sizes) == 1L) result else result[,which.min(sizes)]
-}
-
 plotBookingRateGrid <- function(rates, sizes = NULL, ratio = 1.6) {
   ratesDim <- dim(rates)
 

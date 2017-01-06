@@ -16,7 +16,7 @@ if (require(rstan, quietly = TRUE) == FALSE) {
 }
 
 source(file.path("..", dataSrcPath, "analysis_util.R"))
-source(file.path("..", dataSrcPath, "analysis_plot.R"))
+source(file.path("..", dataSrcPath, "analysis_numArrests_plot.R"))
 
 
 macr <- loadData(path = "..")

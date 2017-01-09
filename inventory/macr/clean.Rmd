@@ -1,9 +1,19 @@
 ```{r 'clean_setup', echo = FALSE}
 cleanDataFile <- file.path("..", dataPath, tables$file[match(mainTable, tables$name)])
-cleanPerformed <- file.exists(cleanDataFile)
 
-if (!cleanPerformed)
+txtFiles <- file.path("..", txtPath, c("clean_type_32.txt",
+                                       "clean_arrestDate.txt",
+                                       "clean_birthdate_1.txt",
+                                       "clean_birthdate_2.txt",
+                                       "clean_birthdate_3.txt"))
+imgFiles <- file.path("..", imgPath, "clean_birthmonthHistogram.pdf")
+
+performClean <- !file.exists(cleanDataFile) || any(!file.exists(txtFiles) || any(!file.exists(imgFiles)))
+
+if (performClean)
   macr.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
+
+rm(txtFiles, imgFiles)
 ```
 
 `r rmdPageBreak()`
@@ -16,7 +26,7 @@ Records with a type id of 32 represent deleted rows, and as they contain no info
 
 ```{r 'clean_type_32', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "clean_type_32.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   badRows <- macr.clean$record_type_id == "32"
   
   type32 <- rmdDisplayDataFrameHead(macr[which(badRows)[seq_len(4L)],], maxCols = 10L, maxColWidth = 5L)
@@ -41,7 +51,7 @@ rm(type32, txtFile)
 
 ```{r 'clean_arrestdate', echo = FALSE}
 txtFile <- file.path("..", txtPath, "clean_arrestDate.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   macr.clean$arrest_date <- with(macr.clean, as.Date(paste(arrest_year, arrest_month, arrest_day, sep = "-"), format = "%F"))
   macr.clean$arrest_day[macr.clean$arrest_day <= 0L] <- NA
   
@@ -135,7 +145,7 @@ MACR includes fields for both the birth date and age, which do not always align.
 
 ```{r 'clean_birthdate_1', echo = FALSE}
 txtFile <- file.path("..", txtPath, "clean_birthdate_1.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   birth_year.clean <- macr.clean$birth_year
 
   discrepancyRows <- with(macr.clean, abs(arrest_year - birth_year - age) > 1L)
@@ -175,7 +185,7 @@ Errors in the birth year are detected by looking for when the age and distance f
 rm(numDiscrepancyBirthYear)
 
 txtFile <- file.path("..", txtPath, "clean_birthdate_2.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   macr.clean$birth_month[macr.clean$birth_month <= 0L] <- NA
   macr.clean$birth_day  [macr.clean$birth_day   <= 0L] <- NA
   
@@ -204,14 +214,14 @@ rm(numDiscrepancyBirthYear); if (exists("pl")) rm(pl)
 
 txtFile <- file.path("..", txtPath, "clean_birthdate_3.txt")
 imgFile <- file.path("..", imgPath, "clean_birthmonthHistogram.pdf")
-if (!cleanPerformed || !file.exists(txtFile) || !file.exists(imgFile)) {
+if (performClean) {
   naRows <- with(macr.clean, is.na(birth_date) & !is.na(birth_month) & !is.na(birth_day))
   
   numInvalidBirthDates       <- sum(naRows)
   numInvalidBirthDates.feb30 <- with(macr.clean, sum(birth_day[naRows] == 30L & birth_month[naRows] == 2L))
   writeLines(as.character(c(numInvalidBirthDates, numInvalidBirthDates.feb30)), txtFile)
   
-  pdf(imgFile, 3, 3)
+  pdf(imgFile, 4.5, 4.5)
   with(macr.clean,
        discrete.histogram(birth_month[naRows & (birth_day != 30L | birth_month != 2L)],
                           xlab = "Month", col = "gray", border = NA, main = "Birth Date Invalid, Not 02/30"))
@@ -234,12 +244,12 @@ The MACR manual states that if the specific birth date is unknown, the birth mon
 ```{r 'clean_birthdate_4', echo = FALSE}
 rm(numInvalidBirthDates, numInvalidBirthDates.feb30)
 
-if (!cleanPerformed) {
+if (performClean) {
   macr <- macr.clean
   save(macr, file = cleanDataFile)
   
   rm(macr.clean, cleanDataFile)
   invisible(gc(FALSE))
 }
-rm(cleanPerformed)
+rm(performClean)
 ```

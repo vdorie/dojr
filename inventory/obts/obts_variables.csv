@@ -45,10 +45,10 @@ arrest_charge_type,arrest offense level,,Arrest offense level.,0,0,,"* F - felon
 * I - infraction
 * X - unknown",
 multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one,
-arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,EG: MAYBE WE SHOULD CALCULATE THIS AS NUMBER OF DAYS AFTER DATE OF ARREEST
+arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,
-arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,PROSECUTOR REJECTS ONLY FINAL DISPO IF COURT RID IS BLANK
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,PROSECUTOR REJECTS is only the final disposition if the Court Record ID is blank
 arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
 
@@ -59,7 +59,7 @@ prior_record_code,prior prison commitments,,Number of prior prison commitments.,
 * 8 - two prior prison commitments
 * 9 - three or more prior prison commitments
 * blank - pre-1982 means lengthy record",
-arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,SEE CJIS CODE TABLE (to be added),
+arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,see cjis_codeTable.csv,
 arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,SEE OBTS MANUAL APPX F,
 arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
 arrest_edit_error_code,arrest edit error code,,Internal processing code.,0,0,,,
@@ -67,10 +67,10 @@ court_record_id,final court id,court of final disposition,Court of final disposi
 * 21 - final disposition in lower court",
 court_bypass,court bypass,,Internal processing code.,0,0,,,
 court_converted_data,court converted data,,Internal processing code.,0,0,,,
-court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,EG: MAYBE WE SHOULD CALCULATE THIS AS NUMBER OF DAYS AFTER DATE OF ARREEST
+court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,
 court_event_month,court event month,,Last date of court proceedings.,0,0,,,
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,
-court_judicial_district,court judicial district,,Court judicial district.,0,0,,SEE judicial_districts.csv table (TO BE CREATED),
+court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv table,
 court_number,court number,,Sealed.,1,0,,,
 court_disposition_type,court disposition type,outcome of court trial,Outcome of court trial.,0,0,,"* 21 - convicted
 * 22 - acquitted
@@ -117,7 +117,7 @@ post 1985:
 * 1 - only one 
 * 2 - 8 - two to eight
 * 9 - 9+ offenses",IS THIS ALWAYS NUMBER OF CONVICTION CHARGES? OR ARE THERE CHARGES ASSOCIATED WITH NON-CONVICTION DISPOSITIONS?
-court_disposition_offense,conviction offense,,Conviction offense.,0,0,,5-digit CJIS CODE TABLE,
-court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,SEE qualifier_codes.csv (TO BE ADDED FROM APPX F OF OBTS MANUAL OR ELSEWHERE),
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv table,
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,
+court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

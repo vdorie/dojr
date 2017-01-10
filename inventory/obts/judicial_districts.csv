@@ -1,0 +1,473 @@
+JUD,COURT
+01****,Alameda County Arrest - No Court Disposition
+01100J,Alameda County Court - Alameda County (Oakland)
+01120J,Alameda County Court - Hayward
+01410J,Alameda County Court - Alameda
+01420J,Alameda County Court - Berkeley
+01430J,Alameda County Court - Fremont
+01435J,Alameda County Court - Livermore
+01440J,Alameda County Court - Oakland
+01450J,Alameda County Court - Hayward
+01451J,Alameda County Court - San Leandro
+02****,Alpine County Arrest - No Court Disposition
+02100J,Alpine County Court - Alpine County
+02610J,Alpine County Court - Markleeville
+03****,Amador County Arrest - No Court Disposition
+03100J,Amador County Court - Amador County
+03610J,Amador County Juvenile Court - Jackson
+04****,Butte County Arrest - No Court Disposition
+04100J,Butte County Court - Butte County
+04430J,Butte County Court - Chico
+04450J,Butte County Court - Gridley
+04460J,Butte County Court - Oroville
+04470J,Butte County Court - Paradise
+04620J,Butte County Court - Biggs
+05650J,Butte County Court - Gridley
+04660J,Butte County Juvenile Court - Oroville
+04670J,Butte County Court - Paradise
+05****,Calaveras County Arrest - No Court Disposition
+05100J,Calaveras County Court - Calaveras County
+05610J,Calaveras County Court - Angels
+05660J,Calaveras County Court - San Andreas
+06****,Colusa County Arrest - No Court Disposition
+06100J,Colusa County Court - Colusa County
+06620J,Colusa County Court - Colusa
+06660J,Colusa County Court - Williams
+07****,Contra Costa County Arrest - No Court Disposition
+07100J,Contra Costa County Court - Contra Costa County
+07410J,Contra Costa County Court - Concord
+07420J,Contra Costa County Court - Martinez
+07460J,Contra Costa County Court - Richmond
+07465J,Contra Costa County Court - Pittsburg
+07467J,Contra Costa County Court - Brentwood
+07470J,Contra Costa County Court - San Pablo
+07480J,Contra Costa County Court - Walnut Creek
+08****,Del Norte County Arrest - No Court Disposition
+08100J,Del Norte County Court - Del Norte County
+08630J,Del Norte County Juvenile Court - Crescent City
+09****,El Dorada County Arrest - No Court Disposition
+09100J,El Dorado County Court - El Dorado County
+09630J,El Dorado County Court - El Dorado
+09640J,El Dorado County Court - Georgetown/Divide
+09660J,El Dorado County Court - South Lake Tahoe
+09670J,El Dorado County Court - Placerville
+10****,Fresno County Arrest - No Court Disposition
+10100J,Fresno County Court - Fresno County
+10440J,Fresno County Court - Fresno Central
+10620J,Fresno County Court - Fowler/Caruthers
+10625J,Fresno County Court - Clovis
+10627J,Fresno County Court - Coalinga
+10628J,Fresno County Court - Dunlap
+10640J,Fresno County Court - Firebaugh
+10645J,Fresno County Court - Fowler
+10650J,Fresno County Court - Kerman
+10655J,Fresno County Court - Kingsburg
+10660J,Fresno County Juvenile Court - Parlier
+10665J,Fresno County Court - Auberry
+10666J,Fresno County Court - Auberry
+10670J,Fresno County Court - Reedley
+10675J,Fresno County Juvenile Court - Riverdale
+10680J,Fresno County Court - Sanger
+10685J,Fresno County Court - Selma
+11****,Glenn County Arrest - No Court Disposition
+11100J,Glenn County Court - Glenn County
+11650J,Glenn County Court - Orland
+11670J,Glenn County Court - Willows
+12****,Humboldt County Arrest - No Court Disposition
+12100J,Humboldt County Court - Humboldt County
+12430J,Humboldt County Court - Eureka
+12610J,Humboldt County Juvenile Court - Arcata
+12640J,Humboldt County Court - Fortuna
+12650J,Humboldt County Court - Garberville
+12660J,Humboldt County Court - Hoopa
+13****,Imperial County Arrest - No Court Disposition
+13100J,Imperial County Court - Imperial County
+13420J,Imperial County Court - Brawley
+13430J,Imperial County Court - Calexico Dept.
+13440J,Imperial County Court - El Centro
+13450J,Imperial County Court - Winterhaven Branch
+13620J,Imperial County Court - Brawley
+13630J,Imperial County Court - Calexico
+14****,Inyo County Arrest - No Court Disposition
+14100J,Inyo County Court - Inyo County
+14580J,Inyo County Court - Inyo (Independence)
+14660J,Inyo County Court - Bishop
+14680J,Inyo County Juvenile Court - Independence
+15****,Kern County Arrest - No Court Disposition
+15100J,Kern County Court - Kern County
+15410J,Kern County Court - Arvin Lamont
+15415J,Kern County Court - Lamont
+15420J,Kern County Court - Bakersfield
+15425J,Kern County Court - Buttonwillow
+15430J,Kern County Court - Delano
+15435J,Kern County Court - Lake Isabella
+15440J,Kern County Court - Taft
+15445J,Kern County Court - Shafter
+15450J,Kern County Court - Wasco
+15455J,Kern County Court - Maricopa
+15460J,Kern County Court - Mojave
+15470J,Kern County Court - Ridgecrest
+15650J,Kern County Court - Lake Isabella
+15670J,Kern County Court - Johannesburg
+16****,Kings County Arrest - No Court Disposition
+16100J,Kings County Court - Kings County
+16420J,Kings County Court - Hanford
+16610J,Kings County Court - Avenal
+16620J,Kings County Court - Corcoran
+16640J,Kings County Court - Hanford
+16660J,Kings County Court - Lemoore
+17****,Lake County Arrest - No Court Disposition
+17100J,Lake County Court - Lake County
+17610J,Lake County Court - Clearlake Highlands
+17640J,Lake County Court - Kelseyville
+17650J,Lake County Juvenile Court - Lakeport
+17657J,Lake County Court - Middletown/Lower Lake
+17680J,Lake County Court - Upper Lake
+18****,Lassen County Arrest - No Court Disposition
+18100J,Lassen County Court - Lassen County
+18675J,Lassen County Court - Susanville
+19****,Los Angeles County Arrest - No Court Disposition
+19100J,Los Angeles County Court - Los Angeles County (Central)
+19110J,Los Angeles County Court - Los Angeles County (Pomona)
+19111J,Los Angeles County Court - Los Angeles County (Glendale)
+19112J,Los Angeles County Superior - Los Angeles County (Burbank)
+19120J,Los Angeles County Court - Los Angeles County (Lancaster)
+19121J,Los Angeles County Court - Los Angeles County (San Fernando)
+19130J,Los Angeles County Court - Los Angeles County (Pasadena)
+19140J,Los Angeles County Court - Los Angeles County (Van Nuys)
+19150J,Los Angeles County Court - Los Angeles County (Long Beach)
+19160J,Los Angeles County Court - Los Angeles County (Compton)
+19170J,Los Angeles County Court - Los Angeles County (Norwalk)
+19180J,Los Angeles County Court - Los Angeles County (Torrance)
+19190J,Los Angeles County Court - Los Angeles County (Santa Monica)
+19405J,Los Angeles County Court - West LA Airport
+19410J,Los Angeles County Court - Alhambra
+19413J,Los Angeles County Court - Lancaster
+19420J,Los Angeles County Court - Beverly Hills
+19425J,Los Angeles County Court - Burbank
+19430J,Los Angeles County Court - West Covina
+19432J,Los Angeles County Court - Chatsworth
+19435J,Los Angeles County Court - Compton
+19437J,Los Angeles County Court - Culver City
+19440J,Los Angeles County Court - Downey
+19443J,Los Angeles County Court - East Los Angeles
+19446J,Los Angeles County Court - El Monte
+19450J,Los Angeles County Court - Glendale
+19455J,Los Angeles County Court - Inglewood
+19460J,Los Angeles County Court - Long Beach
+19462J,Los Angeles County Court - Los Angeles
+19463J,Los Angeles County Court - Los Angeles Metro
+19466J,Los Angeles County Court - Bellflower
+19468J,Los Angeles County Court - Newhall
+19470J,Los Angeles County Court - Pasadena
+19472J,Los Angeles County Court - Malibu
+19473J,Los Angeles County Court - Calabasas
+19475J,Los Angeles County Court - Pomona
+19480J,Los Angeles County Court - Huntington Park
+19482J,Los Angeles County Court - Monrovia
+19484J,Los Angeles County Court - Santa Monica
+19486J,Los Angeles County Court - Torrance
+19487J,Los Angeles County Court - South Bay (Redondo Beach)
+19488J,Los Angeles County Court - South Gate
+19490J,Los Angeles County Court - Whittier
+19495J,Los Angeles County Court - Hollywood
+19496J,Los Angeles County Court - San Fernando
+19497J,Los Angeles County Court - San Pedro
+19498J,Los Angeles County Court - Van Nuys
+19499J,Los Angeles County Court - West Los Angeles
+19610J,Los Angeles County Court - Avalon
+19650J,Los Angeles County Court - Malibu
+20****,Madera County Arrest - No Court Disposition
+20100J,Madera County Court - Madera County
+20620J,Madera County Court - Chowchilla
+20640J,Madera County Court - Borden
+20660J,Madera County Court - Madera
+20680J,Madera County Court - Bass Lake
+21****,Marin County Arrest - No Court Disposition
+21100J,Marin County Court - Marin County (San Rafael)
+21420J,Marin County Court - San Rafael
+22****,Mariposa County Arrest - No Court Disposition
+22100J,Mariposa County Court - Mariposa County
+22650J,Mariposa County Court - Mariposa
+23****,Mendocino County Arrest - No Court Disposition
+23100J,Mendocino County Court - Mendocino County
+23450J,Mendocino County Court - Willits
+23480J,Mendocino County Court - Ukiah
+23610J,Mendocino County Court - Boonville
+23615J,Mendocino County Court - Point Arena
+23620J,Mendocino County Court - Big River (Mendocino) (Prior 5-19-82)
+23650J,Mendocino County Court - Littlelake (Willits)
+23655J,Mendocino County Court - Leggett
+23660J,Mendocino County Court - Covelo
+23670J,Mendocino County Court - Sanel (Hopland) (Prior 5-19-82)
+23675J,Mendocino County Court - Fort Bragg
+23680J,Mendocino County Court - Ukiah
+24****,Merced County Arrest - No Court Disposition
+24100J,Merced County Court - Merced County
+24450J,Merced County Court - Merced
+24455J,Merced County Court - Los Banos
+24610J,Merced County Court - Atwater
+24653J,Merced County Court - Livingston
+24657J,Merced County Court - Los Banos
+24660J,Merced County Court - Merced
+25****,Modoc County Arrest - No Court Disposition
+25100J,Modoc County Court - Modoc County
+25615J,Modoc County Court - Modoc judicial District (Alturas)
+26****,Mono County Arrest - No Court Disposition
+26100J,Mono County Court - Mono County
+26650J,Mono County Court - Bridgeport
+26660J,Mono County Court - Mammoth Lakes
+27****,Monterey County Arrest - No Court Disposition
+27100J,Monterey County Court - Monterey County
+27420J,Monterey County Court - Castroville
+27450J,Monterey County Court - Monterey
+27470J,Monterey County Court - Salinas
+27640J,Monterey County Court - Gonzales
+27650J,Monterey County Court - King City
+27685J,Monterey County Court - Soledad
+28****,Napa County Arrest - No Court Disposition
+28100J,Napa County Court - Napa County
+28440J,Napa County Court - Napa
+28450J,Napa County Court - Calistoga
+28460J,Napa County Court - St. Helena
+29****,Nevada County Arrest - No Court Disposition
+29100J,Nevada County Court - Nevada County
+29460J,Nevada County Court - Nevada City
+29480J,Nevada County Court - Truckee
+29660J,Nevada County Court Nevada
+29680J,Nevada County Court - Truckee
+30****,Orange County Arrest - No Court Disposition
+30100J,Orange County Court - Orange County
+30410J,Orange County Court - Anaheim
+30420J,Orange County Court - Fullerton
+30440J,Orange County Court - Westminster
+30450J,Orange County Court - Laguna Niguel
+30452J,Orange County Court - Laguna Niguel
+30460J,Orange County Court - Newport Beach
+30470J,Orange County Court - Santa Ana
+31****,Placer County Arrest - No Court Disposition
+31100J,Placer County Court - Placer County
+31410J,Placer County Court - Auburn
+31420J,Placer County Court - Colfax
+31440J,Placer County Court - Foresthill
+31450J,Placer County Court - Lincoln
+31455J,Placer County Court - Roseville
+31460J,Placer County Court - Roseville
+31480J,Placer County Court - Tahoe
+31610J,Placer County Court - Auburn
+31620J,Placer County Court - Colfax- Alta - Dutch Flat
+31640J,Placer County Court - Forest Hill
+31650J,Placer County Court - Lincoln
+31660J,Placer County Court - Roseville
+31680J,Placer County Juvenile Court - Tahoe City
+32****,Plumas County Arrest - No Court Disposition
+32100J,Plumas County Court - Plumas County
+32610J,Plumas County Court - Greenville
+32630J,Plumas County Court - Almanor - Chester Branch
+32640J,Plumas County Court - Chester
+32650J,Plumas County Court - Portola
+32660J,Plumas County Court - Quincy
+33****,Riverside County Arrest - No Court Disposition
+33100J,Riverside County Court - Riverside County
+33110J,Riverside County Court - Indio
+33420J,Riverside County Court - Corona
+33440J,Riverside County Court - Hemet
+33441J,Riverside County Court - Beaumont
+33442J,Riverside County Court - Banning
+33450J,Riverside County Court - Indio
+33455J,Riverside County Court - Rubidoux
+33460J,Riverside County Court - Riverside
+33470J,Riverside County Court - Palm Springs
+33480J,Riverside County Court - Blythe
+33490J,Riverside County Court - Perris
+33491J,Riverside County Court - Temecula
+33492J,Riverside County Court - Elsinore
+34****,Sacramento County Arrest - No Court Disposition
+34100J,Sacramento County Court - Sacramento County
+34470J,Sacramento County Court - Sacramento
+34620J,Sacramento County Court - Elk Grove
+34621J,Sacramento County Court - Galt
+34630J,Sacramento Court - Fair Oaks - Folsom
+34640J,Sacramento County Court - Walnut Grove
+35****,San Benito County Arrest - No Court Disposition
+35100J,San Benito County Court - San Benito County
+35640J,San Benito Municip- Hollister
+36****,San Bernardino County Arrest - No Court Disposition
+36100J,San Bernardino County Court - San Bernardino County
+36110J,San Bernardino County Court - Ontario
+36120J,San Bernardino County Court - Victorville
+36130J,San Bernardino County Court - Barstow
+36140J,San Bernardino County Court - Morongo Basin
+36433J,San Bernardino County Court - Chino
+36455J,San Bernardino County Court - Barstow
+36460J,San Bernardino County Court - Redlands
+36470J,San Bernardino County Court - San Bernardino Central
+36480J,San Bernardino County Court - Fontana
+36490J,San Bernardino County Court - Victorville
+36495J,San Bernardino County Court - Rancho Cucamonga
+36622J,San Bernardino Court - Barstow
+36625J,San Bernardino County Court - Big Bear Lake
+36628J,San Bernardino Court - Bloomington
+36630J,San Bernardino Court - Calzona (Parker Dam)
+36637J,San Bernardino County Court - Twin Peaks
+36639J,San Bernardino County Court - San Bernardino Judicial District
+36648J,San Bernardino Court - Highland
+36654J,San Bernardino Court - Mission (Loma Linda)
+36660J,San Bernardino County Court - Needles
+36674J,San Bernardino Court - Trona
+36677J,San Bernardino County Court - Moronga Basin
+36690J,San Bernardino Court - Yucaipa
+37****,San Diego County Arrest - No Court Disposition
+37100J,San Diego County Court - San Diego County
+37110J,San Diego County Court - Vista
+37120J,San Diego County Court - Chula Vista
+37130J,San Diego County Court - El Cajon
+37440J,San Diego County Court - El Cajon
+37460J,San Diego County Court - Vista
+37480J,San Diego County Court - San Diego Central
+37485J,San Diego County Court - Chula Vista
+38****,San Francisco County Arrest - No Court Disposition
+38100J,San Francisco County Court - San Francisco County
+38460J,San Francisco County Court - San Francisco
+39****,San Joaquin County Arrest - No Court Disposition
+39100J,San Joaquin County Court - San Joaquin County
+39440J,San Joaquin County Court - Lodi
+39450J,San Joaquin County Court - Escalon
+39451J,San Joaquin County Court - Manteca
+39452J,San Joaquin County Court - Ripon
+39453J,San Joaquin County Court - Tracy
+39460J,San Joaquin County Court - Stockton
+40****,San Luis Obispo County Arrest - No Court Disposition
+40100J,San Luis Obispo County Court - San Luis Obispo County
+40410J,San Luis Obispo County Court - San Luis Obispo
+40420J,San Luis Obispo County Court - Grover City
+40430J,San Luis Obispo County Court - Paso Robles
+40610J,San Luis Obispo Court - Paso Robles
+40650J,San Luis Obispo Court - Atascadero
+41****,San Mateo County Arrest - No Court Disposition
+41100J,San Mateo County Court - San Mateo County
+41420J,San Mateo County Court - San Mateo
+41450J,San Mateo County Court - South San Francisco
+41470J,San Mateo County Court - Redwood City
+42****,Santa Barbara County Arrest - No Court Disposition
+42100J,Santa Barbara County Court - Santa Barbara County
+42101J,Santa Barbara County Court - Santa Maria
+42460J,Santa Barbara County Court - Santa Barbara
+42461J,Santa Barbara Court - Santa Barbara Goleta (Goleta)
+42465J,Santa Barbara County Court - Santa Maria
+42470J,Santa Barbara County Court - Lompoc
+42620J,Santa Barbara Court - Carpinteria-Montecito
+42675J,Santa Barbara County Court - Solvang
+43****,Santa Clara County Arrest - No Court Disposition
+43100J,Santa Clara County Court - Santa Clara County
+43450J,Santa Clara County Court - Los Gatos
+43460J,Santa Clara County Court - Palo Alto
+43470J,Santa Clara County Court - San Jose
+43471J,Santa Clara County Court - San Jose Traffic
+43473J,Santa Clara County Court - Santa Clara
+43477J,Santa Clara County Court - Sunnyvale
+43635J,Santa Clara County Court - Gilroy
+43650J,Santa Clara County Court - Morgan Hill
+44****,Santa Cruz County Arrest - No Court Disposition
+44100J,Santa Cruz County Court - Santa Cruz County
+44460J,Santa Cruz County Court - Santa Cruz
+44480J,Santa Cruz County Court - Watsonville
+45****,Shasta County Arrest - No Court Disposition
+45100J,Shasta County Court - Shasta County
+45610J,Shasta County Court - Anderson
+45620J,Shasta County Court - Burney
+45633J,Shasta County Court Central Valley
+45640J,Shasta County Court - Fall River Mill
+45670J,Shasta County Court - Redding
+46****,Sierra County Arrest - No Court Disposition
+46100J,Sierra County Court - Sierra County
+46630J,Sierra County Court - Downieville Traffic
+46650J,Sierra Court - Loyalton
+47****,Siskiyou County Arrest - No Court Disposition
+47100J,Siskiyou County Court - Siskiyou County
+47630J,Siskiyou County Court - Dorris
+47635J,Siskiyou Court - Dunsmuir
+47637J,Siskiyou Court - Mount Shasta
+47650J,Siskiyou County Court - Happy Camp
+47660J,Siskiyou Court - McCloud
+47670J,Siskiyou County Court - Shasta Valley
+47672J,Siskiyou Court - Scott Valley (Fort Jones)
+47673J,Siskiyou Court - Shasta Valley (Weed)
+47675J,Siskiyou Court - Tulelake
+47690J,Siskiyou County Court - Yreka
+48****,Solano County Arrest - No Court Disposition
+48100J,Solano County Court - Solano County
+48420J,Solano County Court - Dixon
+48430J,Solano County Court - Fairfield
+48440J,Solano County Court - Vacaville
+48470J,Solano County Court - Benecia Branch
+48480J,Solano County Court - Vallejo Branch
+48660J,Solano Court - Rio Vista
+49****,Sonoma County Arrest - No Court Disposition
+49100J,Sonoma County Court - Sonoma County
+49410J,Sonoma Court - Cloverdale
+49420J,Sonoma Court - Guerneville
+49460J,Sonoma Court - Santa Rosa
+49440J,Sonoma County Court - Healdsburg
+49460J,Sonoma County Court - Santa Rosa
+49465J,Sonoma Court - Sebastopol
+49480J,Sonoma County Court - Petaluma
+49490J,Sonoma County Court - Sonoma
+50****,Stanislaus County Arrest - No Court Disposition
+50100J,Stanislaus County Court - Stanislaus County
+50450J,Stanislaus County Court - Modesto
+50620J,Stanislaus County Court - Newman
+50650J,Stanislaus County Court - Oakdale
+50655J,Stanislaus County Court - Patterson
+50660J,Stanislaus County Court - Riverbank
+50670J,Stanislaus County Court - Turlock
+51****,Sutter County Arrest - No Court Disposition
+51100J,Sutter County Court - Sutter County
+51460J,Sutter County Court - Yuba City
+52****,Tehama County Arrest - No Court Disposition
+52100J,Tehama County Court - Tehama County
+52620J,Tehama County Court - Corning
+52660J,Tehama County Court - Red Bluff
+53****,Trinity County Arrest - No Court Disposition
+53100J,Trinity County Court - Trinity County
+53680J,Trinity Court - Weaverville
+53681J,Trinity Court - Hayfork
+53682J,Trinity Court - Mad River
+54****,Tulare County Arrest - No Court Disposition
+54100J,Tulare County Court - Tulare County
+54440J,Tulare County Court - Dinuba
+54445J,Tulare County Court - Exeter
+54450J,Tulare County Court - Lindsay
+54465J,Tulare County Court - Porterville
+54480J,Tulare County Court - Pixley
+54485J,Tulare County Court - Tulare
+54490J,Tulare County Court - Visalia
+54495J,Tulare County Court - Woodlake
+54640J,Tulare Court - Dinuba
+54645J,Tulare Court - Exeter-Famersville
+54650J,Tulare Court - Lindsay
+54665J,Tulare Court - Porterville
+54690J,Tulare Court - Woodlake
+55****,Tuolumne County Arrest - No Court Disposition
+55100J,Tuolumne County Court - Tuolumne County
+55250J,Tuolumne Court - Jamestown
+55610J,Tuolumne Court - First (Sonora)
+55620J,Tuolumne Court - Second (Columbia)
+55630J,Tuolumne Court - Third (Tuolumne)
+55640J,Tuolumne Court - Fourth (Groveland)
+55650J,Tuolumne Court _ Fifth (Jamestown)
+56****,Ventura County Arrest - No Court Disposition
+56100J,Ventura County Court - Ventura County
+56480J,Ventura County Court - Ventura
+56485J,Ventura County Court - Santa Paula
+57****,Yolo County Arrest - No Court Disposition
+57100J,Yolo County Court - Yolo County
+57410J,Yolo County Court - Broderick
+57420J,Yolo County Court - Woodland
+57430J,Yolo County Court - Davis
+57440J,Yolo County Court - Winters
+58****,Yuba County Arrest - No Court Disposition
+58100J,Yuba County Court - Yuba County
+58650J,Yuba County Court - Marysville
+58680J,Yuba Court - Wheatland
+99****,Unknown County Arrest - No Court Disposition

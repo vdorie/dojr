@@ -375,12 +375,12 @@ if (runAnalysis) {
   jurisd <- jurisd[,c("ncic_jurisdiction", setdiff(colnames(jurisd), "ncic_jurisdiction"))]
   
   jurisd <- jurisd[,c("ncic_jurisdiction", "felony", "misdemeanor", "cited", "booked", "felony complaint sought", "misdemeanor complaint sought")]
-  colnames(jurisd) <- c("ncic_jurisdiction", "felArrestTot", "misdArrestTot", "repCiteTot", "repBookTot", "repFelRefTot", "repMisdRefTot")
+  colnames(jurisd) <- c("ncic_jurisdiction", "felArrest", "misdArrest", "repCite", "repBook", "repFelRef", "repMisdRef")
   
-  jurisd$repBothRefTot <- jurisd$repFelRefTot + jurisd$repMisdRefTot
+  jurisd$repBothRef <- jurisd$repFelRef + jurisd$repMisdRef
   
-  actualBookTot <- aggregate(jurisd.n$status_type, by = list(jurisd.n$ncic_jurisdiction), length)
-  jurisd$actualBookTot <- actualBookTot[match(jurisd$ncic_jurisdiction, actualBookTot[,1L]), "x"]
+  actualBook <- aggregate(jurisd.n$status_type, by = list(jurisd.n$ncic_jurisdiction), length)
+  jurisd$actualBook <- actualBook[match(jurisd$ncic_jurisdiction, actualBook[,1L]), "x"]
   
   #quantile(jurisd$felArrestTotal)
   #75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
@@ -391,7 +391,7 @@ One item that gives us some condfidence that the booking data contain useful sig
 
 ```{r 'booking_percent_match_3', echo = FALSE}
 if (runAnalysis) {
-  pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 6, 6)
+  pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 7.5, 7.5)
   plot(log(stat.jurisd[,2:9]), main = "scatterplots of MACR variables")
   invisible(dev.off())
 
@@ -466,6 +466,8 @@ if (runAnalysis) {
 `r rmdImageInline(file.path(imgPath, "analysis_bookingRates_remaining_2.pdf"))`
 
 ## Booking Rate Tables
+
+The tables below display booking ratesfigures by offense and race. _N_ is the total number of arrests for that particular offense in California. Columns without an _N_ represent a proportion. _bkd_ and _ctd_ are the number of individuals booked and cited after arrest, respectively. Arrests are broken out by race or ethnicity: _wt_ = white, _bl_ = black, _hs_ = Hispanic. 
 
 ```{r 'analysis_bookingRates_booking_rate_function', echo = FALSE}
 if (runAnalysis) getOffenseCodeBookingRatesForJurisdictions <- function(macr, jurisdictions)

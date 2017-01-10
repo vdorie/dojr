@@ -69,7 +69,7 @@ def load_data_from_file(conn, table, infile):
 
 def noArrestBlankReplacement(name, str):
 	# we found instances of character 255 in some record type 91 rows,
-	# which are records for events no arrest occurred.
+	# which are records for events in which no arrest occurred.
 	# Note this is a problem because the database is UTF-8 encoded,
 	# and files as far we know are ASCII. Characters in the range 129-255
 	# can cause the file to not be a valid UTF-8 encoding, making the insert

@@ -60,7 +60,7 @@ for (i in seq_len(nrow(tables))) {
   
   firstFive <- formatFirstFiveRows(tables$name[i])
   if (length(firstFive) != 1L || firstFive != "")
-    cat("#### Sample Rows\n\n", paste0(firstFive, collapse = "\n"), "\n", sep = "")
+    cat("#### Sample Rows\n\n", paste0(firstFive, collapse = "\n"), "\n\n", sep = "")
   
   variablesSummary <- summarizeVariables(tables$name[i])
   if (length(variablesSummary) != 1L || variablesSummary != "")

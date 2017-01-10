@@ -18,7 +18,7 @@ birth_day,birth day,,Individual's birth day.,0,0,Enter the month/day/year (MM/DD
 gender,gender,,Individual's sex/gender.,0,0,Enter the appropriate sex code abbreviation for the subject.,"* M = Male
 * F = Female
 * X = Unknown",
-race,race or ethnicity,,Individual's race/ethnicity.,0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,see race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
+race,race or ethnicity,,Individual's race/ethnicity.,0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,SEE race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
 deceased,deceased,whether individual is deceased,"Whether individual is deceased, alive, or unknown.",0,0,,"* 0 - not deceased or no information
 * 1 - deceased
 * 2 - deceased (homicide)",
@@ -48,8 +48,7 @@ multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,
-arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv 
-,PROSECUTOR REJECTS is only the final disposition if the Court Record ID is blank
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,PROSECUTOR REJECTS is only the final disposition if the Court Record ID is blank
 arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
 
@@ -71,7 +70,7 @@ court_converted_data,court converted data,,Internal processing code.,0,0,,,
 court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,
 court_event_month,court event month,,Last date of court proceedings.,0,0,,,
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,
-court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,
+court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv table,
 court_number,court number,,Sealed.,1,0,,,
 court_disposition_type,court disposition type,outcome of court trial,Outcome of court trial.,0,0,,"* 21 - convicted
 * 22 - acquitted

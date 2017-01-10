@@ -52,7 +52,7 @@ rm(cleanRmdFile, sourceFile)
 
 ```{r 'tables_summary', echo = FALSE, results = "asis"}
 for (i in seq_len(nrow(tables))) {
-  if (tables$display[i] == 0) next
+  if (tables$display[i] == 0L) next
   
   cat("### ", tables$display_name[i], "\n\n", sep = "")
   if (tables$description[i] != "")
@@ -75,7 +75,7 @@ rm(i, firstFive, variablesSummary)
 
 ## Main Table Variables
 
-```{r main_table_variables, echo=FALSE, results="asis"}
+```{r main_table_variables, echo = FALSE, results = "asis"}
 variables <- read.csv(file.path(datasetDir, paste0(mainTable, "_variables.csv")),
                       stringsAsFactors = FALSE)
 pageBreak <- rmdPageBreak()

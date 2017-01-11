@@ -1,5 +1,5 @@
 ---
-title: "MACR Data Inventory"
+title: "__DATANAME_U__ Data Inventory"
 output:
   pdf_document:
     includes:
@@ -20,8 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ##
 ## and will look for a target file in ../common/data, which is to be shared by all projects
 
-datasetName <- "MACR"
-datasetDir  <- "macr"
+datasetName <- "__DATANAME_U__"
+datasetDir  <- "__DATANAME__"
 
 srcPath <- file.path("src")
 

@@ -382,49 +382,50 @@ if (runAnalysis) {
   actualBook <- aggregate(jurisd.n$status_type, by = list(jurisd.n$ncic_jurisdiction), length)
   jurisd$actualBook <- actualBook[match(jurisd$ncic_jurisdiction, actualBook[,1L]), "x"]
   
-  #quantile(jurisd$felArrestTotal)
+  #quantile(jurisd$felArrest)
   #75% of depts. have 95 or more felony arrests. We use these to analyze matched booking rates.  
-  stat.jurisd <- subset(jurisd, felArrestTot >= 95)
+  stat.jurisd <- subset(jurisd, felArrest >= 95)
 }
 ``` 
+
 One item that gives us some condfidence that the booking data contain useful signal is their scatterplots versus other variables on the MACR. We observe the relationships that we would expect. 
 
 ```{r 'booking_percent_match_3', echo = FALSE}
 if (runAnalysis) {
   pdf(file.path("..", imgPath, "analysis_bookingRates_logStat.pdf"), 7.5, 7.5)
-  plot(log(stat.jurisd[,2:9]), main = "scatterplots of MACR variables")
+  plot(log(stat.jurisd[,2:9]), main = "scatterplots of MACR variables", pch = 20)
   invisible(dev.off())
 
-  stat.jurisd$bookMatchPct <- stat.jurisd$actualBookTot / stat.jurisd$repBookTot
+  stat.jurisd$bookMatchPct <- stat.jurisd$actualBook / stat.jurisd$repBook
   # there are two departments with matched booking rates higher than 1 (3623 and 3702). One had 271 fel arrests, the other 3031. This suggeststhat rather than over-reporting bookings, they are under-reporting bookings. Along with some departments that have 100% or nearly 100% match rates, we suspect these departments had their MACR data created from the ACHS data by CJIS. 
 #stat.jurisd$ncic_jurisdiction[stat.jurisd$bookMatchPct > 1]
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_bookedMatchedDensity.pdf"), 4.5, 4.5)
-  plot(density(stat.jurisd$bookMatchPct), xlim=c(0,1), main="distribution of department booking match averages")
+  plot(density(stat.jurisd$bookMatchPct), xlim = c(0, 1), main="distribution of department booking match averages")
   invisible(dev.off())
   # the 5th percentile is 9.1% and the 95th percentile on matched records is 31.0%
   #quantile(stat.jurisd$bookMatchPct, .05)
   #quantile(stat.jurisd$bookMatchPct, .95)
 
-  stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRefTot / stat.jurisd$actualBookTot 
+  stat.jurisd$actualBookvsRepRefs <- stat.jurisd$repBothRef / stat.jurisd$actualBook
   
   pdf(file.path("..", imgPath, "analysis_bookingRates_actualBookedHist.pdf"), 4.5, 4.5)
-  hist(stat.jurisd$actualBookvsRepRefs, main="department ratios of reported to matched bookings", breaks=50, xlab="ratio")
+  hist(stat.jurisd$actualBookvsRepRefs, main="department ratios of reported to matched bookings", breaks = 50, xlab = "ratio")
   invisible(dev.off())
 
   #an alternative metric is to compare the number of reported felony arrests with the number of matched bookings
-  stat.jurisd$repFelArrest_actualBook <- stat.jurisd$felArrestTot / stat.jurisd$repBookTot 
+  stat.jurisd$repFelArrest_actualBook <- stat.jurisd$felArrest / stat.jurisd$repBook
   #quantile(stat.jurisd$repFelArrest_actualBook, .05)
   #quantile(stat.jurisd$repFelArrest_actualBook, .95)
   
   #we see very little relationship between total arrests (dept. size) and booking matches
   pdf(file.path("..", imgPath, "analysis_bookingRates_repBookedVDiff.pdf"), 4.5, 4.5)
-  plot(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot,
-       ylim = c(0, 1),
+  plot(log(stat.jurisd$repBook), stat.jurisd$actualBook / stat.jurisd$repBook,
+       ylim = c(0, 1), pch = 20,
        main = "proportion of matched bookings by arrest volume",
        xlab = "ln(department arrests)",
        ylab = "proportion of reported bookings matched")
-  lines(loess.smooth(log(stat.jurisd$repBookTot), stat.jurisd$actualBookTot/stat.jurisd$repBookTot, ylim=c(0,1)))
+  lines(loess.smooth(log(stat.jurisd$repBook), stat.jurisd$actualBook / stat.jurisd$repBook, ylim=  c(0, 1)))
   invisible(dev.off())
 }
 ```
@@ -535,7 +536,7 @@ if (runAnalysis) {
   rownames(br.misdemeanor) <- substr(rownames(br.misdemeanor), 1, 12)
   br.misdemeanor <- br.misdemeanor[br.misdemeanor$N > 0L,]
   
-  write.csv(br.felony, file.path("..", txtPath, "analysis_bookingRates_misdemeanorTable.csv"))
+  write.csv(br.misdemeanor, file.path("..", txtPath, "analysis_bookingRates_misdemeanorTable.csv"))
 } else {
   br.felony <- read.csv(file.path("..", txtPath, "analysis_bookingRates_felonyTable.csv"), row.names = 1L)
   br.misdemeanor <- read.csv(file.path("..", txtPath, "analysis_bookingRates_misdemeanorTable.csv"), row.names = 1L)
@@ -551,7 +552,7 @@ tab <- round(br.misdemeanor, 2)
 tab[["offense code"]] <- rownames(tab)
 rownames(tab) <- NULL
 tab <- tab[,c("offense code", setdiff(colnames(tab), "offense code"))]
-cat(nativeFormat(tab, size = "footnotesize", width = 9,
+cat(nativeFormat(tab, fontSize = "footnotesize", width = 9,
                  colWidths = sapply(seq_along(tab), function(i) max(nchar(tab[[i]]), nchar(colnames(tab)[i])))),
     sep = "\n")
 ```
@@ -567,7 +568,7 @@ tab <- round(br.felony, 2)
 tab[["offense code"]] <- rownames(tab)
 rownames(tab) <- NULL
 tab <- tab[,c("offense code", setdiff(colnames(tab), "offense code"))]
-cat(nativeFormat(tab, size = "footnotesize", width = 9,
+cat(nativeFormat(tab, fontSize = "footnotesize", width = 9,
                  colWidths = sapply(seq_along(tab), function(i) max(nchar(tab[[i]]), nchar(colnames(tab)[i])))),
     sep = "\n")
 

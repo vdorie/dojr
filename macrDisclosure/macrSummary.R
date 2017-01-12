@@ -46,4 +46,26 @@ colnames(macr.sum)[colnames(macr.sum) == "county"] <- "COUNTY"
 
 levels(macr.sum$AGE_GROUP) <- c("18 to 24", "25 to 32", "33 to 44", "45 and over")
 
+## state aggregates
+macr.sum$key <- as.factor(with(macr.sum, paste0(YEAR, ":", GENDER, ":", RACE, ":", AGE_GROUP)))
+totals <- t(sapply(levels(macr.sum$key), function(key.i) {
+  colSums(subset(macr.sum, key == key.i,
+                 setdiff(colnames(macr.sum), c("YEAR", "COUNTY", "GENDER", "RACE", "AGE_GROUP", "key"))))
+  }))
+macr.sum$key <- NULL
+
+totals <- as.data.frame(totals)
+key <- strsplit(rownames(totals), ":")
+totals$YEAR      <- as.integer(sapply(key, function(key.i) key.i[1L]))
+totals$COUNTY    <- "Statewide"
+totals$GENDER    <- as.factor(sapply(key, function(key.i) key.i[2L]))
+totals$RACE      <- as.factor(sapply(key, function(key.i) key.i[3L]))
+totals$AGE_GROUP <- as.factor(sapply(key, function(key.i) key.i[4L]))
+
+firstCols <- c("YEAR", "COUNTY", "GENDER", "RACE", "AGE_GROUP")
+totals <- totals[, c(firstCols, setdiff(colnames(totals), firstCols))]
+rownames(totals) <- NULL
+
+macr.sum <- rbind(macr.sum, totals)
+
 write.csv(macr.sum, file = "macr_summary.csv", row.names = FALSE)

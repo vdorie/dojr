@@ -27,7 +27,7 @@ arrest_record_id,last reported step,last reported step in crim justice process,L
 * 12 - police",
 arrest_bypass,arrest bypass,,Internal processing code.,0,0,,,
 arrest_converted_data,arrest converted data,converted from old format,Internal processing code.,0,0,,,
-arrest_event_year,arrest event year,,Arrest year.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,"EG: MAYBE WE JUST PROVIDE YEAR HERE, BUT INTERNALLY USE THE FULL DATE AS DAY 0 IN THE PROCESS"
+arrest_event_year,arrest event year,,Arrest year.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,"\textcolor{red}{EG: MAYBE WE JUST PROVIDE YEAR HERE, BUT INTERNALLY USE THE FULL DATE AS DAY 0 IN THE PROCESS}"
 arrest_event_month,arrest_event month,,Arrest month.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
 arrest_event_day,arrest event day,,Arrest day.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
 arresting_agency,arresting agency,arresting or booking agency,Arresting or booking agency.,0,0,"Enter the complete name of the agency that arrested, cited, or requested a complaint be filed against the subject. Abbreviates for Type of Agency are acceptable; however, the county or city name should be spelled out followed by SO, PD, etc. ","* PD Police Department
@@ -48,7 +48,11 @@ multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,
-arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,PROSECUTOR REJECTS is only the final disposition if the Court Record ID is blank
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,"PROSECUTOR REJECTS is only the final disposition if the Court Record ID is blank
+
+\textcolor{red}{EG: we should figure out a way to make this type of data easily understandable to users}
+
+\textcolor{red}{VD: I can just code them in the database, since there really aren't that many}"
 arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
 
@@ -58,7 +62,9 @@ prior_record_code,prior prison commitments,,Number of prior prison commitments.,
 * 7 - one prior prison commitment
 * 8 - two prior prison commitments
 * 9 - three or more prior prison commitments
-* blank - pre-1982 means lengthy record",
+* blank - pre-1982 means lengthy record","\textcolor{red}{EG: we should fix the discrepancy between documentation labels and data values}
+
+\textcolor{red}{VD: not sure what you mean, they seem to be the same as in the OBTS manual}"
 arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,see cjis_codeTable.csv,
 arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,SEE OBTS MANUAL APPX F,
 arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
@@ -116,8 +122,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ offenses",IS THIS ALWAYS NUMBER OF CONVICTION CHARGES? OR ARE THERE CHARGES ASSOCIATED WITH NON-CONVICTION DISPOSITIONS?
-court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,
-court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,
+* 9 - 9+ offenses","\textcolor{red}{EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions? Ask Alyson?}"
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"\textcolor{red}{EG: todo}"
+court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"\textcolor{red}{EG: todo}"
 court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

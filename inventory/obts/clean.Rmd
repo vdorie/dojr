@@ -40,7 +40,7 @@ if (!cleanPerformed || !file.exists(txtFile)) {
 rm(txtFile)
 ```
 
-Most of the single-digit birth are from prior to 1992, when years were stored as only 2 digits. For reasons unknown, 1995 is also in a 2- digit year format. The court event year match that of the corresponding file, so that they range from `r minCourtEventYear` to `r maxCourtEventYear`, and the missing digits can be safely added. `r numInvalidDates` are unable to be parsed into a correct date:
+Most of the single-digit births are from prior to 1992, when years were stored as only 2 digits. For reasons unknown, 1995 is also in a 2- digit year format. The court event year match that of the corresponding file, so that they range from `r minCourtEventYear` to `r maxCourtEventYear`, and the missing digits can be safely added. `r numInvalidDates` are unable to be parsed into a correct date:
 
 `r paste0(invalidDates, collapse = "\n")`
 

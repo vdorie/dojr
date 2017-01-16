@@ -1,9 +1,21 @@
 ```{r 'clean_setup', echo = FALSE}
 cleanDataFile <- file.path("..", dataPath, tables$file[match(mainTable, tables$name)])
-cleanPerformed <- file.exists(cleanDataFile)
 
-if (!cleanPerformed)
+txtFiles <- file.path("..", txtPath, c("clean_court_event_date.txt",
+                                       "clean_arrest_event_date.txt",
+                                       "clean_birth_date_1.txt",
+                                       "clean_birth_date_2.txt",
+                                       "clean_arrest_disposition_year.txt"))
+imgFiles <- file.path("..", imgPath, c("clean_arrest_event_year.png",
+                                       "clean_birth_year.png",
+                                       "clean_arrest_disposition_year.png"))
+
+performClean <- !file.exists(cleanDataFile) || any(!file.exists(txtFiles) || any(!file.exists(imgFiles)))
+
+if (performClean)
   obts.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
+
+rm(txtFiles, imgFiles)
 ```
 
 `r rmdPageBreak()`
@@ -14,7 +26,7 @@ if (!cleanPerformed)
 
 ```{r 'clean_court_event_date', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "clean_court_event_date.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   minCourtEventYear <- min(obts.clean$court_event_year)
   maxCourtEventYear <- max(obts.clean$court_event_year)
   
@@ -53,7 +65,7 @@ rm(minCourtEventYear, maxCourtEventYear, numInvalidDates, invalidDates)
 ```{r 'clean_arrest_event_date', echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "clean_arrest_event_year.png")
 txtFile <- file.path("..", txtPath, "clean_arrest_event_date.txt")
-if (!cleanPerformed || !file.exists(txtFile) || !file.exists(imgFile)) {
+if (performClean) {
   png(imgFile, 6, 3, units = "in", res = 216L)
   
   par(mfrow = c(1, 2))
@@ -126,7 +138,7 @@ rm(numOutOfRange, numInvalidDates, invalidDates)
 ```{r 'clean_birth_date_1', echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "clean_birth_year.png")
 txtFile <- file.path("..", txtPath, "clean_birth_date_1.txt")
-if (!cleanPerformed || !file.exists(txtFile) || !file.exists(imgFile)) {
+if (performClean) {
   png(imgFile, 6, 3, units = "in", res = 216L)
   
   par(mfrow = c(1, 2))
@@ -202,7 +214,7 @@ To impute the century for the birth-year, we follow the rule:
 1. If the listed 2-digit birth year is greater than 3 years from the court-event-year minus 1900, then we assume that it is in the 1800s.
 2. Otherwise, we assume that it is in the 1900s.
 
-This scheme allows the birth years that are close to the court years to persist, as that trend exists in the data sets for 4-digit years. These records bear further investigation.
+This scheme allows the birth years that are close to the court years to persist, as that trend exists in the data sets for 4-digit years. These records bear further investigation as they seem unlikely to be correct.
 
 ```{r, echo = FALSE}
 rm(centuryRecords, nearRecords)
@@ -210,7 +222,7 @@ rm(centuryRecords, nearRecords)
 
 ```{r 'clean_birth_date_2', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "clean_birth_date_2.txt")
-if (!cleanPerformed || !file.exists(txtFile)) {
+if (performClean) {
   obts.clean$birth_date <- with(obts.clean, as.Date(paste(birth_year, birth_month, birth_day, sep = "-"), format = "%F"))
   
   obts.clean$birth_month[obts.clean$birth_month == 0L] <- NA_integer_
@@ -245,7 +257,7 @@ After making this correction, a number of birth dates still cannot be successful
 ```{r 'clean_arrest_disposition_date', echo = FALSE, results = "asis"}
 imgFile <- file.path("..", imgPath, "clean_arrest_disposition_year.png")
 txtFile <- file.path("..", txtPath, "clean_arrest_disposition_year.txt")
-if (!cleanPerformed || !file.exists(imgFile) || !file.exists(txtFile)) {
+if (performClean) {
   png(imgFile, 6, 3, units = "in", res = 216L)
   
   par(mfrow = c(1, 2))
@@ -318,12 +330,12 @@ rm(numInvalidDates, invalidDates)
 ```
 
 ```{r 'save_result', echo = FALSE}
-if (!cleanPerformed) {
+if (performClean) {
   obts <- obts.clean
   save(obts, file = cleanDataFile)
   
-  rm(obts.clean, cleanDataFile)
+  rm(obts.clean)
   invisible(gc(FALSE))
 }
-rm(cleanPerformed)
+rm(cleanPerformed, cleanDataFile)
 ```

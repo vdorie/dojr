@@ -248,8 +248,8 @@ if (performClean) {
   macr <- macr.clean
   save(macr, file = cleanDataFile)
   
-  rm(macr.clean, cleanDataFile)
+  rm(macr.clean, )
   invisible(gc(FALSE))
 }
-rm(performClean)
+rm(performClean, cleanDataFile)
 ```

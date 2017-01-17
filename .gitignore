@@ -7,3 +7,9 @@ import/obts/src/dbCredentials.properties
 bookingRates/intersection.csv
 bookingRates/matchedRecs.csv
 inventory/obts/obtsDisclosure.Rmd
+macrDisclosure/macr_SDA.pdf
+macrDisclosure/macrDisclosure.Rmd
+macrDisclosure/macr_SDA.Rmd
+anonymization/macr/macrDisclosure.Rmd
+anonymization/macr/macr_SDA.pdf
+anonymization/macr/macr_SDA.Rmd

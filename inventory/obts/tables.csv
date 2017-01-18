@@ -1,3 +1,30 @@
 name,display_name,file,object,full_summary,main_table,display,on_load,description
-obts,OBTS Main Database,obts_clean.Rdata,obts,1,1,1,,"The Offender Based Transaction Statistics database is an extract of California's Automated Criminal History System (ACHS), which is used, among other things, for background checks. The OBTS is intended to capture the arrest cycle for all felonies in ACHS, beginning with arrest and ending with a release, a decline to prosecute, a not guilty verdict, or a guilty verdict and a sentence. OBTS data begins in 1982 and contains 250,000 to 400,000 records per year. Each record includes the arresting officer's jurisdiction, the arrest date and BCS code for offense, the age/birth date of the arrestee, the arrestee's demographics, and, if applicable, charges pressed, charges convicted, and sentence type. The OBTS also contains direct identifiers such as name, CII, and DoB. "
+obts,OBTS Main Database,obts_clean.Rdata,obts,1,1,1,,"The Offender Based Transaction Statistics (OBTS) database is designed to provide information about trends in how felony arrests are handled in California. OBTS is an extract of California's Automated Criminal History System (ACHS), which is used, among other things, for background checks. The OBTS captures the arrest-cycle for all adult-level felony arrests, beginning with arrest itself and ending with a release, a decline to prosecute, a not guilty verdict, or a guilty verdict and a sentence. OBTS data begin in 1982 and contain 200,000 to 350,000 records per year. Each record includes the arresting officer's jurisdiction, the arrest date and BCS code for offense, the age/birth date of the arrestee, the arrestee's demographics, and, if applicable, charges pressed, charges convicted, and sentence type. The OBTS also contains direct identifiers such as name, CII, and DoB. 
+
+Background: 
+* Only 65-75% of felony arrest dispositions are captured annually (HOW MUCH DUE TO YEAR TRUNCATION?)
+* The representativeness of OBTS data may vary by county (CONFIRM WITH MARIE OR RANDIE)
+* Disposition data come from form <JUS 8715>[link](https://github.com/vdorie/dojr/tree/master/inventory/obts/adultDisposition_form.pdf), which is filled out by law enforcement, the district attorney's office, and the courts
+* OBTS only captures final dispositions, intermediate dispositions such as diversion programs or retrials are not included [WHAT DEFINES A DISPOSITION AS FINAL?]
+* If there are multiple arrest offenses, the one shown is the most serious offense in terms of potential incarceration sentence
+* If there are multiple conviction offenses, the one shown is the most serious offense in terms of potential incarceration sentence
+* OBTS contains data about juveniles whose final disposition was in the adult criminal justice system
+
+Historical Changes: 
+* Beginning in 1998, lower and superior courts could unify their data reporting
+* From 1992 through 1997, convictions were prioritized for data entry, non-conviction records may be missing in higher numbers
+* [FILE CREATION DATES AFFECTS NUMBER OF RECORDS PER YEAR - HOW DOES THIS WORK?]
+* Offense data for 2002 may be missing due to data being entered in the wrong field [STILL TRUE?]
+
+County-specific issues:
+* Alameda: under-reporting of final dispositions from 1998 through 2002
+* Contra Costa: Incomplete 2008 data
+* Los Angeles: Missing thousands of dispositions from 1998 through 2000
+* Sacramento: Incomplete 2008 data
+* San Bernardino: Incomplete data from 1999 through 2001
+* San Diego: Decrease in dispositions after 2000 may be result of a reporting issue
+* San Francisco: Law enforcement makes very few final dispositions, more likely to send to DA; 2004 data may have errors; 2005 and 2010 data are incomplete; 
+* Santa Barbara: Data for 1993 through 1997 may be unreliable
+* Ventura: Incomplete data from 1996 through 2001; incomplete data for 2010
+"
 obts_dirty,Not Shown,obts.Rdata,obts,0,0,0,,"OBTS, not yet cleaned"

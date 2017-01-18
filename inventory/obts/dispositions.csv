@@ -1,0 +1,19 @@
+code,reason
+1,LEA release: Complainant Refuses to Prosecute
+2,"LEA release: Arrestee Exonerated, unfounded"
+3,LEA release: Further Investigation
+4,"LEA release: Admissible Evidence Insufficient, lack of corpus"
+5,"LEA release: Ascertainable Evidence Insufficient, no probable cause, inadmissable search and seizure"
+6,"LEA release: Other - no further action, unknown, victim(s) complaint unavailable"
+7,LEA release: Unspecified
+10,DA decline: Lack of corpus
+11,"DA decline: Lack of probable cause, lack of evidence"
+12,DA decline: Inadmissable search and seizure
+13,DA decline: Victim(s) complaint unavailable/declines to prosecute
+14,DA decline: Witness(es) unavailable
+15,DA decline: Interest of justice
+16,DA decline: Other
+17,"DA decline: Prosecution deferred, revocation of parole"
+18,DA decline: Prosecution prefiling deferred
+19,DA decline: Probation revoked in lieu of filing 1203.2PC (starts in 1992)
+20,DA decline: Combined cases (starts in 1992)

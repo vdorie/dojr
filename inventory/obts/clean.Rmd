@@ -8,6 +8,7 @@ txtFiles <- file.path("..", txtPath, c("clean_court_event_date.txt",
                                        "clean_arrest_disposition_year.txt"))
 imgFiles <- file.path("..", imgPath, c("clean_arrest_event_year.png",
                                        "clean_birth_year.png",
+                                       "clean_age.png",
                                        "clean_arrest_disposition_year.png"))
 
 performClean <- !file.exists(cleanDataFile) || any(!file.exists(txtFiles) || any(!file.exists(imgFiles)))
@@ -252,6 +253,24 @@ After making this correction, a number of birth dates still cannot be successful
 
 `r paste0(invalidDates, collapse = "\n")`
 
+We can look at the distribution of ages in the data by subtracting the court event date from the birth date.
+
+```{r 'clean_birth_date_3', echo = FALSE}
+imgFile <- file.path("..", imgPath, "clean_age.png")
+if (performClean) {
+  age <- with(obts.clean, court_event_year - birth_year + ifelse(court_event_month > birth_month | court_event_month == birth_month & court_event_day >= birth_day, 0L, 1L))
+  pdf(imgFile, 6, 3.5)
+  par(mfrow = c(1L, 2L))
+  discrete.histogram(age[!is.na(age) & age < 18L], main = "Juvenile Discrete Histogram", col = "gray", border = NA, xlab = "age")
+  discrete.histogram(age[!is.na(age) & age < 18L], main = "Juvenile Disc Hist Closeup", col = "gray", border = NA, xlab = "age", ylim = c(0, 125))
+  dev.off()
+  rm(age)
+}
+rm(imgFile)
+```
+
+`r rmdImageInline(file.path(imgPath, "clean_age.png"))`
+
 ## Arrest Disposition Date
 
 ```{r 'clean_arrest_disposition_date', echo = FALSE, results = "asis"}
@@ -337,5 +356,5 @@ if (performClean) {
   rm(obts.clean)
   invisible(gc(FALSE))
 }
-rm(cleanPerformed, cleanDataFile)
+rm(performClean, cleanDataFile)
 ```

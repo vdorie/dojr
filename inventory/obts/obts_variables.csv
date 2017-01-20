@@ -1,16 +1,16 @@
 name,display_name,short_description,description,contains_pii,skip,question_text,value_labels,notes
 id,database_id,,,0,1,,,
-cii_record_type,CII record type,[WHAT IS RECORD TYPE?],[WHAT IS RECORD TYPE?],0,0,[HOW CREATED?],"* 1 - automated
+cii_record_type,CII record type,,"\textcolor{red}{[WHAT IS RECORD TYPE?]}",0,0,\textcolor{red}{[HOW CREATED?]},"* 1 - automated
 * 2- manual
 * 3 - OBN (no CII record on file)
 * 4 - Hybrid (began 1993)",
-cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the “CII#”, assigned to the subject’s criminal
+cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the ``CII#'', assigned to the subject’s criminal
 history record. If no CII number is available or known to the agency, leave the area blank and continue
 processing the form.",,
-pdr_record_id,PDR record ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system [CORRECT?],0,0,,"* 00 - new offender (no arrest before 8/23/82)
+pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
-* 09 - delete CII",DOES THIS DATA GO PAST 1980s?
+* 09 - delete CII",\textcolor{red}{DOES THIS DATA GO PAST 1980s?}
 name,name,,Individual's name.,1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
 birth_year,birth year,,Individual's birth year.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
 birth_month,birth month,,Individual's birth month.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
@@ -57,9 +57,7 @@ prior_record_code,prior prison commitments,,Number of prior prison commitments.,
 * 7 - one prior prison commitment
 * 8 - two prior prison commitments
 * 9 - three or more prior prison commitments
-* blank - pre-1982 means lengthy record","\textcolor{red}{EG: we should fix the discrepancy between documentation labels and data values}
-
-\textcolor{red}{VD: not sure what you mean, they seem to be the same as in the OBTS manual}"
+* blank - pre-1982 means lengthy record",
 arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,see cjis_codeTable.csv,
 arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,see qualifier_codes.csv,
 arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
@@ -91,7 +89,7 @@ post 1985:
 * 2 - 8 - two to eight
 * 9 - 9+ dispositions",
 court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,
-sentence_type,sentence type,[HOW QUESTIONABLE IS SENTENCE TYPE?],Court sentence type.,0,0,,,
+sentence_type,sentence type,\textcolor{red}{[HOW QUESTIONABLE IS SENTENCE TYPE?]},Court sentence type.,0,0,,,
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA

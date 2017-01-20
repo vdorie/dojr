@@ -117,8 +117,20 @@ isEnumType <- function(x) grepl(";", x)
 ## used to reset some stuff for testing purposes
 dropTable <- function(con, tableDef, tableNames)
 {
-  ignored <- function(e) invisible(NULL)
-  
+  if ("obts_typed" %in% tableNames) {
+    if (dbExistsTable(con, "obts_typed")) dbExecute(con, "DROP TABLE obts_typed")
+    
+    for (i in seq_len(nrow(tableDef))) {
+      if (!isEnumType(tableDef$type[i])) next
+      typeName <- paste0("obts_", tableDef$full_name[i])
+      if (dbExistsType(con, typeName)) dbExecute(con, paste0("DROP TYPE ", typeName))
+    }
+  }
+  if ("obts" %in% tableNames) {
+    if (dbExistsTable(con, "obts")) dbExecute(con, "DROP TABLE obts")
+    
+    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET id_start = 0, id_end = 0")
+  }
   if ("obts_raw_1" %in% tableNames) {
     if (dbExistsTable(con, "obts_raw_1")) dbExecute(con, "DROP TABLE obts_raw_1")
     if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0 WHERE format = 1")
@@ -127,26 +139,26 @@ dropTable <- function(con, tableDef, tableNames)
     if (dbExistsTable(con, "obts_raw_2")) dbExecute(con, "DROP TABLE obts_raw_2")
     if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0 WHERE format = 2")
   }
-  if ("obts" %in% tableNames) {
-    if (dbExistsTable(con, "obts")) dbExecute(con, "DROP TABLE obts")
-    
-    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET id_start = 0, id_end = 0")
-  }
-  if ("obts_typed" %in% tableNames) {
-    if (dbExistsTable(con, "obts")) dbExecute(con, "DROP TABLE obts_typed")
-    
-    for (i in seq_len(nrow(tableDef))) {
-      if (!isEnumType(tableDef$type[i])) next
-      typeName <- paste0("obts_", tableDef$full_name[i])
-      if (dbExistsType(con, typeName)) dbExecute(con, paste0("DROP TYPE ", typeName))
-    }
-  }
-    
+  
   if ("info" %in% tableNames && dbExistsTable(con, "info")) dbExecute(con, "DROP TABLE info")
   
   invisible(NULL)
 }
 
+resetDatabase <- function(drv, tableDef)
+{
+  con <- connectToDatabase(drv, "obts")
+  
+  dropTable(con, tableDef, "obts_typed")
+  dropImportFunctions(con, tableDef)
+  
+  dropTable(con, tableDef, c("obts", "obts_raw_1", "obts_raw_2"))
+  dbExecute(con, "DELETE FROM info")
+  
+  dbDisconnect(con)
+  
+  invisible(NULL)
+}
 
 
 createTablesIfNonexistent <- function(drv, tableDef, tableNames)
@@ -309,8 +321,9 @@ dropImportFunctions <- function(con, tableDef) {
     if (!isEnumType(tableDef$type[i])) next
     
     functionName <- paste0("string_to_", tableDef$full_name[i])
-    fieldLength <- max(tableDef[i,colnames(tableDef)[grepl("length", colnames(tableDef))]])
-    functionArgumentType <- paste0("character(", fieldLength, ")")
+    # field length is used when creating, but not dropping
+    #fieldLength <- max(tableDef[i,colnames(tableDef)[grepl("length", colnames(tableDef))]])
+    functionArgumentType <- paste0("character")
     if (dbExistsFunction(con, functionName, functionArgumentType))
       dbExecute(con, paste0("DROP FUNCTION ", functionName, "(", functionArgumentType, ")"))
   }
@@ -567,7 +580,7 @@ splitRawColumns <- function(drv, tableDef) {
     for (i in seq_len(nrow(currentEntries))) {
       currentEntry <- currentEntries[i,]
       
-      cat("split columns for file '", currentEntry$file_name, "'\n", sep = "")
+      cat("spliting columns for file '", currentEntry$file_name, "'\n", sep = "")
       splitResult <- tryCatch(splitRawColumnsForEntry(con, tableDef, currentEntry), error = function(e) e)
       if (is(splitResult, "error")) {
         dbDisconnect(con)
@@ -723,22 +736,23 @@ dropTable(con, tableDef, "obts_typed")
 dbDisconnect(con)
 
 
-dbUnloadDriver(drv)
-
 
 con <- connectToDatabase(drv, "obts")
 
 obts <- dbGetQuery(con, "SELECT * FROM obts_typed")
 
 ## enum types in obts
-for (variableName in c("cii_record_type", "pdr_record_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence", "court_charge_type"))
+for (variableName in c("cii_record_type", "pdr_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "arrest_disposition_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence_type", "sentence", "court_charge_type"))
   obts[[variableName]] <- as.factor(obts[[variableName]])
 
 ## integer types that are really categorical
-for (variableName in c("arresting_agency", "multiple_arrest_charges", "arrest_disposition_type", "arrest_multiple_dispositions", "arrest_offense", "arrest_summary_code", "court_converted_data", "court_judicial_district", "court_multiple_dispositions", "sentence_type", "court_multiple_disposition_charges", "court_disposition_offense", "court_qualifier", "court_summary_code"))
+for (variableName in c("arresting_agency", "multiple_arrest_charges", "arrest_multiple_dispositions", "arrest_offense", "arrest_summary_code", "court_converted_data", "court_judicial_district", "court_multiple_dispositions", "court_multiple_disposition_charges", "court_disposition_offense", "court_qualifier", "court_summary_code"))
   obts[[variableName]] <- as.factor(obts[[variableName]])
 
 
 save(obts, file = file.path("..", "..", "common", "data", "obts.Rdata"))
+
+
+dbUnloadDriver(drv)
 
 }

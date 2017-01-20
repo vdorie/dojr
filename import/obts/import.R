@@ -736,7 +736,15 @@ dropTable(con, tableDef, "obts_typed")
 dbDisconnect(con)
 
 
+## validate import
+con <- connectToDatabase(drv, "obts")
 
+checkColumns(con, tableDef)
+
+dbDisconnect(con)
+
+
+## export to file
 con <- connectToDatabase(drv, "obts")
 
 obts <- dbGetQuery(con, "SELECT * FROM obts_typed")

@@ -1,5 +1,5 @@
-name,display_name,file,object,full_summary,main_table,display,on_load,description
-macr,"MACR Main Database",macr_clean_pii.Rdata,macr,1,1,1,,"The Monthly Arrest and Citation Register compiles monthly arrest reports from all law enforcement agencies in California. The reports are supposed to contain every arrest (and citation until 2005) that an agency makes of juveniles or adults. 
+name,display_name,file,object,main_table,display,on_load,description
+macr,"MACR Main Database",macr_clean_pii.Rdata,macr,1,1,,"The Monthly Arrest and Citation Register compiles monthly arrest reports from all law enforcement agencies in California. The reports are supposed to contain every arrest (and citation until 2005) that an agency makes of juveniles or adults. 
 
 * Each row represents a single arrest, and includes the arrest date, the offense for which the individual was arrested, the individual's age, gender, race or ethnicity, and whether the case was referred to the local prosecutor. Each row also contains a full name and birthdate, which are excluded in these data. 
 * An arrest is defined as detaining an individual with the intention of seeking charges for a specific offense
@@ -20,6 +20,6 @@ Department-specific changes:
 
 * Bakersfield Police Department (PD) and Oakland PD did not report arrest data in 1995.
 * San Francisco did not update its race_or_ethnicity codes until 2012, when it adoped the FBI's categories: white, black, American Indian, other Asian, and other. San Francisco data since 2012 does not distinguish between Hispanic and non-Hispanic whites."
-macr_dirty,"Not Shown",macr_pii.Rdata,macr,0,0,0,,"MACR, not yet cleaned"
-bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,0,1,,"BCS codes combine like statutes for statistical analysis. This table maps statutes to BCS codes to BCS summary codes (groups of BCS codes)."
-jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,0,1,,"The jurisdiction is the law enforcement agency that made the arrest. This table maps jurisdiction codes to their names and counties. It also describes when agencies began and stopped reporting, when agencies merged, and if agencies subcontracted to one another."
+macr_dirty,"Not Shown",macr_pii.Rdata,macr,0,0,,"MACR, not yet cleaned"
+bcs_offense_codes,"BCS Code Table",bcs_offense_codes.csv,bcsOffenseCodes,0,1,,"BCS codes combine like statutes for statistical analysis. This table maps statutes to BCS codes to BCS summary codes (groups of BCS codes)."
+jurisdictions,"NCIC Jurisdiction Table",jurisdictions.csv,jurisdictions,0,1,,"The jurisdiction is the law enforcement agency that made the arrest. This table maps jurisdiction codes to their names and counties. It also describes when agencies began and stopped reporting, when agencies merged, and if agencies subcontracted to one another."

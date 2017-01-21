@@ -1,5 +1,5 @@
 "county_code","agency_code","county","type","agency"
-"01",****,Alameda,Arrest,No Court Disposition
+"01",NA,Alameda,Arrest,No Court Disposition
 "01",100J,Alameda,County,Alameda County (Oakland)
 "01",120J,Alameda,County,Hayward
 "01",410J,Alameda,County,Alameda
@@ -9,13 +9,13 @@
 "01",440J,Alameda,County,Oakland
 "01",450J,Alameda,County,Hayward
 "01",451J,Alameda,County,San Leandro
-"02",****,Alpine,Arrest,No Court Disposition
+"02",NA,Alpine,Arrest,No Court Disposition
 "02",100J,Alpine,County,Alpine County
 "02",610J,Alpine,County,Markleeville
-"03",****,Amador,Arrest,No Court Disposition
+"03",NA,Amador,Arrest,No Court Disposition
 "03",100J,Amador,County,Amador County
 "03",610J,Amador,Juvenile,Jackson
-"04",****,Butte,Arrest,No Court Disposition
+"04",NA,Butte,Arrest,No Court Disposition
 "04",100J,Butte,County,Butte County
 "04",430J,Butte,County,Chico
 "04",450J,Butte,County,Gridley
@@ -25,15 +25,15 @@
 "05",650J,Butte,County,Gridley
 "04",660J,Butte,Juvenile,Oroville
 "04",670J,Butte,County,Paradise
-"05",****,Calaveras,Arrest,No Court Disposition
+"05",NA,Calaveras,Arrest,No Court Disposition
 "05",100J,Calaveras,County,Calaveras County
 "05",610J,Calaveras,County,Angels
 "05",660J,Calaveras,County,San Andreas
-"06",****,Colusa,Arrest,No Court Disposition
+"06",NA,Colusa,Arrest,No Court Disposition
 "06",100J,Colusa,County,Colusa County
 "06",620J,Colusa,County,Colusa
 "06",660J,Colusa,County,Williams
-"07",****,Contra Costa,Arrest,No Court Disposition
+"07",NA,Contra Costa,Arrest,No Court Disposition
 "07",100J,Contra Costa,County,Contra Costa County
 "07",410J,Contra Costa,County,Concord
 "07",420J,Contra Costa,County,Martinez
@@ -42,16 +42,16 @@
 "07",467J,Contra Costa,County,Brentwood
 "07",470J,Contra Costa,County,San Pablo
 "07",480J,Contra Costa,County,Walnut Creek
-"08",****,Del Norte,Arrest,No Court Disposition
+"08",NA,Del Norte,Arrest,No Court Disposition
 "08",100J,Del Norte,County,Del Norte County
 "08",630J,Del Norte,Juvenile,Crescent City
-"09",****,El Dorado,Arrest,No Court Disposition
+"09",NA,El Dorado,Arrest,No Court Disposition
 "09",100J,El Dorado,County,El Dorado County
 "09",630J,El Dorado,County,El Dorado
 "09",640J,El Dorado,County,Georgetown/Divide
 "09",660J,El Dorado,County,South Lake Tahoe
 "09",670J,El Dorado,County,Placerville
-"10",****,Fresno,Arrest,No Court Disposition
+"10",NA,Fresno,Arrest,No Court Disposition
 "10",100J,Fresno,County,Fresno County
 "10",440J,Fresno,County,Fresno Central
 "10",620J,Fresno,County,Fowler/Caruthers
@@ -69,18 +69,18 @@
 "10",675J,Fresno,Juvenile,Riverdale
 "10",680J,Fresno,County,Sanger
 "10",685J,Fresno,County,Selma
-"11",****,Glenn,Arrest,No Court Disposition
+"11",NA,Glenn,Arrest,No Court Disposition
 "11",100J,Glenn,County,Glenn County
 "11",650J,Glenn,County,Orland
 "11",670J,Glenn,County,Willows
-"12",****,Humboldt,Arrest,No Court Disposition
+"12",NA,Humboldt,Arrest,No Court Disposition
 "12",100J,Humboldt,County,Humboldt County
 "12",430J,Humboldt,County,Eureka
 "12",610J,Humboldt,Juvenile,Arcata
 "12",640J,Humboldt,County,Fortuna
 "12",650J,Humboldt,County,Garberville
 "12",660J,Humboldt,County,Hoopa
-"13",****,Imperial,Arrest,No Court Disposition
+"13",NA,Imperial,Arrest,No Court Disposition
 "13",100J,Imperial,County,Imperial County
 "13",420J,Imperial,County,Brawley
 "13",430J,Imperial,County,Calexico Dept.
@@ -88,12 +88,12 @@
 "13",450J,Imperial,County,Winterhaven Branch
 "13",620J,Imperial,County,Brawley
 "13",630J,Imperial,County,Calexico
-"14",****,Inyo,Arrest,No Court Disposition
+"14",NA,Inyo,Arrest,No Court Disposition
 "14",100J,Inyo,County,Inyo County
 "14",580J,Inyo,County,Inyo (Independence)
 "14",660J,Inyo,County,Bishop
 "14",680J,Inyo,Juvenile,Independence
-"15",****,Kern,Arrest,No Court Disposition
+"15",NA,Kern,Arrest,No Court Disposition
 "15",100J,Kern,County,Kern County
 "15",410J,Kern,County,Arvin Lamont
 "15",415J,Kern,County,Lamont
@@ -109,24 +109,24 @@
 "15",470J,Kern,County,Ridgecrest
 "15",650J,Kern,County,Lake Isabella
 "15",670J,Kern,County,Johannesburg
-"16",****,Kings,Arrest,No Court Disposition
+"16",NA,Kings,Arrest,No Court Disposition
 "16",100J,Kings,County,Kings County
 "16",420J,Kings,County,Hanford
 "16",610J,Kings,County,Avenal
 "16",620J,Kings,County,Corcoran
 "16",640J,Kings,County,Hanford
 "16",660J,Kings,County,Lemoore
-"17",****,Lake,Arrest,No Court Disposition
+"17",NA,Lake,Arrest,No Court Disposition
 "17",100J,Lake,County,Lake County
 "17",610J,Lake,County,Clearlake Highlands
 "17",640J,Lake,County,Kelseyville
 "17",650J,Lake,Juvenile,Lakeport
 "17",657J,Lake,County,Middletown/Lower Lake
 "17",680J,Lake,County,Upper Lake
-"18",****,Lassen,Arrest,No Court Disposition
+"18",NA,Lassen,Arrest,No Court Disposition
 "18",100J,Lassen,County,Lassen County
 "18",675J,Lassen,County,Susanville
-"19",****,Los Angeles,Arrest,No Court Disposition
+"19",NA,Los Angeles,Arrest,No Court Disposition
 "19",100J,Los Angeles,County,Los Angeles County (Central)
 "19",110J,Los Angeles,County,Los Angeles County (Pomona)
 "19",111J,Los Angeles,County,Los Angeles County (Glendale)
@@ -177,19 +177,19 @@
 "19",499J,Los Angeles,County,West Los Angeles
 "19",610J,Los Angeles,County,Avalon
 "19",650J,Los Angeles,County,Malibu
-"20",****,Madera,Arrest,No Court Disposition
+"20",NA,Madera,Arrest,No Court Disposition
 "20",100J,Madera,County,Madera County
 "20",620J,Madera,County,Chowchilla
 "20",640J,Madera,County,Borden
 "20",660J,Madera,County,Madera
 "20",680J,Madera,County,Bass Lake
-"21",****,Marin,Arrest,No Court Disposition
+"21",NA,Marin,Arrest,No Court Disposition
 "21",100J,Marin,County,Marin County (San Rafael)
 "21",420J,Marin,County,San Rafael
-"22",****,Mariposa,Arrest,No Court Disposition
+"22",NA,Mariposa,Arrest,No Court Disposition
 "22",100J,Mariposa,County,Mariposa County
 "22",650J,Mariposa,County,Mariposa
-"23",****,Mendocino,Arrest,No Court Disposition
+"23",NA,Mendocino,Arrest,No Court Disposition
 "23",100J,Mendocino,County,Mendocino County
 "23",450J,Mendocino,County,Willits
 "23",480J,Mendocino,County,Ukiah
@@ -202,7 +202,7 @@
 "23",670J,Mendocino,County,Sanel (Hopland) (Prior 5-19-82)
 "23",675J,Mendocino,County,Fort Bragg
 "23",680J,Mendocino,County,Ukiah
-"24",****,Merced,Arrest,No Court Disposition
+"24",NA,Merced,Arrest,No Court Disposition
 "24",100J,Merced,County,Merced County
 "24",450J,Merced,County,Merced
 "24",455J,Merced,County,Los Banos
@@ -210,14 +210,14 @@
 "24",653J,Merced,County,Livingston
 "24",657J,Merced,County,Los Banos
 "24",660J,Merced,County,Merced
-"25",****,Modoc,Arrest,No Court Disposition
+"25",NA,Modoc,Arrest,No Court Disposition
 "25",100J,Modoc,County,Modoc County
 "25",615J,Modoc,County,Modoc judicial District (Alturas)
-"26",****,Mono,Arrest,No Court Disposition
+"26",NA,Mono,Arrest,No Court Disposition
 "26",100J,Mono,County,Mono County
 "26",650J,Mono,County,Bridgeport
 "26",660J,Mono,County,Mammoth Lakes
-"27",****,Monterey,Arrest,No Court Disposition
+"27",NA,Monterey,Arrest,No Court Disposition
 "27",100J,Monterey,County,Monterey County
 "27",420J,Monterey,County,Castroville
 "27",450J,Monterey,County,Monterey
@@ -225,18 +225,18 @@
 "27",640J,Monterey,County,Gonzales
 "27",650J,Monterey,County,King City
 "27",685J,Monterey,County,Soledad
-"28",****,Napa,Arrest,No Court Disposition
+"28",NA,Napa,Arrest,No Court Disposition
 "28",100J,Napa,County,Napa County
 "28",440J,Napa,County,Napa
 "28",450J,Napa,County,Calistoga
 "28",460J,Napa,County,St. Helena
-"29",****,Nevada,Arrest,No Court Disposition
+"29",NA,Nevada,Arrest,No Court Disposition
 "29",100J,Nevada,County,Nevada County
 "29",460J,Nevada,County,Nevada City
 "29",480J,Nevada,County,Truckee
 "29",660J,Nevada,County,Nevada
 "29",680J,Nevada,County,Truckee
-"30",****,Orange,Arrest,No Court Disposition
+"30",NA,Orange,Arrest,No Court Disposition
 "30",100J,Orange,County,Orange County
 "30",410J,Orange,County,Anaheim
 "30",420J,Orange,County,Fullerton
@@ -245,7 +245,7 @@
 "30",452J,Orange,County,Laguna Niguel
 "30",460J,Orange,County,Newport Beach
 "30",470J,Orange,County,Santa Ana
-"31",****,Placer,Arrest,No Court Disposition
+"31",NA,Placer,Arrest,No Court Disposition
 "31",100J,Placer,County,Placer County
 "31",410J,Placer,County,Auburn
 "31",420J,Placer,County,Colfax
@@ -260,14 +260,14 @@
 "31",650J,Placer,County,Lincoln
 "31",660J,Placer,County,Roseville
 "31",680J,Placer,Juvenile,Tahoe City
-"32",****,Plumas,Arrest,No Court Disposition
+"32",NA,Plumas,Arrest,No Court Disposition
 "32",100J,Plumas,County,Plumas County
 "32",610J,Plumas,County,Greenville
 "32",630J,Plumas,County,Almanor/Chester Branch
 "32",640J,Plumas,County,Chester
 "32",650J,Plumas,County,Portola
 "32",660J,Plumas,County,Quincy
-"33",****,Riverside,Arrest,No Court Disposition
+"33",NA,Riverside,Arrest,No Court Disposition
 "33",100J,Riverside,County,Riverside County
 "33",110J,Riverside,County,Indio
 "33",420J,Riverside,County,Corona
@@ -282,17 +282,17 @@
 "33",490J,Riverside,County,Perris
 "33",491J,Riverside,County,Temecula
 "33",492J,Riverside,County,Elsinore
-"34",****,Sacramento,Arrest,No Court Disposition
+"34",NA,Sacramento,Arrest,No Court Disposition
 "34",100J,Sacramento,County,Sacramento County
 "34",470J,Sacramento,County,Sacramento
 "34",620J,Sacramento,County,Elk Grove
 "34",621J,Sacramento,County,Galt
 "34",630J,Sacramento,County,Fair Oaks/Folsom
 "34",640J,Sacramento,County,Walnut Grove
-"35",****,San Benito,Arrest,No Court Disposition
+"35",NA,San Benito,Arrest,No Court Disposition
 "35",100J,San Benito,County,San Benito County
 "35",640J,Shasta,County,Central Valley
-"36",****,San Bernardino,Arrest,No Court Disposition
+"36",NA,San Bernardino,Arrest,No Court Disposition
 "36",100J,San Bernardino,County,San Bernardino County
 "36",110J,San Bernardino,County,Ontario
 "36",120J,San Bernardino,County,Victorville
@@ -317,7 +317,7 @@
 "36",674J,San Bernardino,County,Trona
 "36",677J,San Bernardino,County,Moronga Basin
 "36",690J,San Bernardino,County,Yucaipa
-"37",****,San Diego,Arrest,No Court Disposition
+"37",NA,San Diego,Arrest,No Court Disposition
 "37",100J,San Diego,County,San Diego County
 "37",110J,San Diego,County,Vista
 "37",120J,San Diego,County,Chula Vista
@@ -326,10 +326,10 @@
 "37",460J,San Diego,County,Vista
 "37",480J,San Diego,County,San Diego Central
 "37",485J,San Diego,County,Chula Vista
-"38",****,San Francisco,Arrest,No Court Disposition
+"38",NA,San Francisco,Arrest,No Court Disposition
 "38",100J,San Francisco,County,San Francisco County
 "38",460J,San Francisco,County,San Francisco
-"39",****,San Joaquin,Arrest,No Court Disposition
+"39",NA,San Joaquin,Arrest,No Court Disposition
 "39",100J,San Joaquin,County,San Joaquin County
 "39",440J,San Joaquin,County,Lodi
 "39",450J,San Joaquin,County,Escalon
@@ -337,19 +337,19 @@
 "39",452J,San Joaquin,County,Ripon
 "39",453J,San Joaquin,County,Tracy
 "39",460J,San Joaquin,County,Stockton
-"40",****,San Luis Obispo,Arrest,No Court Disposition
+"40",NA,San Luis Obispo,Arrest,No Court Disposition
 "40",100J,San Luis Obispo,County,San Luis Obispo County
 "40",410J,San Luis Obispo,County,San Luis Obispo
 "40",420J,San Luis Obispo,County,Grover City
 "40",430J,San Luis Obispo,County,Paso Robles
 "40",610J,San Luis Obispo,County,Paso Robles
 "40",650J,San Luis Obispo,County,Atascadero
-"41",****,San Mateo,Arrest,No Court Disposition
+"41",NA,San Mateo,Arrest,No Court Disposition
 "41",100J,San Mateo,County,San Mateo County
 "41",420J,San Mateo,County,San Mateo
 "41",450J,San Mateo,County,South San Francisco
 "41",470J,San Mateo,County,Redwood City
-"42",****,Santa Barbara,Arrest,No Court Disposition
+"42",NA,Santa Barbara,Arrest,No Court Disposition
 "42",100J,Santa Barbara,County,Santa Barbara County
 "42",101J,Santa Barbara,County,Santa Maria
 "42",460J,Santa Barbara,County,Santa Barbara
@@ -358,7 +358,7 @@
 "42",470J,Santa Barbara,County,Lompoc
 "42",620J,Santa Barbara,County,Carpinteria-Montecito
 "42",675J,Santa Barbara,County,Solvang
-"43",****,Santa Clara,Arrest,No Court Disposition
+"43",NA,Santa Clara,Arrest,No Court Disposition
 "43",100J,Santa Clara,County,Santa Clara County
 "43",450J,Santa Clara,County,Los Gatos
 "43",460J,Santa Clara,County,Palo Alto
@@ -368,22 +368,22 @@
 "43",477J,Santa Clara,County,Sunnyvale
 "43",635J,Santa Clara,County,Gilroy
 "43",650J,Santa Clara,County,Morgan Hill
-"44",****,Santa Cruz,Arrest,No Court Disposition
+"44",NA,Santa Cruz,Arrest,No Court Disposition
 "44",100J,Santa Cruz,County,Santa Cruz County
 "44",460J,Santa Cruz,County,Santa Cruz
 "44",480J,Santa Cruz,County,Watsonville
-"45",****,Shasta,Arrest,No Court Disposition
+"45",NA,Shasta,Arrest,No Court Disposition
 "45",100J,Shasta,County,Shasta County
 "45",610J,Shasta,County,Anderson
 "45",620J,Shasta,County,Burney
 "45",633J,San Benito,County,Hollister
 "45",640J,Shasta,County,Fall River Mill
 "45",670J,Shasta,County,Redding
-"46",****,Sierra,Arrest,No Court Disposition
+"46",NA,Sierra,Arrest,No Court Disposition
 "46",100J,Sierra,County,Sierra County
 "46",630J,Sierra,County,Downieville Traffic
 "46",650J,Sierra,County,Loyalton
-"47",****,Siskiyou,Arrest,No Court Disposition
+"47",NA,Siskiyou,Arrest,No Court Disposition
 "47",100J,Siskiyou,County,Siskiyou County
 "47",630J,Siskiyou,County,Dorris
 "47",635J,Siskiyou,County,Dunsmuir
@@ -395,7 +395,7 @@
 "47",673J,Siskiyou,County,Shasta Valley (Weed)
 "47",675J,Siskiyou,County,Tulelake
 "47",690J,Siskiyou,County,Yreka
-"48",****,Solano,Arrest,No Court Disposition
+"48",NA,Solano,Arrest,No Court Disposition
 "48",100J,Solano,County,Solano County
 "48",420J,Solano,County,Dixon
 "48",430J,Solano,County,Fairfield
@@ -403,7 +403,7 @@
 "48",470J,Solano,County,Benecia Branch
 "48",480J,Solano,County,Vallejo Branch
 "48",660J,Solano,County,Rio Vista
-"49",****,Sonoma,Arrest,No Court Disposition
+"49",NA,Sonoma,Arrest,No Court Disposition
 "49",100J,Sonoma,County,Sonoma County
 "49",410J,Sonoma,County,Cloverdale
 "49",420J,Sonoma,County,Guerneville
@@ -413,7 +413,7 @@
 "49",465J,Sonoma,County,Sebastopol
 "49",480J,Sonoma,County,Petaluma
 "49",490J,Sonoma,County,Sonoma
-"50",****,Stanislaus,Arrest,No Court Disposition
+"50",NA,Stanislaus,Arrest,No Court Disposition
 "50",100J,Stanislaus,County,Stanislaus County
 "50",450J,Stanislaus,County,Modesto
 "50",620J,Stanislaus,County,Newman
@@ -421,19 +421,19 @@
 "50",655J,Stanislaus,County,Patterson
 "50",660J,Stanislaus,County,Riverbank
 "50",670J,Stanislaus,County,Turlock
-"51",****,Sutter,Arrest,No Court Disposition
+"51",NA,Sutter,Arrest,No Court Disposition
 "51",100J,Sutter,County,Sutter County
 "51",460J,Sutter,County,Yuba City
-"52",****,Tehama,Arrest,No Court Disposition
+"52",NA,Tehama,Arrest,No Court Disposition
 "52",100J,Tehama,County,Tehama County
 "52",620J,Tehama,County,Corning
 "52",660J,Tehama,County,Red Bluff
-"53",****,Trinity,Arrest,No Court Disposition
+"53",NA,Trinity,Arrest,No Court Disposition
 "53",100J,Trinity,County,Trinity County
 "53",680J,Trinity,County,Weaverville
 "53",681J,Trinity,County,Hayfork
 "53",682J,Trinity,County,Mad River
-"54",****,Tulare,Arrest,No Court Disposition
+"54",NA,Tulare,Arrest,No Court Disposition
 "54",100J,Tulare,County,Tulare County
 "54",440J,Tulare,County,Dinuba
 "54",445J,Tulare,County,Exeter
@@ -448,7 +448,7 @@
 "54",650J,Tulare,County,Lindsay
 "54",665J,Tulare,County,Porterville
 "54",690J,Tulare,County,Woodlake
-"55",****,Tuolumne,Arrest,No Court Disposition
+"55",NA,Tuolumne,Arrest,No Court Disposition
 "55",100J,Tuolumne,County,Tuolumne County
 "55",250J,Tuolumne,County,Jamestown
 "55",610J,Tuolumne,County,First (Sonora)
@@ -456,18 +456,18 @@
 "55",630J,Tuolumne,County,Third (Tuolumne)
 "55",640J,Tuolumne,County,Fourth (Groveland)
 "55",650J,Tuolumne,County,Fifth (Jamestown)
-"56",****,Ventura,Arrest,No Court Disposition
+"56",NA,Ventura,Arrest,No Court Disposition
 "56",100J,Ventura,County,Ventura County
 "56",480J,Ventura,County,Ventura
 "56",485J,Ventura,County,Santa Paula
-"57",****,Yolo,Arrest,No Court Disposition
+"57",NA,Yolo,Arrest,No Court Disposition
 "57",100J,Yolo,County,Yolo County
 "57",410J,Yolo,County,Broderick
 "57",420J,Yolo,County,Woodland
 "57",430J,Yolo,County,Davis
 "57",440J,Yolo,County,Winters
-"58",****,Yuba,Arrest,No Court Disposition
+"58",NA,Yuba,Arrest,No Court Disposition
 "58",100J,Yuba,County,Yuba County
 "58",650J,Yuba,County,Marysville
 "58",680J,Yuba,County,Wheatland
-"99",****,Unknown,Arrest,No Court Disposition
+"99",NA,Unknown,Arrest,No Court Disposition

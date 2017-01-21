@@ -52,6 +52,8 @@ judicialDistricts$agency <- as.character(countyNames$agency)
 judicialDistricts$county[judicialDistricts$county == "El Dorada"] <- "El Dorado"
 judicialDistricts$county <- droplevels(judicialDistricts$county)
 
+judicialDistricts$agency_code[judicialDistricts$agency_code == "****"] <- NA
+
 write.csv(judicialDistricts, file.path("..", "..", "common", "data", "judicial_districts.csv"),
           row.names = FALSE,
           quote = 1L)

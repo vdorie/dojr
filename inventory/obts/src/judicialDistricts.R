@@ -24,8 +24,8 @@ countyNames[[nonstandardNames[1L]]] <- c("Nevada County Court", "Nevada")
 countyNames[[nonstandardNames[2L]]] <- c("Placer County Court", "Colfax/Alta/Dutch Flat")
 countyNames[[nonstandardNames[3L]]] <- c("Plumas County Court", "Almanor/Chester Branch")
 countyNames[[nonstandardNames[4L]]] <- c("Sacramento County Court", "Fair Oaks/Folsom")
-countyNames[[nonstandardNames[5L]]] <- c("Shasta County Court", "Central Valley")
-countyNames[[nonstandardNames[6L]]] <- c("San Benito County Court", "Hollister")
+countyNames[[nonstandardNames[5L]]] <- c("San Benito County Court", "Hollister")
+countyNames[[nonstandardNames[6L]]] <- c("Shasta County Court", "Central Valley")
 countyNames[[nonstandardNames[7L]]] <- c("Tuolumne Court", "Fifth (Jamestown)")
 rm(nonstandardNames)
 
@@ -49,8 +49,13 @@ judicialDistricts$county <- countyNames$county
 judicialDistricts$type   <- countyNames$type
 judicialDistricts$agency <- as.character(countyNames$agency)
 
+## spelling error
 judicialDistricts$county[judicialDistricts$county == "El Dorada"] <- "El Dorado"
 judicialDistricts$county <- droplevels(judicialDistricts$county)
+
+## apparently, all lower courts in CA are superior, so this one record shouldn't exist
+judicialDistricts$type[judicialDistricts$type == "Superior"] <- "County"
+judicialDistricts$type <- droplevels(judicialDistricts$type)
 
 judicialDistricts$agency_code[judicialDistricts$agency_code == "****"] <- NA
 

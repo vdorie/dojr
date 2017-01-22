@@ -130,7 +130,7 @@
 "19",100J,Los Angeles,County,Los Angeles County (Central)
 "19",110J,Los Angeles,County,Los Angeles County (Pomona)
 "19",111J,Los Angeles,County,Los Angeles County (Glendale)
-"19",112J,Los Angeles,Superior,Los Angeles County (Burbank)
+"19",112J,Los Angeles,County,Los Angeles County (Burbank)
 "19",120J,Los Angeles,County,Los Angeles County (Lancaster)
 "19",121J,Los Angeles,County,Los Angeles County (San Fernando)
 "19",130J,Los Angeles,County,Los Angeles County (Pasadena)
@@ -291,7 +291,7 @@
 "34",640J,Sacramento,County,Walnut Grove
 "35",NA,San Benito,Arrest,No Court Disposition
 "35",100J,San Benito,County,San Benito County
-"35",640J,Shasta,County,Central Valley
+"35",640J,San Benito,County,Hollister
 "36",NA,San Bernardino,Arrest,No Court Disposition
 "36",100J,San Bernardino,County,San Bernardino County
 "36",110J,San Bernardino,County,Ontario
@@ -376,7 +376,7 @@
 "45",100J,Shasta,County,Shasta County
 "45",610J,Shasta,County,Anderson
 "45",620J,Shasta,County,Burney
-"45",633J,San Benito,County,Hollister
+"45",633J,Shasta,County,Central Valley
 "45",640J,Shasta,County,Fall River Mill
 "45",670J,Shasta,County,Redding
 "46",NA,Sierra,Arrest,No Court Disposition

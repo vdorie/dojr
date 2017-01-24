@@ -1,0 +1,1774 @@
+code,agency,type
+010000,OAKLAND,Sheriffs Office
+010001,OAKLAND,County Jail
+010100,ALAMEDA,Police Department
+01013A,OAKLAND,District Attorney
+01013G,OAKLAND,Probation Department
+01013H,FREMONT,District Attorney
+01015C,OAKLAND,Youth Authority
+01017Y,ALAMEDA CO SOC SEC AD,Federal Board/Commission/Dept/Bureau/Agy
+010200,ALBANY,Police Department
+01025G,ALAMEDA CO,Parole
+010300,BERKELEY,Police Department
+01035G,PAR COMM SRV OAKLAND,Parole
+010400,EMERYVILLE,Police Department
+01045G,COMM SRV SAN LEANDRO,Parole
+010500,FREMONT,Police Department
+01055G,PLEASANTON,Youth Authority
+010600,HAYWARD,Police Department
+010700,LIVERMORE,Police Department
+010800,NEWARK,Police Department
+010900,OAKLAND,Police Department
+011000,PIEDMONT,Police Department
+011100,PLEASANTON,Police Department
+011200,SAN LEANDRO,Police Department
+011300,UNION CITY,Police Department
+011400,E BAY REG OAKLAND,Police Department
+011401,E BAY REG CASTRO VAL,Police Department
+011500,PD HAYWARD,State University
+012100,PD BART OAKLAND,Transit District
+012200,PD LIVERMORE,University
+012500,PERALTA SAFETY POLICE,Community College
+012700,PD LAWRENC BERKLY LAB,University
+013100,EAST BAY RANGERS,Utility District
+013300,OAKLAND HOUS AUTH PSD,City Board/Commission/Dept.
+013400,DMV INV OAKLAND,State Department
+013900,PD OAKLAND,Unified School District
+019100,OAKLAND,Marshal
+019700,PD BERKELEY,University
+019800,OAKLAND,State Police
+019916,ISU GOLDEN GATE DIV,Highway Patrol
+019945,HAYWARD,Highway Patrol
+019970,OAKLAND,Highway Patrol
+019971,OKLND,Highway Patrol
+019975,CASTRO VALLEY,Highway Patrol
+019990,DUBLIN AREA,Highway Patrol
+019999,OTHER ALAMEDA CO,Reporting Agency
+01ID00,ALAMEDA CO,Identification Bureau
+020000,MARKLEEVILLE,Sheriffs Office
+020001,MARKLEEVILLE,County Jail
+02013A,MARKLEEVILLE,District Attorney
+02013G,MARKLEEVILLE,Probation Department
+02015G,ALPINE CO,Parole
+029100,MARKLEEVILLE,Marshal
+029900,MARKLEEVILLE,Highway Patrol
+029999,OTHER ALPINE CO,Reporting Agency
+030000,JACKSON,Sheriffs Office
+030001,JACKSON,County Jail
+030100,AMADOR CITY,Police Department
+03013A,JACKSON,District Attorney
+03013G,JACKSON,Probation Department
+03015C,PINE GROVE,Youth Authority
+03015D,WATERMAN,Youth Authority
+03015G,AMADOR CO,Parole
+030200,IONE,Police Department
+03025C,IONE,Youth Authority
+03025D,PRESTON,Youth Authority
+030300,JACKSON,Police Department
+03035C,CORR IONE,State Department
+030400,PLYMOUTH,Police Department
+030500,SUTTER CREEK,Police Department
+039100,JACKSON,Marshal
+039900,JACKSON,Highway Patrol
+039995,AMADOR,Highway Patrol
+039999,OTHER AMADOR CO,Reporting Agency
+040000,OROVILLE,Sheriffs Office
+040001,OROVILLE,County Jail
+040100,BIGGS,Police Department
+04013A,OROVILLE,District Attorney
+04013G,OROVILLE,Probation Department
+04015G,BUTTE CO,Parole
+040200,CHICO,Police Department
+040300,GRIDLEY,Police Department
+040400,OROVILLE,Police Department
+040500,PARADISE,Police Department
+040600,HLTH SERV INVST,State Department
+040700,PARKS REC OROVILLE,State Department
+041000,BUTTE CO,Narctotic Task Force
+041100,PD BUTTE COMM COLLEGE,Community College
+041200,FORESTRY FIRE PROT IV,State Department
+049100,OROVILLE,Marshal
+049700,PD CHICO,State University
+049940,OROVILLE,Highway Patrol
+049941,CHICO,Highway Patrol
+049999,OTHER BUTTE CO,Reporting Agency
+050000,SAN ANDREAS,Sheriffs Office
+050001,SAN ANDREAS,County Jail
+050100,ANGELS CAMP,Police Department
+05013A,SAN ANDREAS,District Attorney
+05013G,SAN ANDREAS,Probation Department
+05015C,SAN ANDREAS,Youth Authority
+05015G,CALAVERAS CO,Parole
+050300,PARKS REC CALAVERAS,State Department
+050400,CALAVERAS CO,Narctotic Task Force
+050500,WELFARE SAN ANDREAS,County Board/Commission/Dept.
+059100,SAN ANDREAS,Marshal
+059955,SAN ANDREAS,Highway Patrol
+059999,OTHER CALAVERAS CO,Reporting Agency
+060000,COLUSA,Sheriffs Office
+060001,COLUSA,County Jail
+060100,COLUSA,Police Department
+06013A,COLUSA,District Attorney
+06013G,COLUSA,Probation Department
+06015G,COLUSA CO,Parole
+060200,WILLIAMS,Police Department
+069100,COLUSA,Marshal
+069955,WILLIAMS,Highway Patrol
+069999,OTHER COLUSA CO,Reporting Agency
+070000,MARTINEZ,Sheriffs Office
+070001,MARTINEZ,County Jail
+070021,CNTRA CSTA DANVILLEPD,Sheriffs Office
+070025,CNTRA CSTA S RAMON PD,Sheriffs Office
+070057,CNTRA CSTA OAKLEY PD,Sheriffs Office
+070100,ANTIOCH,Police Department
+07013A,MARTINEZ,District Attorney
+07013G,CONCORD,Probation Department
+07015G,CONTRA COSTA CO,Parole
+070200,BRENTWOOD,Police Department
+07023G,ANTIOCH,Probation Department
+070300,CLAYTON,Police Department
+07033G,MARTINEZ,Probation Department
+070400,CONCORD,Police Department
+07043G,RICHMOND,Probation Department
+070500,EL CERRITO,Police Department
+070600,HERCULES,Police Department
+070700,PINOLE,Police Department
+070800,PITTSBURG,Police Department
+070900,PLEASANT HILL,Police Department
+071000,RICHMOND,Police Department
+071100,SAN PABLO,Police Department
+071200,WALNUT CREEK,Police Department
+071300,KENSINGTON,Police Department
+071400,MARTINEZ,Police Department
+071500,LAFAYETTE,Police Department
+071600,MORAGA,Police Department
+071700,E BAY REG MARTINEZ,Police Department
+072100,PD CONTRA COSTA,Community College
+072200,RIVERVIEW FIRE INV,County Board/Commission/Dept.
+072700,CONSLDTED FIRE DST PH,Arson Division
+072800,CONTRA COSTA CO,Drug Enforcement Unit/Administration
+073100,INSUR FRAUD MARTINEZ,State Department
+073200,WELFARE INV MARTINEZ,County Board/Commission/Dept.
+074000,SAN RAMON,Police Department
+079100,MARTINEZ,Marshal
+079101,RICHMOND,Marshal
+079900,MARTINEZ,Highway Patrol
+079920,CONTRA COSTA,Highway Patrol
+079999,OTHER CONTRA COSTA CO,Reporting Agency
+080000,CRESCENT CITY,Sheriffs Office
+080001,CRESCENT CITY,County Jail
+080100,CRESCENT CITY,Police Department
+08013A,CRESCENT CITY,District Attorney
+08013G,CRESCENT CITY,Probation Department
+08015C,CORR PELICAN BAY,State Department
+08015G,DEL NORTE CO,Parole
+080200,CRESCENT CITY,Narctotic Task Force
+08033G,DEL NORTE,Probation Department
+089100,CRESCENT CITY,Marshal
+089920,CRESCENT CITY,Highway Patrol
+089999,OTHER DEL NORTE CO,Reporting Agency
+090000,PLACERVILLE,Sheriffs Office
+090001,PLACERVILLE,County Jail
+090002,EL DORADO SO LK TAHOE,Sheriffs Office
+090099,EL DORADO PLACERVILLE,Sheriffs Office
+090100,PLACERVILLE,Police Department
+09013A,PLACERVILLE,District Attorney
+09013G,PLACERVILLE,Probation Department
+09013J,ELDORADO,Superior Court
+09015G,EL DORADO CO,Parole
+090200,SOUTH LAKE TAHOE,Police Department
+09033A,SOUTH LAKE TAHOE,District Attorney
+090400,WELFARE EL DORADO,County Board/Commission/Dept.
+099100,PLACERVILLE,Marshal
+099945,PLACERVILLE,Highway Patrol
+099946,SOUTH LAKE TAHOE,Highway Patrol
+099999,OTHER EL DORADO CO,Reporting Agency
+100000,FRESNO,Sheriffs Office
+100001,FRESNO,County Jail
+100100,CLOVIS,Police Department
+10013G,FRESNO,Probation Department
+10015C,CORR PLEASANT VALLEY,State Department
+10015G,FRESNO CO,Parole
+10015M,COALINGA,Hospital
+100200,COALINGA,Police Department
+10023A,FRESNO,District Attorney
+100300,FIREBAUGH,Police Department
+100400,FOWLER,Police Department
+100500,FRESNO,Police Department
+100600,HURON,Police Department
+100700,KERMAN,Police Department
+100800,KINGSBURG,Police Department
+100900,MENDOTA,Police Department
+101000,ORANGE COVE,Police Department
+101100,PARLIER,Police Department
+101200,REEDLEY,Police Department
+101300,SANGER,Police Department
+101400,SAN JOAQUIN,Police Department
+101500,SELMA,Police Department
+101700,PD ST CENTER FRESNO,Community College
+102000,FISH GAME FRESNO,State Department
+102100,FIRE DEPT FRESNO,City Board/Commission/Dept.
+103000,PARKS REC SAN JOAQUIN,State Department
+103200,DMV INV FRESNO,State Department
+103300,INS FRAUD FRESNO,State Department
+103400,FORESTRY FIRE PROT IU,State Department
+109100,FRESNO,Marshal
+109400,BNE FRESNO,Department of Justice
+109700,PD FRESNO,State University
+109800,FRESNO,State Police
+109901,CENTRAL DIVISION,Highway Patrol
+109935,FRESNO,Highway Patrol
+109995,COALINGA,Highway Patrol
+109999,OTHER FRESNO CO,Reporting Agency
+110000,WILLOWS,Sheriffs Office
+110001,WILLOWS,County Jail
+110100,ORLAND,Police Department
+11013A,WILLOWS,District Attorney
+11013G,WILLOWS,Probation Department
+11015G,GLENN CO,Parole
+110200,WILLOWS,Police Department
+119100,WILLOWS,Marshal
+119960,WILLOWS,Highway Patrol
+119999,OTHER GLENN CO,Reporting Agency
+120000,EUREKA,Sheriffs Office
+120001,EUREKA,County Jail
+120010,HUMBOLDT CO EUREKA,Sheriffs Office
+120100,ARCATA,Police Department
+12013A,EUREKA,District Attorney
+12013G,EUREKA,Probation Department
+12015G,HUMBOLDT CO,Parole
+120200,BLUE LAKE,Police Department
+120300,EUREKA,Police Department
+120400,FERNDALE,Police Department
+120500,FORTUNA,Police Department
+120600,TRINIDAD,Police Department
+120700,RIO DELL,Police Department
+120800,PD HUMBOLDT,State University
+121000,PARKS REC EEL RIVER,State Department
+121200,HUMBOLDT CO,Narctotic Task Force
+121400,WELFARE EUREKA,County Board/Commission/Dept.
+121500,CONSTABLE ARCATA,County Board/Commission/Dept.
+129100,EUREKA,Marshal
+129925,HUMBOLDT,Highway Patrol
+129926,GARBERVILLE,Highway Patrol
+129999,OTHER HUMBOLDT CO,Reporting Agency
+130000,EL CENTRO,Sheriffs Office
+130001,EL CENTRO,County Jail
+130100,BRAWLEY,Police Department
+13013A,EL CENTRO,District Attorney
+13015C,CORR NORTH IMPERIAL,State Department
+13015G,IMPERIAL CO,Parole
+130200,CALEXICO,Police Department
+13023G,EL CENTRO,Probation Department
+130300,CALIPATRIA,Police Department
+130400,EL CENTRO,Police Department
+13045C,CORR CENTINELA,State Department
+130500,HOLTVILLE,Police Department
+13055C,CORR CENTINELA RECORD,State Department
+130600,IMPERIAL,Police Department
+130700,WESTMORLAND,Police Department
+131000,IMPERIAL CO,Narctotic Task Force
+139100,EL CENTRO,Marshal
+139910,WINTRHAVEN,Highway Patrol
+139920,WINTERHAVEN,Highway Patrol
+139925,EL CENTRO,Highway Patrol
+139999,OTHER IMPERIAL CO,Reporting Agency
+140000,INDEPENDENCE,Sheriffs Office
+140001,INDEPENDENCE,County Jail
+140100,BISHOP,Police Department
+14013A,INDEPENDENCE,District Attorney
+14013G,INDEPENDENCE,Probation Department
+14015G,INYO CO,Parole
+140200,INDEPENDENCE,Police Department
+14023A,INYO COUNTY,District Attorney
+149100,INDEPENDENCE,Marshal
+149925,BISHOP,Highway Patrol
+149999,OTHER INYO CO,Reporting Agency
+150000,BAKERSFIELD,Sheriffs Office
+150001,BAKERSFIELD,County Jail
+150003,KERN MOJAVE,Sheriffs Office
+150004,KERN CO RECORDS,Sheriffs Office
+150010,KERN WASCO,Sheriffs Office
+150011,KERN RIDGECREST,Sheriffs Office
+150100,ARVIN,Police Department
+15011C,DELANO COMM CORR FAC,County Board/Commission/Dept.
+15013A,BAKERSFIELD,District Attorney
+15013G,BAKERSFIELD,Probation Department
+15015C,CORR TEHACHAPI,State Department
+15015G,KERN CO,Parole
+15017G,BAKERSFIELD,Probation Department
+150200,BAKERSFIELD,Police Department
+15025C,CORR WASCO,State Department
+150300,DELANO,Police Department
+150400,MARICOPA,Police Department
+15045C,CORR DELANO,State Department
+150500,MCFARLAND,Police Department
+150600,RIDGECREST,Police Department
+150700,SHAFTER,Police Department
+15075C,KERN,State Prison
+150800,TAFT,Police Department
+15085C,CORR CALIFORNIA CITY,State Department
+150900,TEHACHAPI,Police Department
+151000,WASCO,Police Department
+151100,CALIFORNIA CITY,Police Department
+151200,PD BAKERSFIELD,State University
+151300,CHINA LAKE,Police Department
+151400,STALLION SPRINGS,Police Department
+15143J,KERN,Superior Court
+151500,BEAR VALLEY,Police Department
+151800,ARSON UNIT BAKERSFLD,County Board/Commission/Dept.
+151900,BAKERSFIELD,Park District
+152100,KERN UNION HIGH,Unified School District
+152300,HOUSING AUTH BKRSFLD,County Board/Commission/Dept.
+152400,KERN CO HUMAN SERV IU,County Board/Commission/Dept.
+159100,BAKERSFIELD,Marshal
+159920,BAKERSFIELD,Highway Patrol
+159926,BUTTONWILLOW AREA,Highway Patrol
+159930,MOJAVE,Highway Patrol
+159960,FORT TEJON,Highway Patrol
+159999,OTHER KERN CO,Reporting Agency
+160000,HANFORD,Sheriffs Office
+160001,HANFORD,County Jail
+160100,CORCORAN,Police Department
+16013A,HANFORD,District Attorney
+16013G,HANFORD,Probation Department
+16015C,CORR AVENAL,State Department
+16015G,KINGS CO,Parole
+160200,HANFORD,Police Department
+16025C,CORR CORCORAN,State Department
+160300,LEMOORE,Police Department
+160500,KINGS CO FIRE DEPT,Arson Division
+16065C,CORR CA SATF RECORDS,State Department
+160800,AVENAL,Police Department
+169100,HANFORD,Marshal
+169940,HANFORD,Highway Patrol
+169999,OTHER KINGS CO,Reporting Agency
+170000,LAKEPORT,Sheriffs Office
+170001,LAKEPORT,County Jail
+170100,LAKEPORT,Police Department
+17013A,LAKEPORT,District Attorney
+17013G,LAKEPORT,Probation Department
+17015G,LAKE CO,Parole
+170200,CLEARLAKE,Police Department
+179100,LAKEPORT,Marshal
+179900,LAKEPORT,Highway Patrol
+179951,CLEAR LAKE,Highway Patrol
+179999,OTHER LAKE CO,Reporting Agency
+180000,SUSANVILLE,Sheriffs Office
+180001,SUSANVILLE,County Jail
+180100,SUSANVILLE,Police Department
+18013A,SUSANVILLE,District Attorney
+18013G,SUSANVILLE,Probation Department
+18015C,CORR SUSANVILLE,State Department
+18015G,LASSEN CO,Parole
+180200,HERLONG,Police Department
+18055C,HIGH DESERT,State Prison
+189100,SUSANVILLE,Marshal
+189940,SUSANVILLE,Highway Patrol
+189999,OTHER LASSEN CO,Reporting Agency
+190000,LOS ANGELES,Sheriffs Office
+190002,LA EAST LOS ANGELES,Sheriffs Office
+190003,LA LENNOX,Sheriffs Office
+190004,LA NORWALK,Sheriffs Office
+190005,LA TEMPLE,Sheriffs Office
+190006,LA SANTA CLARITA VLY,Sheriffs Office
+190007,LA ALTADENA,Sheriffs Office
+190008,LA SAN DIMAS,Sheriffs Office
+190009,LA WEST HOLLYWOOD,Sheriffs Office
+190012,LA CRESCENTA VALLEY,Sheriffs Office
+190013,LA LAKEWOOD,Sheriffs Office
+190014,LA INDUSTRY,Sheriffs Office
+190015,LA PICO RIVERA,Sheriffs Office
+190016,LA CARSON,Sheriffs Office
+190017,LA LOMITA,Sheriffs Office
+190018,LA AVALON,Sheriffs Office
+190020,LA WALNUT,Sheriffs Office
+190022,LA LOST HILLS,Sheriffs Office
+190024,LA LANCASTER,Sheriffs Office
+190030,LA PJP DET NORTH,Sheriffs Office
+190035,LOS ANGELES,Narctotic Task Force
+190040,LA RECORDS FP,Sheriffs Office
+190042,LA COMPTON,Sheriffs Office
+190046,LA SCIENTIFIC SRV LAB,Sheriffs Office
+190047,LA RECORDS ID,Sheriffs Office
+190049,LA EMERG OPER BUREAU,Sheriffs Office
+190050,LA INMATE RECEP CTR,Sheriffs Office
+190051,LA SYBIL BRAND INST,Sheriffs Office
+190053,LOS ANGELES,County Jail
+190056,LA MIRALOMA,Sheriffs Office
+190057,LA JAIL HOSPITAL WARD,Sheriffs Office
+190058,LA MENS CNTRL JAIL,Sheriffs Office
+190062,LA MAJOR CRIMES BUR,Sheriffs Office
+190065,LA MARINA DEL REY,Sheriffs Office
+190079,LA MONTEREY PARK,Sheriffs Office
+190082,LA PHR SOUTH,Sheriffs Office
+190087,LA NORTH CO CORR FAC,Sheriffs Office
+190094,LA WHITTIER,Sheriffs Office
+1900F2,LA CO REC INFO SYSTEM,Sheriffs Office
+1900F3,LA PARKS BUREAU,Sheriffs Office
+1900F4,LA SERVICES BUREAU,Sheriffs Office
+1900N9,LA COURT SERVICES,Sheriffs Office
+1900P0,LA SAN FERNANDO MUNI,Sheriffs Office
+1900P2,LA EASTLAKE JUV S CRT,Sheriffs Office
+1900P4,LA MINI AIRPORT BRNCH,Sheriffs Office
+1900P6,LA L PADRINOS JUV CRT,Sheriffs Office
+1900P7,LA SYLMAR JUV SUP,Sheriffs Office
+1900Q3,LA S BAY TORRANCE CRT,Sheriffs Office
+1900Q5,LA VAN NUYS MUNI,Sheriffs Office
+1900Q8,LA WHITTIER MUNI CRT,Sheriffs Office
+1900Q9,LA CHATSWORTH COURT,Sheriffs Office
+1900R7,LA CERRITOS,Sheriffs Office
+1900S1,LA DEPT NINE FIVE SUP,Sheriffs Office
+1900S3,LA KENYON JUV SUP,Sheriffs Office
+1900T1,LA SANTA ANITA MUNI,Sheriffs Office
+1900T2,LA SNTA MONICA SUPMUN,Sheriffs Office
+1900T4,LA SOUTH GATE MUNI,Sheriffs Office
+1900T6,LA VAN NUYS SUP,Sheriffs Office
+1900T7,LA WEST LA MUNI,Sheriffs Office
+1900U5,LA COMM ORNTD POL BUR,Sheriffs Office
+1900V3,LA CENTURY,Sheriffs Office
+1900W9,LA PALMDALE,Sheriffs Office
+1900X0,LA SAN PEDRO MUNI,Sheriffs Office
+1900X1,LA LYNWOOD MUNI,Sheriffs Office
+1900X2,LA MALIBU SUP MUNI,Sheriffs Office
+1900X3,LA LA METRO MUNI,Sheriffs Office
+1900X4,LA NEW HALL VLNCIA MC,Sheriffs Office
+1900X5,LA NORWALK SUP,Sheriffs Office
+1900X6,LA PASADENA MUNI,Sheriffs Office
+1900X7,LA POMONA MUNI,Sheriffs Office
+1900X8,LA POMONA SUP,Sheriffs Office
+1900X9,LA RIO HONDO MUNI,Sheriffs Office
+1900Y0,LA LOS CERRITOS MUNI,Sheriffs Office
+1900Y1,LA CULVER CTY SUPMUNI,Sheriffs Office
+1900Y2,LA DOWNEY MUNI,Sheriffs Office
+1900Y3,LA EAST LA MUNI,Sheriffs Office
+1900Y4,LA EDELMAN CHLDRN SUP,Sheriffs Office
+1900Y5,LA GLENDALE MUNI,Sheriffs Office
+1900Y6,LA HOLLYWOOD MUNI,Sheriffs Office
+1900Y7,LA HUNTINGTON PK MUNI,Sheriffs Office
+1900Y8,LA INGLEWOOD MUNI,Sheriffs Office
+1900Y9,LA LONG BEACH MUNI,Sheriffs Office
+1900Z0,LA ALHAMBRA MUNI,Sheriffs Office
+1900Z1,LA ANTELOPE VLLY MUNI,Sheriffs Office
+1900Z2,LA BVRLY HILL SUPMUNI,Sheriffs Office
+1900Z3,LA BURBANK MUNI,Sheriffs Office
+1900Z4,LA CNTRL ARRAIGN SUP,Sheriffs Office
+1900Z5,LA CITRUS MUNI,Sheriffs Office
+1900Z6,LA COMPTON MUNI,Sheriffs Office
+1900Z7,LA CO CRT HSE SUPMUNI,Sheriffs Office
+1900Z8,LA CRIMINAL CRTS BLDG,Sheriffs Office
+190100,ALHAMBRA,Police Department
+19013A,LOS ANGELES,District Attorney
+19013B,LA PRETRIAL SERV,Probation Department
+19013G,LOS ANGELES,Probation Department
+19015M,METROPOLITAN STATE,Hospital
+190200,ARCADIA,Police Department
+19023G,LA ISO DOWNEY,Probation Department
+19025G,GLENDALE,Youth Authority
+190300,ARTESIA,Police Department
+19033G,LA BARRY NIDORF JUV,Probation Department
+19035C,LOS ANGELES,Youth Authority
+19035G,LOS ANGELES PAROLE,Parole
+19037Y,LA SOC SEC INSP GEN,Federal Board/Commission/Dept/Bureau/Agy
+190400,AVALON,Police Department
+19043C,LANCASTER,Youth Authority
+19043G,LA E SAN FERNANDO VLY,Probation Department
+19045C,NORWALK,Youth Authority
+19045G,LOS ANGELES CO,Parole
+19047Y,HUD OFC INSP GENERAL,Federal Board/Commission/Dept/Bureau/Agy
+190500,AZUSA,Police Department
+19053G,LA HARBOR,Probation Department
+19055C,WHITTIER,Youth Authority
+19055G,PAR COMM SRV PALMDALE,Parole
+190600,BALDWIN PARK,Police Department
+19063G,LA CENTINELA,Probation Department
+19065C,CORR ADULT LOS ANG,State Department
+19065D,CORR LOS ANGELES,State Department
+190700,BELL,Police Department
+19073G,LA LOS PADRINOS JUV,Probation Department
+19075G,LA CO DIAMOND BAR,Parole
+190800,BELLFLOWER,Police Department
+19083G,LA FIRESTONE,Probation Department
+19085G,PAR COMM SRV COMPTON,Parole
+190900,BELL GARDENS,Police Department
+19093G,LA EAST LOS ANGELES,Probation Department
+190A00,PDLOS ANGELES,Community College
+190B00,PD LOS ANGELES,Unified School District
+190C00,PD EL CAMINO TORRANCE,Community College
+190F00,INS FRAUD LA,State Department
+190G00,LA CO HOUSING AUTH PD,County Board/Commission/Dept.
+190J00,LOS ANGELES,Airport Authority
+190K00,PD LOS ANGELES,Transit District
+190N00,BURBANK,Airport Authority
+190P00,PD LONG BEACH,Community College
+190R00,PD PASADENA,Community College
+190S00,CONSUMER AFF GLENDALE,State Department
+190T00,FISH GAME LONG BEACH,State Department
+190V00,LOS ANGELES,Coroner
+190Y00,CORP INV BUS OVERSGHT,State Department
+191000,BEVERLY HILLS,Police Department
+19103G,LA FOOTHILL,Probation Department
+19105C,CORR LANCASTER,State Department
+19105G,PAR COMM SRV EL MONTE,Parole
+19105Y,FRANCHISE TAX BOARD,State Agency
+191100,BRADBURY ESTATES,Police Department
+19113G,LA LONG BEACH,Probation Department
+191200,BURBANK,Police Department
+19123G,LA POMONA VLY,Probation Department
+19125Y,SOC SRV COMM CARE INV,State Department
+191300,CLAREMONT,Police Department
+19133G,LA RIO HONDO,Probation Department
+19135G,COMM SRV HUNTNGTN PRK,Parole
+191400,COMMERCE,Police Department
+19143G,LA SAN GABRIEL VLY,Probation Department
+19145G,PAR COM SRV INGLEWOOD,Parole
+19153G,LA SANTA MONICA,Probation Department
+19155G,PAR COMM SRV PASADENA,Parole
+191600,COVINA,Police Department
+19163G,LA SOUTH CENTRAL,Probation Department
+191700,CUDAHY,Police Department
+19173G,LA CRENSHAW,Probation Department
+19175G,PAR COMM SRV LA,Parole
+191800,CULVER CITY,Police Department
+19183G,LA INFO SYS DOWNEY,Probation Department
+191900,DAIRY VALLEY,Police Department
+191A9P,AMTRAK PD LOS ANGELES,Railroad
+191D00,HEALTH SERVICES LA,State Department
+191J00,LOTTERY SEC WHITTIER,State Commission
+191L00,MTNS REC CNSRVTN AUTH,Park District
+191M00,PD HOUSING AUTH LA,City Board/Commission/Dept.
+191N00,PD BALDWIN PARK,Unified School District
+191P00,PD CERRITOS,Community College
+191S00,SOC SERV DIS EVAL LA,State Department
+191T00,ABC LOS ANGELES,State Department
+192000,DOWNEY,Police Department
+19203G,LA ANTELOPE VLY,Probation Department
+19205G,SANTE FE SPRINGS,Parole
+192100,DUARTE,Police Department
+19213G,LA IDC LOS ANGELES,Probation Department
+19215G,COMM SERV COMPTON,Parole
+192200,EL MONTE,Police Department
+19223G,LA N HOLLYWOOD,Probation Department
+192300,EL SEGUNDO,Police Department
+19233G,LA WF ALHAMBRA,Probation Department
+19235G,PAR COMM SRV VAN NUYS,Parole
+192400,GARDENA,Police Department
+19243G,LA CENTRAL JUV,Probation Department
+19245G,PAROLE COMM SERV LA,Parole
+192500,GLENDALE,Police Department
+19251A,LOS ANGELES,City Attorney
+19253G,LA INGLEWOOD MC,Probation Department
+19255G,PAR COMM SERV POMONA,Parole
+192600,GLENDORA,Police Department
+19263G,LA VALENCIA,Probation Department
+19265G,PAR COMM SRV COVINA,Parole
+192700,HAWAIIAN GARDENS,Police Department
+19273G,LA LA MADERA,Probation Department
+19275G,COMM SERV LOS ANGELES,Parole
+192800,HAWTHORNE,Police Department
+19283G,LA CAMP HDQTRS,Probation Department
+19285G,PAR COMM SRV LONG BCH,Parole
+192900,HERMOSA BEACH,Police Department
+19293J,LOS ANGELES OR DIV,Superior Court
+19295G,COMM SRV WEST COVINA,Parole
+192A00,LOS ANGELES ISD PSD,County Board/Commission/Dept.
+192C00,PARKS REC LOS ANGELES,City Board/Commission/Dept.
+192D00,LA PROTECT SVCS DIV,Department of Public Safety
+192E00,GENERAL SRVS POLICE,City Board/Commission/Dept.
+192M00,PD PASADENA,Unified School District
+192N00,PD MUSEUM OF ART LA,County Board/Commission/Dept.
+192P00,AVALON HARBOR DEPT,City Board/Commission/Dept.
+192Q00,PD LOS ANGELES,Community College
+192R00,PD POMONA,Unified School District
+192S00,PD INGLEWOOD,Unified School District
+192Z00,PD LA MISSION SYLMAR,Community College
+193000,HIDDEN HILLS,Police Department
+19305G,PAROLE COMPTON,Parole
+193100,HUNTINGTON PARK,Police Department
+193200,INDUSTRY,Police Department
+193215,LA NORTH HOLLYWOOD,Police Department
+193300,INGLEWOOD,Police Department
+193400,IRWINDALE,Police Department
+193500,LAKEWOOD,Police Department
+193600,LA MIRADA,Police Department
+193700,LA PUENTE,Police Department
+193800,LA VERNE,Police Department
+193900,LAWNDALE,Police Department
+193C00,PD HARBOR COLLEGE,Community College
+193D00,PD TRADE TECH COLLEGE,Community College
+193E00,PD PIERCE COLLEGE,Community College
+193F00,PD COMPTON,Unified School District
+193G00,REDNDO BCH FIRE DP HP,Arson Division
+193H00,LA CO FIRE DEPT INV,Arson Division
+193I00,PD GLENDALE,Community College
+193K9E,PD PACIFIC HARBOR,Railroad
+194000,LOMITA,Police Department
+194100,LONG BEACH,Police Department
+194200,LOS ANGELES,Police Department
+194201,LA CENTRAL DIVISION,Police Department
+194202,LA RAMPART DIV REC,Police Department
+194203,LA SW DIVISION REC,Police Department
+194204,LA HOLLENBECK,Police Department
+194205,LA HARBOR DIV REC,Police Department
+194206,LA HOLLYWOOD DIV REC,Police Department
+194207,LA WILSHIRE DIV REC,Police Department
+194208,LA WEST LOS ANGELES,Police Department
+194210,LA WEST VALLEY REC,Police Department
+194211,LA NORTHEAST,Police Department
+194212,LA SEVENTY SEVEN,Police Department
+194213,LA NEWTON,Police Department
+194214,LA PACIFIC DIV REC,Police Department
+194216,LA FOOTHILL DIV REC,Police Department
+194217,LA DEVONSHIRE DIV REC,Police Department
+194218,LA SE DIVISION REC,Police Department
+194219,LA MISSION,Police Department
+194220,LA CENTRAL BUREAU,Police Department
+194221,LA SOUTH BUREAU,Police Department
+194264,LA OLYMPIC STATION,Police Department
+194265,LA TOPANGA STATION,Police Department
+194273,LA METRO JAIL,Police Department
+194276,LA RECORDS AND ID,Police Department
+194279,LA VALLEY JAIL,Police Department
+194294,LA MEDIA RELATNS SECT,Police Department
+194300,LYNWOOD,Police Department
+194400,MANHATTAN BEACH,Police Department
+194500,MAYWOOD,Police Department
+194600,MONROVIA,Police Department
+194700,MONTEBELLO,Police Department
+194800,MONTEREY PARK,Police Department
+194900,NORWALK,Police Department
+195000,PALMDALE,Police Department
+195100,PALOS VERDES ESTATES,Police Department
+195200,PARAMOUNT,Police Department
+195300,PASADENA,Police Department
+195400,PICO RIVERA,Police Department
+195500,POMONA,Police Department
+195600,REDONDO BEACH,Police Department
+195700,ROLLING HILLS,Police Department
+195800,ROLLING HILLS ESTATE,Police Department
+195900,ROSEMEAD,Police Department
+196000,SAN DIMAS,Police Department
+196100,SAN FERNANDO,Police Department
+196200,SAN GABRIEL,Police Department
+196300,SAN MARINO,Police Department
+196400,SANTA FE SPRINGS,Police Department
+196500,SANTA MONICA,Police Department
+196600,SIERRA MADRE,Police Department
+196700,SIGNAL HILL,Police Department
+196800,SOUTH EL MONTE,Police Department
+196900,SOUTH GATE,Police Department
+19691A,CENTRL TRIAL BRNCH LA,City Attorney
+197000,SOUTH PASADENA,Police Department
+19701A,BAUCHET ST OFFICE LA,City Attorney
+197100,TEMPLE CITY,Police Department
+19711A,WEST LA OFFICE LA,City Attorney
+197200,TORRANCE,Police Department
+19721A,VAN NUYS OFFICE LA,City Attorney
+197300,VERNON,Police Department
+19731A,SAN PEDRO OFFICE LA,City Attorney
+197400,WALNUT,Police Department
+19741A,HILL ST OFFICE LA,City Attorney
+197500,WEST COVINA,Police Department
+19751A,HOLLYWOOD OFFICE LA,City Attorney
+197600,WHITTIER,Police Department
+19761A,NO VALLEY OFFICE LA,City Attorney
+197700,CARSON,Police Department
+19771A,PASADENA,City Attorney
+197800,PD POMONA,State University
+19781A,CITY PROSECUTOR L BCH,City Board/Commission/Dept.
+197900,DMV LOS ANGELES CO,State Department
+19801A,SANTA MONICA OFFC LA,City Attorney
+198100,PD DOMINGUEZ HILLS,State University
+198200,PD LONG BEACH,State University
+198300,PD LOS ANGELES,State University
+198400,PD NORTHRIDGE,State University
+198600,PD LOS ANGELES,Park District
+198700,FIRE DEPT ARSON IU LA,City Board/Commission/Dept.
+198800,PORT OF LOS ANGELES,Police Department
+199100,LOS ANGELES,Marshal
+199400,LOS ANGELES,Department of Justice
+199430,LA MEDI CAL FRAUD,Department of Justice
+199700,PD LOS ANGELES,University
+199701,MED CTR LOS ANGELES,University
+199800,LOS ANGELES,State Police
+199900,LOS ANGELES,Highway Patrol
+199901,SOUTHERN DIVISION,Highway Patrol
+199925,BALDWIN PARK,Highway Patrol
+199930,SOUTH LOS ANGELES,Highway Patrol
+199935,EAST LOS ANGELES,Highway Patrol
+199940,NEWHALL,Highway Patrol
+199945,ANTELOPE VALLEY,Highway Patrol
+199950,SANTA FE SPRINGS,Highway Patrol
+199965,WEST LOS ANGELES,Highway Patrol
+199966,MALIBU,Highway Patrol
+199975,ALTADENA,Highway Patrol
+199980,WEST VALLEY,Highway Patrol
+199990,CENTRAL LOS ANGELES,Highway Patrol
+199999,OTHER LOS ANGELES CO,Reporting Agency
+19A100,DMV INV COMPTON,State Department
+19A300,POMONA FIRE DEPT,Arson Division
+19A400,JOINT DRUG NORWALK,Narctotic Task Force
+19A500,PD ANTELOPE,Community College
+19A600,WELFARE FRAUD INV LA,County Board/Commission/Dept.
+19A900,PD METRO STATE NORWLK,Hospital
+19AA00,DMV INV ARLETA,State Department
+200000,MADERA,Sheriffs Office
+200001,MADERA,County Jail
+200100,CHOWCHILLA,Police Department
+20013A,MADERA,District Attorney
+20013C,MADERA,Juvenile Detention
+20013G,MADERA,Probation Department
+20015C,CORR CHOWCHILLA,State Department
+20015G,MADERA CO,Parole
+200200,MADERA,Police Department
+20023C,CORR MADERA,County Board/Commission/Dept.
+20025C,CORR City Board/Commission/Dept.WF RECEP REC,State Department
+20035C,CORR City Board/Commission/Dept.WF MAIN RECORD,State Department
+20045C,CORR VALLEY WOMEN REC,State Department
+20065C,CORR VALLEY WOMEN RCP,State Department
+20073J,MADERA,Superior Court
+209100,MADERA,Marshal
+209950,MADERA,Highway Patrol
+209956,OAKHURST,Highway Patrol
+209999,OTHER MADERA CO,Reporting Agency
+210000,SAN RAFAEL,Sheriffs Office
+210001,SAN RAFAEL,County Jail
+210100,BELVEDERE,Police Department
+21013A,SAN RAFAEL,District Attorney
+21013G,SAN RAFAEL,Probation Department
+21015C,SAN QUENTIN,State Prison
+21015G,MARIN CO,Parole
+21017G,SAN RAFAEL,Probation Department
+210200,CORTE MADERA,Police Department
+210300,FAIRFAX,Police Department
+210500,MILL VALLEY,Police Department
+210600,NOVATO,Police Department
+210700,ROSS,Police Department
+210900,SAN RAFAEL,Police Department
+211000,SAUSALITO,Police Department
+211100,TIBURON,Police Department
+211300,PD MARIN,Community College
+211400,PARKS REC MARIN DIST,State Department
+211500,WELFARE SAN RAFAEL,County Board/Commission/Dept.
+211600,MARIN CO MAJOR CRIMES,Task Force
+211700,CENTRAL MARIN AUTH,Police Department
+219100,SAN RAFAEL,Marshal
+219900,CORTE MADERA,Highway Patrol
+219950,MARIN,Highway Patrol
+219999,OTHER MARIN CO,Reporting Agency
+220000,MARIPOSA,Sheriffs Office
+220001,MARIPOSA,County Jail
+220100,FORESTRY MAD MARI MER,State Department
+22013A,MARIPOSA,District Attorney
+22013G,MARIPOSA,Probation Department
+22015C,MARIPOSA,Youth Authority
+22015G,MARIPOSA CO,Parole
+229100,MARIPOSA,Marshal
+229955,MARIPOSA,Highway Patrol
+229999,OTHER MARIPOSA CO,Reporting Agency
+230000,UKIAH,Sheriffs Office
+230001,UKIAH,County Jail
+230100,FORT BRAGG,Police Department
+23013A,UKIAH,District Attorney
+23013G,UKIAH,Probation Department
+23013Y,MENDOCINO CO HHS SIU,County Board/Commission/Dept.
+23015G,MENDOCINO CO,Parole
+230200,POINT ARENA,Police Department
+230300,UKIAH,Police Department
+230400,WILLITS,Police Department
+230600,PARKS REC MENDOCINO,State Department
+230700,MENDOCINO CO,Narctotic Task Force
+23123J,MENDOCINO,Superior Court
+239100,UKIAH,Marshal
+239950,UKIAH,Highway Patrol
+239999,OTHER MENDOCINO CO,Reporting Agency
+240000,MERCED,Sheriffs Office
+240001,MERCED,County Jail
+240100,ATWATER,Police Department
+24013A,MERCED,District Attorney
+24013G,MERCED,Probation Department
+24015G,MERCED CO,Parole
+240200,DOS PALOS,Police Department
+240300,GUSTINE,Police Department
+240400,LIVINGSTON,Police Department
+240500,LOS BANOS,Police Department
+240600,MERCED,Police Department
+241000,PARKS REC FOUR RIVERS,State Department
+241200,PD MERCED,University
+249100,MERCED,Marshal
+249960,MERCED,Highway Patrol
+249961,LOS BANOS,Highway Patrol
+249999,OTHER MERCED CO,Reporting Agency
+250000,ALTURAS,Sheriffs Office
+250001,ALTURAS,County Jail
+250100,ALTURAS,Police Department
+25013A,ALTURAS,District Attorney
+25013G,ALTURAS,Probation Department
+25015G,MODOC CO,Parole
+259100,ALTURAS,Marshal
+259970,ALTURAS,Highway Patrol
+259999,OTHER MODOC CO,Reporting Agency
+260000,BRIDGEPORT,Sheriffs Office
+260001,BRIDGEPORT,County Jail
+260100,MAMMOTH LAKES,Police Department
+26013A,BRIDGEPORT,District Attorney
+26013G,BRIDGEPORT,Probation Department
+26015G,MONO CO,Parole
+269100,BRIDGEPORT,Marshal
+269920,BRIDGEPORT,Highway Patrol
+269925,BRIDGEPRT,Highway Patrol
+269999,OTHER MONO CO,Reporting Agency
+270000,SALINAS,Sheriffs Office
+270001,SALINAS,County Jail
+270003,MONTEREY,Sheriffs Office
+270100,CARMEL,Police Department
+27013A,SALINAS,District Attorney
+27013G,SALINAS,Probation Department
+27015C,CORR SOLEDAD,State Department
+27015D,SOLEDAD,State Prison
+27015G,MONTEREY CO,Parole
+270200,DEL REY OAKS,Police Department
+27023A,MONTEREY,District Attorney
+27025C,SALINAS VALLEY,State Prison
+27027G,MONTEREY,Probation Department
+270300,GONZALES,Police Department
+270400,GREENFIELD,Police Department
+27043A,KING CITY,District Attorney
+270500,KING CITY,Police Department
+270600,MONTEREY,Police Department
+270700,PACIFIC GROVE,Police Department
+270800,SALINAS,Police Department
+270900,SAND CITY,Police Department
+271000,SEASIDE,Police Department
+271100,SOLEDAD,Police Department
+271200,MARINA,Police Department
+271400,MONTEREY,Airport Authority
+271700,PARKS REC MONTEREY,State Department
+271900,PD MONTEREY BAY,State University
+279100,SALINAS,Marshal
+279900,SALINAS,Highway Patrol
+279930,MONTEREY,Highway Patrol
+279935,KING CITY,Highway Patrol
+279999,OTHER MONTEREY CO,Reporting Agency
+280000,NAPA,Sheriffs Office
+280001,NAPA,County Jail
+280100,CALISTOGA,Police Department
+28013A,NAPA,District Attorney
+28013G,NAPA,Probation Department
+28013Y,DEPT HHS SIU NAPA CO,County Board/Commission/Dept.
+28015G,NAPA CO,Parole
+28015M,NAPA,Hospital
+280200,NAPA,Police Department
+28023C,NAPA CO CORRECTIONS,County Board/Commission/Dept.
+280300,SAINT HELENA,Police Department
+28033G,NAPA CO,Probation Department
+280400,YOUNTVILLE,Police Department
+28043G,NAPA CO JUV HALL,Probation Department
+280500,F G YOUNTVILLE,State Department
+280800,NAPA STATE PD,Hospital
+280900,PD NAPA VALLEY,Community College
+281000,COMPTR CRIMES TF N CA,Task Force
+28119E,NAPA VALLEY PD,Railroad
+289100,NAPA,Marshal
+289925,NAPA,Highway Patrol
+289999,OTHER NAPA CO,Reporting Agency
+290000,NEVADA CITY,Sheriffs Office
+290001,NEVADA CITY,County Jail
+290010,NEVADA CO TRUCKEE,Sheriffs Office
+290100,GRASS VALLEY,Police Department
+29013A,NEVADA CITY,District Attorney
+29013G,NEVADA CITY,Probation Department
+29013J,NEVADA,Superior Court
+29015C,NEVADA CITY,Youth Authority
+29015G,NEVADA CO,Parole
+290200,NEVADA CITY,Police Department
+290500,SOC SRV SIU NEVADA CO,County Board/Commission/Dept.
+290800,TRUCKEE,Police Department
+299100,NEVADA CITY,Marshal
+299922,TRUCKEE,Highway Patrol
+299930,GRASS VALLEY,Highway Patrol
+299999,OTHER NEVADA CO,Reporting Agency
+300000,SANTA ANA,Sheriffs Office
+300001,SANTA ANA,County Jail
+300076,SANTA ANA,Narctotic Task Force
+300091,ORANGE CO FIRE INV,County Board/Commission/Dept.
+300100,ANAHEIM,Police Department
+30013A,SANTA ANA,District Attorney
+30013G,SANTA ANA,Probation Department
+30017B,PRETRIAL SRV SNTA ANA,Federal District Court
+30017G,SANTA ANA,Probation Department
+300200,BREA,Police Department
+30025G,ORANGE CO,Parole
+30027Y,SOC SEC ADM INSP GEN,Federal Board/Commission/Dept/Bureau/Agy
+300300,BUENA PARK,Police Department
+300400,COSTA MESA,Police Department
+300500,CYPRESS,Police Department
+30055G,PAR COMM SRV SNTA ANA,Parole
+300600,LA PALMA,Police Department
+300700,FOUNTAIN VALLEY,Police Department
+300800,FULLERTON,Police Department
+300900,GARDEN GROVE,Police Department
+30093C,SANTA ANA,Youth Authority
+301000,HUNTINGTON BEACH,Police Department
+301100,LAGUNA BEACH,Police Department
+301200,LA HABRA,Police Department
+301300,LOS ALAMITOS,Police Department
+301400,NEWPORT BEACH,Police Department
+301430,NEWPORT BEACH REC,Police Department
+301500,ORANGE,Police Department
+301600,PLACENTIA,Police Department
+301700,SAN CLEMENTE,Police Department
+301800,SAN JUAN CAPISTRANO,Police Department
+301900,SANTA ANA,Police Department
+302000,SEAL BEACH,Police Department
+302100,STANTON,Police Department
+302200,TUSTIN,Police Department
+302300,VILLA PARK,Police Department
+302400,WESTMINSTER,Police Department
+302500,YORBA LINDA,Police Department
+302600,IRVINE,Police Department
+302700,PD FULLERTON,State University
+303000,INS FRAUD GARDN GROVE,State Department
+303100,ORANGE CO FIRE INVS,County Board/Commission/Dept.
+303200,PARK REC ORANGE COAST,State Department
+303700,PD FAIRVIEW,Hospital
+304000,HEALTH SERV SANTA ANA,State Department
+304100,DMV INV FULLERTON,State Department
+304400,CONTRACTORS BUENA PK,State Board
+304500,EMP DEV ANAHEIM,State Department
+304600,PD SANTA ANA,Unified School District
+304700,ORANGE FIRE ARSON INV,Arson Division
+305200,SANTA ANA ARSON INV,Arson Division
+309100,SANTA ANA,Marshal
+309400,BNE SANTA ANA,Department of Justice
+309600,PD IRVINE VALLEY,Community College
+309700,PD IRVINE,University
+309970,WESTMINSTER,Highway Patrol
+309975,SANTA ANA,Highway Patrol
+309990,CAPISTRANO,Highway Patrol
+309999,OTHER ORANGE CO,Reporting Agency
+30A100,PD SADDLEBACK,Community College
+310000,AUBURN,Sheriffs Office
+310001,AUBURN,County Jail
+310002,PLACER CO N LK TAHOE,Sheriffs Office
+310003,PLACER CO AUBURN,Sheriffs Office
+310014,PLACER CO LOOMIS,Sheriffs Office
+310021,PLACER CO ROSEVILLE,Sheriffs Office
+310100,AUBURN,Police Department
+31013A,AUBURN,District Attorney
+31013G,AUBURN,Probation Department
+31015G,PLACER CO,Parole
+310200,COLFAX,Police Department
+310300,LINCOLN,Police Department
+31033A,PLACER CO FAM SUPPORT,District Attorney
+310400,ROCKLIN,Police Department
+310500,ROSEVILLE,Police Department
+310700,PARKS REC SIERRA DIST,State Department
+310800,PLACER CO,Narctotic Task Force
+310900,WELFARE AUBURN,County Board/Commission/Dept.
+319100,AUBURN,Marshal
+319920,AUBURN,Highway Patrol
+319921,GOLD RUN,Highway Patrol
+319999,OTHER PLACER CO,Reporting Agency
+320000,QUINCY,Sheriffs Office
+320001,QUINCY,County Jail
+320100,PORTOLA,Police Department
+32013A,QUINCY,District Attorney
+32013G,QUINCY,Probation Department
+32015G,PLUMAS CO,Parole
+32023J,PLUMAS,Superior Court
+320300,WELFARE FRAUD QUINCY,County Board/Commission/Dept.
+329100,QUINCY,Marshal
+329965,QUINCY,Highway Patrol
+329999,OTHER PLUMAS CO,Reporting Agency
+330000,RIVERSIDE,Sheriffs Office
+330001,RIVERSIDE,County Jail
+330003,RIVERSIDE PERRIS,Sheriffs Office
+330004,RIVERSIDE JURUPA VLLY,Sheriffs Office
+330027,RIVERSIDE CO CAL ID,Sheriffs Office
+330040,RIVERSIDE PALM DESERT,Sheriffs Office
+330046,RIVERSIDE INDIO,Sheriffs Office
+330050,ORANGE CO CAL ID,Sheriffs Office
+330053,RIVERSIDE CABAZON,Sheriffs Office
+330060,RIVERSIDE LK ELSINORE,Sheriffs Office
+330067,RIVERSIDE TEMECULA,Sheriffs Office
+330071,RIVERSIDE HEMET,Sheriffs Office
+330094,MORENO VALLEY,Police Department
+330100,BANNING,Police Department
+33013A,RIVERSIDE,District Attorney
+33013G,RIVERSIDE,Probation Department
+33015C,CORR CORONA,State Department
+33015G,RIVERSIDE CO,Parole
+33017B,PRETRIAL SRV RIVERSDE,Federal District Court
+330200,BEAUMONT,Police Department
+33025C,CORR FRONTERA,State Department
+330300,BLYTHE,Police Department
+33033G,RIVERSIDE CO,Probation Department
+330400,CABAZON,Police Department
+33045C,CORR CHUCKAWALLA VLY,State Department
+330500,COACHELLA,Police Department
+33055C,CORR CRC FEL RECORDS,State Department
+330600,DESERT HOT SPRINGS,Police Department
+33063G,RIVERSDE CO INDIO JUV,Probation Department
+33065C,CORR IRONWOOD,State Department
+330700,ELSINORE,Police Department
+33073A,BLYTHE,District Attorney
+33075C,CORR IRONWOOD RECORDS,State Department
+330800,HEMET,Police Department
+33083G,ADULT DIV HEMET,Probation Department
+330900,INDIO,Police Department
+33093G,BANNING,Probation Department
+331000,NORCO,Police Department
+331100,PALM SPRINGS,Police Department
+331200,PERRIS,Police Department
+331300,RIVERSIDE,Police Department
+331400,SAN JACINTO,Police Department
+331500,CORONA,Police Department
+33153G,RVRSIDE SOUTHWEST JUV,Probation Department
+331600,INDIAN WELLS,Police Department
+33163G,RIVERSIDE PERRIS,Probation Department
+33173G,RIVERSIDE INDIO,Probation Department
+332300,WELFARE RIVERSIDE,County Board/Commission/Dept.
+332400,PARKS REC INLAND EMPR,State Department
+332500,CATHEDRAL CITY,Police Department
+334200,MURRIETA,Police Department
+334500,CONSUMR AFF MB IU RIV,State Department
+334600,RIVERSIDE FIRE DEPT,Arson Division
+334700,PD MT JACINTO COLLEGE,Community College
+339100,RIVERSIDE,Marshal
+339400,RIVERSIDE,Drug Enforcement Unit/Administration
+339700,PD RIVERSIDE,University
+339930,INDIO,Highway Patrol
+339935,RANCHO CALIFORNIA,Highway Patrol
+339940,RIVERSIDE,Highway Patrol
+339955,SAN GORGONIO PASS,Highway Patrol
+339960,BLYTHE,Highway Patrol
+339985,TEMECULA,Highway Patrol
+339999,OTHER RIVERSIDE CO,Reporting Agency
+340000,SACRAMENTO,Sheriffs Office
+340002,SACRAMENTO,County Jail
+340040,SACTO MAIN JAIL,Sheriffs Office
+340045,SACTO BRANCH JAIL,Sheriffs Office
+340100,FOLSOM,Police Department
+34011A,SACRAMENTO CITY,District Attorney
+34013A,SACRAMENTO,District Attorney
+34013G,SACRAMENTO,Probation Department
+34015C,FOLSOM,State Prison
+34015D,CORR ADULT SACRAMENTO,State Department
+34015E,CORR HQ SACRAMENTO,State Department
+34015F,CORRECTIONS,State Department
+34015G,CORR PAR COMM SRV SAC,State Department
+34015H,SACRAMENTO CO,Parole
+34015Y,WSTRN STATES INFO NET,NonProfit Consortium or Public Authority
+34017B,PRETRIAL SERVICES SAC,Federal District Court
+34017G,PROBATION SACRAMENTO,Federal Board/Commission/Dept/Bureau/Agy
+340200,GALT,Police Department
+34023G,JUV DIV SACRAMENTO,Probation Department
+34025C,SACRAMENTO,Youth Authority
+34025D,PERKINS,Youth Authority
+34025G,YOUTH AUTHORITY,Parole
+340300,ISLETON,Police Department
+34035C,CORR SACRAMENTO,State Department
+34035G,PAR COMM SRV SACRMNTO,Parole
+340400,SACRAMENTO,Police Department
+34045C,CORR NEW FOLSOM,State Department
+34045G,PRISON TERMS INV SAC,State Board
+340500,FORESTRY SACRAMENTO,State Department
+34055G,CORR PAROLE SERV SAC,State Department
+34065C,CORR SACRAMENTO REC,State Department
+340700,DMV INVEST SERV SAC,State Department
+340740,MOTOR VEHICLES SAC,State Department
+340800,PD SACRAMENTO,State University
+340A00,HEALTH SERV TOXIC SAC,State Department
+340C00,PARKS REC SACRAMENTO,County Board/Commission/Dept.
+340D00,EDD INV SACRAMENTO,State Department
+340E00,PD LOS RIOS,Community College
+340F00,PD AMERICAN RIVER,Community College
+340G00,SENATE SGT AT ARMS,State Agency
+340H00,ELK GROVE,Police Department
+340P00,SACTO METRO ARSON INV,Arson Division
+341000,CONSUMR AFFR INV SAC,State Department
+341100,ARSON BOMB INV SAC,Fire Marshal
+341200,PARKS REC SACRAMENTO,State Department
+341201,PARK REC GOLD FIELDS,State Department
+341300,INS FRAUD SAC,State Department
+34135G,SACRAMENTO SOUTH,Youth Authority
+341400,PD TWIN RIVERS UNIFID,Unified School District
+341600,HEALTH SRVS INVEST,State Department
+341800,SACTO MEDI CAL FRAUD,Department of Justice
+341900,FISH GAME SACTO,State Department
+342000,CAL EXPO SACRAMENTO,Police Department
+342100,WELFARE FRAUD SAC,County Board/Commission/Dept.
+342200,PARKS REC CAPITAL DST,State Department
+342400,CA EMERG MGT AGCY SAC,State Agency
+342500,CONTRACTORS LIC SACTO,State Board
+342600,LOTTERY SECURITY SAC,State Commission
+342800,MEDICAL QUALITY ASSUR,State Board
+343000,ABC SACRAMENTO,State Department
+343300,PARKS REC TWIN CITIES,State Department
+343400,MENTAL HEALTH INV SAC,State Department
+343500,SOCIAL SERVICES SAC,State Department
+343600,SACTO FIRE DEPT INV,City Board/Commission/Dept.
+343800,DMV INV SACRAMENTO,State Department
+343900,DMV INV CARMICHAEL,State Department
+343A00,CORPORATIONS INV SAC,State Department
+344200,SACRAMENTO CO,Coroner
+344300,HLTH SERV FD DRUG SAC,State Department
+344400,ST CONTROLLER INV SAC,State Department
+344500,SOC SRV FRAUD SACTO,State Department
+344600,SEC OF ST SACRAMENTO,State Department
+344900,STATE ASSEMBLY,State Agency
+345100,FULTON ELCAMINO REC,Park District
+345200,SACTO INSP GENERAL IN,State Department
+345300,PD ELK GROVE UNIFIED,Unified School District
+345400,PD SACRAMENTO CITY,Community College
+349100,SACRAMENTO,Marshal
+349400,SACRAMENTO,Department of Justice
+349410,SACRAMENTO OCR,Department of Justice
+349420,SACRAMENTO III APP,Department of Justice
+349425,DIV FIREARMS SAC,Department of Justice
+349430,SAC MEDI CAL FRAUD,Department of Justice
+349431,SAC FAC PROTECT UNIT,Department of Justice
+349436,CA DOJ,Department of Justice
+349453,REG MEGANS LAW WEBSTE,Department of Justice
+349466,GAMBLING CTRL SAC,Department of Justice
+349469,REG SEX ARSON UNIT,Department of Justice
+349481,REG ASSESSMENT UNIT,Department of Justice
+349496,BNE SACRAMENTO,Department of Justice
+349600,CITRUS HEIGHTS,Police Department
+349700,MED CTR SACRAMENTO,University
+349800,SACRAMENTO,State Police
+349900,SACRAMENTO,Highway Patrol
+349901,VALLEY DIVISION,Highway Patrol
+349912,VALLEY DIV AUTO THFT,Highway Patrol
+349914,COMM CENTER SACTO,Highway Patrol
+349950,NORTH SACRAMENTO,Highway Patrol
+349952,SOUTH SACRAMENTO,Highway Patrol
+349960,RANCHO CORDOVA AREA,Highway Patrol
+349965,SACRAMENTO INV,Highway Patrol
+349981,SAC INTERNAL AFFAIRS,Highway Patrol
+349999,OTHER SACRAMENTO CO,Reporting Agency
+350000,HOLLISTER,Sheriffs Office
+350001,HOLLISTER,County Jail
+350100,HOLLISTER,Police Department
+35013A,HOLLISTER,District Attorney
+35013G,HOLLISTER,Probation Department
+35015G,SAN BENITO CO,Parole
+350200,SAN JUAN BAUTISTA,Police Department
+350400,PARKS REC HOLLISTER,State Department
+350600,HOLLISTER,Narctotic Task Force
+359100,HOLLISTER,Marshal
+359900,HOLLISTR GILROY,Highway Patrol
+359999,OTHER SAN BENITO CO,Reporting Agency
+360000,SAN BERNARDINO,Sheriffs Office
+360001,SAN BERNARDINO,County Jail
+360002,SAN BERDO CHINO HILLS,Sheriffs Office
+360003,SAN BERDO FONTANA,Sheriffs Office
+360004,SAN BERDO YUCAIPA,Sheriffs Office
+360005,SAN BERDO TWIN PEAKS,Sheriffs Office
+360006,SAN BERDO BIG BEAR,Sheriffs Office
+360007,SAN BERDO VICTOR VLY,Sheriffs Office
+360008,SAN BERDO BARSTOW,Sheriffs Office
+360009,SAN BERDO MORONGA,Sheriffs Office
+360010,SN BERDO COLORADO RIV,Sheriffs Office
+360011,S BERDO RCH CUCAMONGA,Sheriffs Office
+360024,SAN BERDO ADELANTO,Sheriffs Office
+360032,GLEN HELEN REHAB CTR,Rehabilitation Center
+360049,SAN BERDO HESPERIA,Sheriffs Office
+360050,SAN BERDO HIGHLAND,Sheriffs Office
+360063,SAN BERDO APPLE VLY,Sheriffs Office
+360066,SANBERDO VICTORVILLE,Sheriffs Office
+360100,BARSTOW,Police Department
+36013G,SAN BERNARDINO,Probation Department
+36013K,SAN BERNARDINO,Coroner
+36015C,CHINO,State Prison
+36015D,CORR CHINO,State Department
+36015M,PATTON,Hospital
+360200,CHINO,Police Department
+36023A,SAN BERNARDINO,District Attorney
+36025C,CHINO,Youth Authority
+36025G,SAN BERNARDINO CO,Parole
+360300,COLTON,Police Department
+36033G,VICTORVILLE,Probation Department
+36035C,SAN BERNARDINO,Youth Authority
+360400,FONTANA,Police Department
+36043G,ONTARIO,Probation Department
+36045C,CORR CHINO WEST,State Department
+360500,MONTCLAIR,Police Department
+36055C,CORR CHINO CENTRAL,State Department
+360600,NEEDLES,Police Department
+36063A,RANCHO CUCAMONGA,District Attorney
+36065C,CORR CHINO EAST,State Department
+360700,ONTARIO,Police Department
+36073A,VICTORVILLE,District Attorney
+360800,REDLANDS,Police Department
+36085C,CORR CIW FRONTERA REC,State Department
+360900,RIALTO,Police Department
+36093C,CORR ADELANTO,City Board/Commission/Dept.
+361000,SAN BERNARDINO,Police Department
+361100,UPLAND,Police Department
+361200,VICTORVILLE,Police Department
+361300,ADELANTO,Police Department
+361400,PD SAN BERNARDINO,State University
+361500,LOMA LINDA,Police Department
+361900,WELFARE SAN BERDO,County Board/Commission/Dept.
+362300,PD SAN BERNARDINO,Unified School District
+36253J,SAN BERNARDINO,Superior Court
+36263J,BARSTOW,Superior Court
+362700,FONTANA FIRE AGY INV,County Board/Commission/Dept.
+36273J,BIG BEAR,Superior Court
+362800,SAN BERDO FIRE SP DST,County Board/Commission/Dept.
+36283J,JOSHUA TREE,Superior Court
+36293J,NEEDLES,Superior Court
+36303J,RANCHO CUCAMONGA,Superior Court
+36313J,VICTORVILLE,Superior Court
+363700,RANCHO CUCAMONGA,Arson Division
+364200,PD HESPERIA,Unified School District
+364500,FIRE DPT MONTCLAIR,City Board/Commission/Dept.
+364800,NEWBERRY SPRINGS,Arson Division
+364900,PD SNOWLINE SCH,Unified School District
+365000,PD FONTANA,Unified School District
+365100,FORESTRY FIRE SN BRDO,State Department
+365200,FIRE DP ARSN REDLANDS,City Board/Commission/Dept.
+365300,FIRE DPT IU SAN BERDO,City Board/Commission/Dept.
+365700,PD PATTON,Hospital
+365800,PD VICTOR VALLEY,Community College
+369100,SAN BERNARDINO,Marshal
+369600,DMV INV RCH CUCAMONGA,State Department
+369900,SN BERNARDINO,Highway Patrol
+369901,INLAND DIVISION,Highway Patrol
+369934,NEEDLES,Highway Patrol
+369935,BARSTOW,Highway Patrol
+369950,VICTORVILLE,Highway Patrol
+369955,RANCHO CUCAMONGA,Highway Patrol
+369960,SAN BERNARDINO,Highway Patrol
+369965,ARROWHEAD,Highway Patrol
+369970,MORONGO BASIN,Highway Patrol
+369980,NEEDLS,Highway Patrol
+369999,OTHER S BERNARDINO CO,Reporting Agency
+36A100,PD APPLE VALLEY,Unified School District
+370000,SAN DIEGO,Sheriffs Office
+370001,SAN DIEGO CO,Sheriffs Office
+370003,SAN DIEGO SANTEE,Sheriffs Office
+370004,SAN DIEGO VISTA,Sheriffs Office
+370005,SAN DIEGO LEMON GROVE,Sheriffs Office
+370006,SAN DIEGO ENCINITAS,Sheriffs Office
+370007,SAN DIEGO,Narctotic Task Force
+370011,SAN DIEGO POWAY,Sheriffs Office
+370012,SAN DIEGO,County Jail
+370019,SAN DIEGO ALPINE STN,Sheriffs Office
+370021,SD LAS COLINAS DET,Sheriffs Office
+370042,SAN DIEGO IMPERIAL,Sheriffs Office
+370089,SAN DIEGO LIC DIV,Sheriffs Office
+370095,SAN DIEGO SAN MARCOS,Sheriffs Office
+370100,CARLSBAD,Police Department
+37013B,REV AND REC SAN DIEGO,County Board/Commission/Dept.
+37013G,SAN DIEGO,Probation Department
+37015C,CORR SAN DIEGO,State Department
+37015G,SAN DIEGO CO,Parole
+37017B,PRETRIAL SRV SN DIEGO,Federal District Court
+37017Y,SAN DIEGO INSP GEN,Federal Board/Commission/Dept/Bureau/Agy
+370200,CHULA VISTA,Police Department
+37021Z,SAN DIEGO COUNTY,Medical Examiner
+37023A,SAN DIEGO,District Attorney
+37025C,CORR RJ DONOVAN RECEP,State Department
+37027G,SAN DIEGO,Probation Department
+370300,CORONADO,Police Department
+37033G,ADULT INST SAN DIEGO,Probation Department
+370400,DEL MAR,Police Department
+37045G,PAR COMM SRV SN DIEGO,Parole
+370500,EL CAJON,Police Department
+37053G,SAN DIEGO CO JUV,Probation Department
+370600,ESCONDIDO,Police Department
+37061A,SAN DIEGO,City Attorney
+370700,IMPERIAL BEACH,Police Department
+370800,LA MESA,Police Department
+370900,NATIONAL CITY,Police Department
+37095G,OCEANSIDE,Parole
+371000,OCEANSIDE,Police Department
+371100,SAN DIEGO,Police Department
+37113G,SAN DIEGO EAST MESA,Probation Department
+37115G,PAR COM SRV ESCONDIDO,Parole
+371200,SAN MARCOS,Police Department
+371300,VISTA,Police Department
+371400,PD SAN DIEGO,State University
+371500,SAN DIEGO HARBOR PD,Port/Harbor
+371600,INSUR FRAUD SAN DIEGO,State Department
+371800,PDSOUTHWESTERN COLL,Community College
+372100,PD SAN DIEGO,Unified School District
+372200,PARK REC COLORADO DES,State Department
+372400,PARKS REC OCOTILLO WL,State Department
+372500,PARKS REC CARLSBAD,State Department
+372600,MISSION BAY HRBR PTRL,City Board/Commission/Dept.
+372800,PD SAN DIEGO,Community College
+372900,WELFARE INV SAN DIEGO,County Board/Commission/Dept.
+373000,HEALTH SERV SAN DIEGO,State Department
+373100,DMV INV SAN DIEGO,State Department
+373200,PD SAN MARCOS,State University
+373400,PD EL CAJON,Community College
+373500,SAN DIEGO INSP GEN IN,State Department
+379100,SAN DIEGO,Marshal
+379400,SAN DIEGO,Department of Justice
+379700,PD SAN DIEGO,University
+379800,SAN DIEGO,State Police
+379901,BORDER DIVISION,Highway Patrol
+379945,SAN DIEGO,Highway Patrol
+379950,OCEANSIDE,Highway Patrol
+379980,EL CAJON,Highway Patrol
+379999,OTHER SAN DIEGO CO,Reporting Agency
+37A700,PD PALOMAR,Community College
+37A800,DEL MAR PARK RANGERS,City Board/Commission/Dept.
+37A900,FORESTRY FIRE PROT SD,State Department
+380000,SAN FRANCISCO,Sheriffs Office
+380002,SAN FRANCISCO,County Jail
+380100,SAN FRANCISCO,Police Department
+38011A,SAN FRANCISCO,City Attorney
+38013A,SAN FRANCISCO,District Attorney
+38013G,SAN FRANCISCO,Probation Department
+38015G,SAN FRANCISCO CO,Parole
+380200,SAN FRAN HARBOR PD,Port/Harbor
+38023G,SAN FRANCISCO JUV,Probation Department
+38027A,US ATTORNEY SAN FRAN,Department of Justice
+380300,PD SAN FRANCISCO,State University
+380301,MED CTR SAN FRANCISCO,University
+38043C,SAN FRANCISCO,Youth Authority
+381100,PROTCT SRV INV SF PUC,County Board/Commission/Dept.
+381200,SAN FRANCISCO,Medical Examiner
+381300,INSUR FRAUD SAN FRAN,State Department
+381600,HASTINGS LAW SAN FRAN,University
+381700,PD SAN FRANCISCO,Community College
+382100,HUMAN SRVS SPEC INVES,County Board/Commission/Dept.
+389100,SAN FRANCISCO,Marshal
+389400,SAN FRANCISCO,Department of Justice
+389410,BOCity Board/Commission/Dept.I SAN FRANCISCO,Department of Justice
+389430,SAN FRAN MEDI CAL FRD,Department of Justice
+389700,PD SAN FRANCISCO,University
+389935,SAN FRANCISCO,Highway Patrol
+389999,OTHER S FRANCISCO CO,Reporting Agency
+38PRJV,SN FRANCISCO JUV,Probation Department
+390000,STOCKTON,Sheriffs Office
+390001,STOCKTON,County Jail
+390100,ESCALON,Police Department
+39013G,STOCKTON,Probation Department
+39015C,CORR TRACY,State Department
+39015D,TRACY,Youth Authority
+390200,LODI,Police Department
+39023A,STOCKTON,District Attorney
+39023G,CORR PAR COMM SRV SKN,State Department
+39025C,STOCKTON,Youth Authority
+39025G,SAN JOAQUIN CO,Parole
+390300,MANTECA,Police Department
+39035C,NORTHERN STOCKTON,Youth Authority
+390400,RIPON,Police Department
+39045G,CORR HC FAC STOCKTON,State Department
+390500,STOCKTON,Police Department
+390600,TRACY,Police Department
+39065C,CORR STOCKTON,State Department
+39075C,TRACY,State Prison
+39075G,CORR PA COMM SRV STKN,State Department
+390800,PD STOCKTON,Community College
+391100,STOCKTON PORT PD,Port/Harbor
+391500,PD STOCKTON,Unified School District
+391600,HUMAN SRV INV STOCKTN,County Board/Commission/Dept.
+391800,SAN JOAQUIN CO,Narctotic Task Force
+392200,STOCKTON,Arson Division
+392300,PD STOCKTON,University
+399100,STOCKTON,Marshal
+399965,STOCKTON,Highway Patrol
+399966,TRACY,Highway Patrol
+399999,OTHER SAN JOAQUIN CO,Reporting Agency
+400000,SAN LUIS OBISPO,Sheriffs Office
+400001,SAN LUIS OBISPO,County Jail
+400100,ARROYO GRANDE,Police Department
+40013A,SAN LUIS OBISPO,District Attorney
+40013G,SAN LUIS OBISPO,Probation Department
+40013Y,HOUS AUTH FRD INV SLO,County Board/Commission/Dept.
+40015C,CORR SAN LUIS OBISPO,State Department
+40015G,SAN LUIS OBISPO CO,Parole
+40015M,ATASCADERO STATE,Hospital
+400200,GROVER BEACH,Police Department
+40023Y,WELFARE FRAUD SIU SLO,County Board/Commission/Dept.
+40025C,PASO ROBLES,Youth Authority
+400300,MORRO BAY,Police Department
+400400,PASO ROBLES,Police Department
+400500,PISMO BEACH,Police Department
+40055C,CORR MENS COLONY WEST,State Department
+400600,SAN LUIS OBISPO,Police Department
+400700,PD SAN LUIS OBISPO,State University
+400800,ATASCADERO,Police Department
+401000,PK REC S LUIS OBISPO,Reporting Agency
+401200,PARKS REC SLO COAST,State Department
+401400,PARKS REC OCEANO DUNE,State Department
+401500,SAN LUIS OBISPO,Narctotic Task Force
+409100,SAN LUIS OBISPO,Marshal
+409901,COASTAL DIVISION,Highway Patrol
+409940,TEMPLETON,Highway Patrol
+409945,SAN LUIS OBISPO,Highway Patrol
+409999,OTHER S L OBISPO CO,Reporting Agency
+410000,REDWOOD CITY,Sheriffs Office
+410001,REDWOOD CITY,County Jail
+410017,AIRPORT SAN FRANCISCO,Reporting Agency
+410100,ATHERTON,Police Department
+41013A,REDWOOD CITY,District Attorney
+41013G,REDWOOD CITY,Probation Department
+41015G,SAN MATEO CO,Parole
+41017G,SAN MATEO PROBATION,Probation Department
+410200,BELMONT,Police Department
+41025G,PAR COM SRV DALY CITY,Parole
+410300,BRISBANE,Police Department
+410400,BURLINGAME,Police Department
+410500,COLMA,Police Department
+41053G,BELMONT,Probation Department
+410600,DALY CITY,Police Department
+410700,HALF MOON BAY,Police Department
+410800,HILLSBOROUGH,Police Department
+410900,MENLO PARK,Police Department
+411000,MILLBRAE,Police Department
+411100,PACIFICA,Police Department
+411200,PORTOLA VALLEY,Police Department
+411300,REDWOOD CITY,Police Department
+411400,SAN BRUNO,Police Department
+411500,SAN CARLOS,Police Department
+411600,SAN MATEO,Police Department
+411700,SOUTH SAN FRANCISCO,Police Department
+411800,WOODSIDE,Police Department
+411900,BROADMOOR,Police Department
+412000,FOSTER CITY,Police Department
+412100,EMERALD LAKE,Police Department
+412200,ESTERO,Police Department
+412300,FOSTER CITY,Department of Public Safety
+412500,SF INTERNATIONAL,Airport Authority
+412600,PARK REC BAY AREA DST,State Department
+412700,EAST PALO ALTO,Police Department
+412900,SAN MATEO COUNTY,Coroner
+419100,REDWOOD CITY,Marshal
+419930,REDWOOD CITY,Highway Patrol
+419999,OTHER SAN MATEO CO,Reporting Agency
+420000,SANTA BARBARA,Sheriffs Office
+420004,SANTA BARBARA,County Jail
+420100,GUADALUPE,Police Department
+42013A,SANTA BARBARA,District Attorney
+42013B,SANTA MARIA,Municipal Court
+42013G,SANTA BARBARA,Probation Department
+42015G,SANTA BARBARA CO,Parole
+420200,LOMPOC,Police Department
+420300,SANTA BARBARA,Police Department
+420400,SANTA MARIA,Police Department
+420500,CARPINTERIA,Police Department
+42063A,SNTA BARBARA,District Attorney
+420800,PARKS REC GOLETA,State Department
+421100,PD ALLAN HANCOCK JT,Community College
+421200,SNTA BARBARA AIRPT PD,City Board/Commission/Dept.
+429100,SANTA BARBARA,Marshal
+429700,PD SANTA BARBARA,University
+429950,SANTA MARIA,Highway Patrol
+429955,BUELLTON,Highway Patrol
+429960,SANTA BARBARA,Highway Patrol
+429999,OTHER S BARBARA CO,Reporting Agency
+430000,SAN JOSE,Sheriffs Office
+430011,SAN JOSE,County Jail
+430015,SNTA CLARA STANFRD UV,Sheriffs Office
+430100,ALVISO,Police Department
+43013A,SAN JOSE,District Attorney
+43013G,SAN JOSE,Probation Department
+43015G,SANTA CLARA CO,Parole
+430200,CAMPBELL,Police Department
+430400,GILROY,Police Department
+430500,LOS ALTOS,Police Department
+430700,LOS GATOS,Police Department
+430800,MILPITAS,Police Department
+43083C,SANTA CLARA CO CORR,County Board/Commission/Dept.
+430900,MONTE SERENO,Police Department
+431000,MORGAN HILL,Police Department
+431100,MOUNTAIN VIEW,Police Department
+431200,PALO ALTO,Police Department
+431300,SAN JOSE,Police Department
+431400,SANTA CLARA,Police Department
+431600,SUNNYVALE,Police Department
+431601,SUNNYVALE,Department of Public Safety
+431700,PD SAN JOSE,State University
+431800,SCLARA SSFIU,Social Welfare
+432000,SANTA CLARA FIRE DEPT,Arson Division
+432200,PD SAN JOSE,Unified School District
+432300,SAN JOSE,Airport Authority
+432600,SANTA CLARA,Narctotic Task Force
+432700,PD FOOTHILL DEANZA,Community College
+432900,DMV INV SAN JOSE,State Department
+433100,FINANCIAL INV SN JOSE,Task Force
+433300,REG AUTO THFT SN JOSE,Task Force
+433400,PD SAN JOSE EVERGREEN,Community College
+433500,INSUR FRAUD SAN JOSE,State Department
+433700,WEST VALLEY,Community College
+439100,SAN JOSE,Marshal
+439400,SAN JOSE,Department of Justice
+439600,SAN JOSE FIRE ARSON,Arson Division
+439901,GILROY,Highway Patrol
+439925,HOLLISTER GILROY,Highway Patrol
+439940,SAN JOSE,Highway Patrol
+439999,OTHER SANTA CLARA CO,Reporting Agency
+440000,SANTA CRUZ,Sheriffs Office
+440001,SANTA CRUZ,County Jail
+440100,CAPITOLA,Police Department
+44013A,SANTA CRUZ,District Attorney
+44013G,SANTA CRUZ,Probation Department
+44015C,SANTA CRUZ,Youth Authority
+44015G,SANTA CRUZ CO,Parole
+440200,SANTA CRUZ,Police Department
+440300,WATSONVILLE,Police Department
+440400,SCOTTS VALLEY,Police Department
+440700,PARKS REC APTOS,State Department
+440800,PARK REC SANTA CRUZ,State Department
+440900,SANTA CRUZ CO HRA SIU,County Board/Commission/Dept.
+449100,SANTA CRUZ,Marshal
+449700,PD SANTA CRUZ,University
+449920,SANTA CRUZ,Highway Patrol
+449999,OTHER SANTA CRUZ CO,Reporting Agency
+450000,REDDING,Sheriffs Office
+450001,REDDING,County Jail
+450010,SHASTA BURNEY,Sheriffs Office
+450100,ANDERSON,Police Department
+45013A,REDDING,District Attorney
+45013G,REDDING,Probation Department
+45015G,SHASTA CO,Parole
+450200,REDDING,Police Department
+450400,FISH GAME SHASTA CO,State Department
+450600,WELFARE SHASTA,County Board/Commission/Dept.
+450700,SHASTA CO,Narctotic Task Force
+450800,FIRE DPT ARSN REDDING,City Board/Commission/Dept.
+450900,SHASTA FIRE ARSON INV,Arson Division
+459100,REDDING,Marshal
+459400,DOJ REDDING,Drug Enforcement Unit/Administration
+459901,NORTHERN DIVISION,Highway Patrol
+459935,REDDING,Highway Patrol
+459999,OTHER SHASTA CO,Reporting Agency
+460000,DOWNIEVILLE,Sheriffs Office
+460001,DOWNIEVILLE,County Jail
+460100,LOYALTON,Police Department
+46013A,DOWNIEVILLE,District Attorney
+46013G,DOWNIEVILLE,Probation Department
+46015G,SIERRA CO,Parole
+469100,DOWNIEVILLE,Marshal
+469900,DOWNIEVILLE,Highway Patrol
+469999,OTHER SIERRA CO,Reporting Agency
+470000,YREKA,Sheriffs Office
+470001,YREKA,County Jail
+470100,DORRIS,Police Department
+47013A,YREKA,District Attorney
+47013G,YREKA,Probation Department
+47015G,SISKIYOU CO,Parole
+470200,DUNSMUIR,Police Department
+470300,ETNA,Police Department
+470400,FORT JONES,Police Department
+470500,MONTAGUE,Police Department
+470600,MOUNT SHASTA,Police Department
+470700,TULELAKE,Police Department
+470800,WEED,Police Department
+470900,YREKA,Police Department
+471200,SISKIYOU CO,County Board/Commission/Dept.
+479100,YREKA,Marshal
+479945,YREKA,Highway Patrol
+479946,MOUNT SHASTA,Highway Patrol
+479999,OTHER SISKIYOU CO,Reporting Agency
+480000,FAIRFIELD,Sheriffs Office
+480001,FAIRFIELD,County Jail
+480080,SOLANO NARC ENF,Sheriffs Office
+480100,BENICIA,Police Department
+48013A,FAIRFIELD,District Attorney
+48013G,FAIRFIELD,Probation Department
+48015C,CORR VACAVILLE,State Department
+48015G,SOLANO CO,Parole
+48017Y,SOLANO CO SOC SEC OIG,Federal Board/Commission/Dept/Bureau/Agy
+480200,DIXON,Police Department
+48023G,FAIRFIELD JUV HALL,Probation Department
+48025C,CORR VACAVILLE SOUTH,State Department
+480300,FAIRFIELD,Police Department
+48033A,VALLEJO,District Attorney
+480400,RIO VISTA,Police Department
+48043A,VALLEJO FS,District Attorney
+48045C,CORR SOLANO RECORDS,State Department
+480500,SUISUN CITY,Police Department
+480600,VACAVILLE,Police Department
+480700,VALLEJO,Police Department
+481000,INSUR FRAUD VALLEJO,State Department
+481100,WELFARE SIU VALLEJO,County Board/Commission/Dept.
+481200,HLTH SERV IN VALLEJO,State Department
+481300,PD SUISUN,Community College
+481400,INSUR FRAUD BENICIA,State Department
+489100,FAIRFIELD,Marshal
+489900,VALLEJO,Highway Patrol
+489901,GOLDEN GATE DIVISION,Highway Patrol
+489965,SOLANO,Highway Patrol
+489999,OTHER SOLANO CO,Reporting Agency
+490000,SANTA ROSA,Sheriffs Office
+490001,SANTA ROSA,County Jail
+490020,WINDSOR,Police Department
+490100,CLOVERDALE,Police Department
+49013A,SANTA ROSA,District Attorney
+49013G,SANTA ROSA,Probation Department
+49015C,SANTA ROSA,Youth Authority
+49015G,SONOMA CO,Parole
+49015M,PD SONOMA ELDRIDGE,Hospital
+490200,COTATI,Police Department
+49027G,SANTA ROSA,Probation Department
+490300,HEALDSBURG,Police Department
+490400,ROHNERT PARK,Police Department
+490500,SANTA ROSA,Police Department
+490600,SEBASTOPOL,Police Department
+490700,SONOMA,Police Department
+490800,PETALUMA,Police Department
+490900,PD SONOMA,State University
+491100,PARKS REC SILVERADO,State Department
+491200,PARK REC DUNCAN MILLS,State Department
+491400,PD SANTA ROSA,Community College
+491600,WELFARE FRAUD SN ROSA,County Board/Commission/Dept.
+499100,SANTA ROSA,Marshal
+499960,SANTA ROSA,Highway Patrol
+499999,OTHER SONOMA CO,Reporting Agency
+500000,MODESTO,Sheriffs Office
+500001,MODESTO,County Jail
+500100,CERES,Police Department
+50013A,MODESTO,District Attorney
+50013G,MODESTO,Probation Department
+50015G,STANISLAUS CO,Parole
+500200,MODESTO,Police Department
+50025G,MODESTO,Parole
+500300,NEWMAN,Police Department
+50033A,MODESTO FAM SUPPORT,District Attorney
+50033G,STANISLAUS CO JUV,Probation Department
+500400,OAKDALE,Police Department
+500500,PATTERSON,Police Department
+500600,RIVERBANK,Police Department
+500700,TURLOCK,Police Department
+500800,WATERFORD,Police Department
+500900,HUGHSON,Police Department
+501000,PD STANISLAUS,State College
+501002,PD STANISLAUS,State University
+501600,WELFARE FRAUD MODESTO,County Board/Commission/Dept.
+501700,MODESTO,Arson Division
+501900,FIRE PROTCT MODESTO,County Board/Commission/Dept.
+509100,MODESTO,Marshal
+509965,MODESTO,Highway Patrol
+509999,OTHER STANISLAUS CO,Reporting Agency
+510000,YUBA CITY,Sheriffs Office
+510001,YUBA CITY,County Jail
+510100,LIVE OAK,Police Department
+51013A,YUBA CITY,District Attorney
+51013G,YUBA CITY,Probation Department
+51015G,SUTTER CO,Parole
+510200,YUBA CITY,Police Department
+510300,WELFARE YUBA CITY,County Board/Commission/Dept.
+510500,SUTTER CO,Narctotic Task Force
+519100,YUBA CITY,Marshal
+519900,YUBA CITY,Highway Patrol
+519985,YUBA SUTTER,Highway Patrol
+519999,OTHER SUTTER CO,Reporting Agency
+520000,RED BLUFF,Sheriffs Office
+520001,RED BLUFF,County Jail
+520100,CORNING,Police Department
+52013A,RED BLUFF,District Attorney
+52013G,RED BLUFF,Probation Department
+52015G,TEHAMA CO,Parole
+520200,RED BLUFF,Police Department
+520300,TEHAMA,Police Department
+520400,BNE TAGMET,Department of Justice
+529100,RED BLUFF,Marshal
+529930,RED BLUFF,Highway Patrol
+529999,OTHER TEHAMA CO,Reporting Agency
+530000,WEAVERVILLE,Sheriffs Office
+530001,WEAVERVILLE,County Jail
+53013A,WEAVERVILLE,District Attorney
+53013G,WEAVERVILLE,Probation Department
+53015G,TRINITY CO,Parole
+539100,WEAVERVILLE,Marshal
+539900,WEAVERVILLE,Highway Patrol
+539975,TRINITY RIVER,Highway Patrol
+539999,OTHER TRINITY CO,Reporting Agency
+540000,VISALIA,Sheriffs Office
+540001,VISALIA,County Jail
+540100,DINUBA,Police Department
+54013A,VISALIA,District Attorney
+54013G,VISALIA,Probation Department
+54015G,TULARE CO,Parole
+540200,EXETER,Police Department
+54023A,VISALIA MAIN,District Attorney
+540300,FARMERSVILLE,Police Department
+540400,LINDSAY,Police Department
+540500,PORTERVILLE,Police Department
+540600,TULARE,Police Department
+540700,VISALIA,Police Department
+540800,WOODLAKE,Police Department
+541200,PD PORTERVILLE,Hospital
+54123J,TULARE,Superior Court
+541300,TULARE CO FIRE DEPT,Arson Division
+549100,VISALIA,Marshal
+549980,VISALIA,Highway Patrol
+549981,PORTERVILLE,Highway Patrol
+549999,OTHER TULARE CO,Reporting Agency
+550000,SONORA,Sheriffs Office
+550001,SONORA,County Jail
+550100,SONORA,Police Department
+55013A,SONORA,District Attorney
+55013G,SONORA,Probation Department
+55015C,CORR JAMESTOWN,State Department
+55015G,TUOLUMNE CO,Parole
+559100,SONORA,Marshal
+559925,SONORA,Highway Patrol
+559999,OTHER TUOLUMNE CO,Reporting Agency
+560000,VENTURA,Sheriffs Office
+560002,VENTURA,County Jail
+560010,VENTURA CAMARILLO PD,Sheriffs Office
+560018,VENTURA FILLMORE PD,Sheriffs Office
+560027,VENTURA MOORPARK PD,Sheriffs Office
+560100,CAMARILLO,Police Department
+56013G,VENTURA,Probation Department
+56015C,VENTURA SCH CAMARILLO,Youth Authority
+56015G,VENTURA CO,Parole
+56015M,CAMARILLO STATE,Hospital
+560200,FILLMORE,Police Department
+56023A,VENTURA,District Attorney
+56025C,CAMARILLO,Youth Authority
+560300,OJAI,Police Department
+560400,OXNARD,Police Department
+560500,PORT HUENEME,Police Department
+56053G,VENTURA CO,Probation Department
+560600,SANTA PAULA,Police Department
+560700,THOUSAND OAKS,Police Department
+560800,VENTURA,Police Department
+560900,SIMI VALLEY,Police Department
+561300,PARK REC ANGELS DIST,State Department
+561500,PARKS REC CHANNEL CST,State Department
+561700,PARKS REC HUNGRY VLLY,State Department
+561900,ARSON UNIT CAMARILLO,County Board/Commission/Dept.
+562000,MED EXAMINER VENTURA,County Board/Commission/Dept.
+562200,PD CHANNEL ISLANDS,State University
+569100,VENTURA,Marshal
+569965,VENTURA,Highway Patrol
+569970,MOORPARK AREA,Highway Patrol
+569999,OTHER VENTURA CO,Reporting Agency
+570000,WOODLAND,Sheriffs Office
+570001,BRODERICK,Sheriffs Office
+570002,WOODLAND,County Jail
+570100,DAVIS,Police Department
+57013A,WOODLAND,District Attorney
+57013G,WOODLAND,Probation Department
+57015G,YOLO CO,Parole
+570200,WINTERS,Police Department
+570300,WOODLAND,Police Department
+57033A,WOODLAND CRM DIV,District Attorney
+570400,WEST SACRAMENTO,Police Department
+570700,YOLO,Narctotic Task Force
+570900,WELFARE WOODLAND,County Board/Commission/Dept.
+579100,WOODLAND,Marshal
+579700,PD DAVIS,University
+579980,WOODLAND,Highway Patrol
+579999,OTHER YOLO CO,Reporting Agency
+580000,MARYSVILLE,Sheriffs Office
+580001,MARYSVILLE,County Jail
+580100,MARYSVILLE,Police Department
+58013A,MARYSVILLE,District Attorney
+58013G,MARYSVILLE,Probation Department
+58015G,YUBA CO,Parole
+580200,WHEATLAND,Police Department
+589100,MARYSVILLE,Marshal
+589900,MARYSVILLE,Highway Patrol
+589999,OTHER YUBA CO,Reporting Agency

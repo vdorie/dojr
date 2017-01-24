@@ -1,0 +1,183 @@
+# Table Joins
+
+Some entries in the OBTS do not have matching values in the related tables, specifically the judicial districts, arresting agencies, and CJIS codes.
+
+## Judicial Districts
+
+```{r 'analysis_joinFailures_judicialDistricts', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_joinFailures_judicialDistricts.txt")
+if (!file.exists(txtFile)) {
+  loadData("judicialDistricts", "..")
+  loadData(mainTable, "..")
+  districtCodes <- with(judicialDistricts, paste0(county_code, ifelse(is.na(agency_code), "****", agency_code)))
+  unmatchedRows <- obts$court_judicial_district %not_in% districtCodes
+  
+  unmatchedSet <- subset(obts, unmatchedRows, c("court_judicial_district", "court_event_year"))
+  unmatchedSet$court_judicial_district <- droplevels(unmatchedSet$court_judicial_district)
+  
+  numUnmatched <- sum(unmatchedRows)
+  unmatchedByJurisdiction <- rmdFormat(sort(table(unmatchedSet$court_judicial_district), decreasing = TRUE))
+  unmatchedByYear <- rmdFormat(table(unmatchedSet$court_event_year), maxRows = NA)
+  
+  writeLines(c(as.character(numUnmatched),
+               unmatchedByJurisdiction,
+               unmatchedByYear),
+             txtFile)
+  rm(districtCodes, unmatchedRows, unmatchedSet)
+} else {
+  lines <- readLines(txtFile)
+  numUnmatched <- lines[1L]
+  unmatchedByJurisdiction <- lines[seq.int(2L, 54L)]
+  unmatchedByYear <- tail(lines, -54L)
+  rm(lines)
+}
+rm(txtFile)
+```
+
+A total of `r numUnmatched` rows have listed judicial districts that cannot be matched.
+
+#### Unmatched by Jurisdiction Tabulation
+
+`r paste0(unmatchedByJurisdiction, collapse = "\n")`
+
+#### Unmatched by Court Event Year Tabulation
+
+`r paste0(unmatchedByYear, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(numUnmatched, unmatchedByJurisdiction, unmatchedByYear)
+```
+
+## Arresting Agencies
+
+```{r 'analysis_joinFailures_arrestingAgencies', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_joinFailures_arrestingAgencies.txt")
+if (!file.exists(txtFile)) {
+  loadData("arrestingAgencies", "..")
+  loadData(mainTable, "..")
+  unmatchedRows <- obts$arresting_agency %not_in% arrestingAgencies$code
+  
+  unmatchedSet <- subset(obts, unmatchedRows, c("arresting_agency", "court_event_year"))
+  unmatchedSet$arresting_agency <- droplevels(unmatchedSet$arresting_agency)
+  
+  numUnmatched <- sum(unmatchedRows)
+  unmatchedByAgency <- rmdFormat(sort(table(unmatchedSet$arresting_agency), decreasing = TRUE))
+  unmatchedByYear <- rmdFormat(table(unmatchedSet$court_event_year), maxRows = NA)
+  
+  writeLines(c(as.character(numUnmatched),
+               unmatchedByAgency,
+               unmatchedByYear),
+             txtFile)
+  rm(unmatchedRows, unmatchedSet)
+} else {
+  lines <- readLines(txtFile)
+  numUnmatched <- lines[1L]
+  unmatchedByAgency <- lines[seq.int(2L, 54L)]
+  unmatchedByYear <- tail(lines, -54L)
+  rm(lines)
+}
+rm(txtFile)
+```
+
+A total of `r numUnmatched` rows have listed arresting agencies that cannot be matched.
+
+#### Unmatched by Agency Tabulation
+
+`r paste0(unmatchedByAgency, collapse = "\n")`
+
+#### Unmatched by Court Event Year Tabulation
+
+`r paste0(unmatchedByYear, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(numUnmatched, unmatchedByAgency, unmatchedByYear)
+```
+
+## Offense Codes
+
+```{r 'analysis_joinFailures_offenseCodes', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_joinFailures_offenseCodes.txt")
+if (!file.exists(txtFile)) {
+  loadData("cjisCodes", "..")
+  loadData(mainTable, "..")
+  
+  while (sum(shortCodes <- nchar(levels(obts$arrest_offense)) < 5L) > 0L)
+    levels(obts$arrest_offense)[shortCodes] <- paste0("0", levels(obts$arrest_offense)[shortCodes])
+  
+  while (sum(shortCodes <- nchar(levels(obts$court_disposition_offense)) < 5L) > 0L)
+    levels(obts$court_disposition_offense)[shortCodes] <- paste0("0", levels(obts$court_disposition_offense)[shortCodes])
+  rm(shortCodes)
+  
+  unmatchedArrestOffenseRows <- obts$arrest_offense %not_in% cjisCodes$cjis_code & !is.na(obts$arrest_offense)
+  unmatchedArrestOffenses <- droplevels(obts$arrest_offense[unmatchedArrestOffenseRows])
+  
+  unmatchedCourtDispositionOffenseRows <- obts$court_disposition_offense %not_in% cjisCodes$cjis_code & !is.na(obts$court_disposition_offense)
+  unmatchedCourtDispositionOffenses <- droplevels(obts$court_disposition_offense[unmatchedCourtDispositionOffenseRows])
+  
+  numUnmatchedArrestOffenses <- length(unmatchedArrestOffenses)
+  numUnmatchedCourtDispositionOffenses <- length(unmatchedCourtDispositionOffenses)
+  
+  unmatchedArrestOffenseTable <- as.data.frame(table(unmatchedArrestOffenses))
+  unmatchedCourtDispositionOffenseTable <- as.data.frame(table(unmatchedCourtDispositionOffenses))
+  
+  unmatchedOffensesTable <- data.frame(code = union(unmatchedArrestOffenseTable[[1L]], unmatchedCourtDispositionOffenseTable[[1L]]),
+                                       arrest_offense = 0L,
+                                       court_disposition_offense = 0L)
+  unmatchedOffensesTable[match(unmatchedArrestOffenseTable[[1L]], unmatchedOffensesTable[[1L]]), "arrest_offense"] <-
+    unmatchedArrestOffenseTable[[2L]]
+  
+  unmatchedOffensesTable[match(unmatchedCourtDispositionOffenseTable[[1L]], unmatchedOffensesTable[[1L]]), "court_disposition_offense"] <-
+    unmatchedCourtDispositionOffenseTable[[2L]]
+  
+  unmatchedByOffense <-
+    rmdFormat(unmatchedOffensesTable[order(unmatchedOffensesTable[[2L]] + unmatchedOffensesTable[[3L]], decreasing = TRUE),])
+  
+  unmatchedArrestOffenseTable <- table(obts$court_event_year[unmatchedArrestOffenseRows])
+  unmatchedCourtDispositionOffenseTable <- table(obts$court_event_year[unmatchedCourtDispositionOffenseRows])
+  
+  unmatchedYearsTable <- data.frame(court_event_year =
+                                      sort(union(names(unmatchedArrestOffenseTable), names(unmatchedCourtDispositionOffenseTable))),
+                                    arrest_offense = 0L,
+                                    court_disposition_offense = 0L)
+  unmatchedYearsTable[match(names(unmatchedArrestOffenseTable), unmatchedYearsTable$court_event_year), "arrest_offense"] <-
+    as.integer(unmatchedArrestOffenseTable)
+  unmatchedYearsTable[match(names(unmatchedCourtDispositionOffenseTable), unmatchedYearsTable$court_event_year), "court_disposition_offense"] <-
+    as.integer(unmatchedCourtDispositionOffenseTable)
+  
+  unmatchedByYear <- rmdFormat(unmatchedYearsTable[order(unmatchedYearsTable$court_event_year),], maxRows = NA)
+  
+  
+  
+  writeLines(c(as.character(numUnmatchedArrestOffenses),
+               as.character(numUnmatchedCourtDispositionOffenses),
+               unmatchedByOffense,
+               unmatchedByYear),
+             txtFile)
+  
+  rm(unmatchedArrestOffenseRows, unmatchedArrestOffenses, unmatchedCourtDispositionOffenseRows,
+     unmatchedCourtDispositionOffenses, unmatchedOffensesTable, unmatchedYearsTable,
+     unmatchedArrestOffenseTable, unmatchedCourtDispositionOffenseTable)
+} else {
+  lines <- readLines(txtFile)
+  numUnmatchedArrestOffenses <- lines[1L]
+  numUnmatchedCourtDispositionOffenses <- lines[2L]
+  unmatchedByOffense <- lines[seq.int(3L, 55L)]
+  unmatchedByYear <- tail(lines, -55L)
+  rm(lines)
+}
+rm(txtFile)
+```
+
+A total of `r numUnmatchedArrestOffenses` rows have arrest offense codes that cannot be matched, while `r numUnmatchedCourtDispositionOffenses` rows have court disposition offense codes that cannot be matched.
+
+#### Unmatched by Offense Code Tabulation
+
+`r paste0(unmatchedByOffense, collapse = "\n")`
+
+#### Unmatched by Court Event Year Tabulation
+
+`r paste0(unmatchedByYear, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(numUnmatchedArrestOffenses, numUnmatchedCourtDispositionOffenses, unmatchedByOffense, unmatchedByYear)
+```

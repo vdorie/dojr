@@ -59,6 +59,7 @@ judicialDistricts$type <- droplevels(judicialDistricts$type)
 
 judicialDistricts$agency_code[judicialDistricts$agency_code == "****"] <- NA
 
-write.csv(judicialDistricts, file.path("..", "..", "common", "data", "judicial_districts.csv"),
+write.csv(judicialDistricts,
+          file.path("..", "..", "common", "data", "judicial_districts.csv"),
           row.names = FALSE,
           quote = 1L)

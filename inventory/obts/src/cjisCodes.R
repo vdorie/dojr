@@ -63,6 +63,6 @@ cjisCodes$code_type <- as.factor(cjisCodes$code_type)
 cjisCodes$toc <- as.factor(cjisCodes$toc)
 
 write.csv(cjisCodes,
-          file.path("..", "..", "common", "data", "cjisCodes.csv"),
+          file.path("..", "..", "common", "data", "cjis_codes.csv"),
           row.names = FALSE,
           quote = c(2L, 4L))

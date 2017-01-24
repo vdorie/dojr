@@ -30,7 +30,7 @@ County-specific issues:
 * Santa Barbara: Data for 1993 through 1997 may be unreliable
 * Ventura: Incomplete data from 1996 through 2001; incomplete data for 2010"
 obts_dirty,Not Shown,obts.Rdata,obts,0,0,,"OBTS, not yet cleaned"
-judicialDistricts,Judicial Districts,judicial_districts.csv,judicialDistricts,0,1,"for (name in c('county_code', 'county', 'type')) judicialDistricts[[name]] <- as.factor(judicialDistricts[[name]]); shortNames <- nchar(levels(judicialDistricts$county_code)) ==1L; levels(judicialDistricts$county_code)[shortNames] <- paste0('0', levels(judicialDistricts$county_code)[shortNames]); rm(shortNames)","Data were pulled from the OBTS manual with the following changes:
+judicialDistricts,Judicial Districts,judicial_districts.csv,judicialDistricts,0,1,"for (name in c('county_code', 'county', 'type')) judicialDistricts[[name]] <- as.factor(judicialDistricts[[name]]); shortNames <- nchar(levels(judicialDistricts$county_code)) == 1L; levels(judicialDistricts$county_code)[shortNames] <- paste0('0', levels(judicialDistricts$county_code)[shortNames]); rm(shortNames)","Data were pulled from the 1982-2014 OBTS Tech Manual with the following changes:
 
 * 6 records that did not conform to the practice of `County Name - Location` were modified by hand:
 
@@ -53,7 +53,9 @@ judicialDistricts,Judicial Districts,judicial_districts.csv,judicialDistricts,0,
 +--------+-------------------------------------------------+------------+------------------------+
 
 * Records for when the word ""County"" was missing were assumed to be at the county level 
-* The record with ""El Dorada"" county was changed to 'El Dorado' county
+* The record with ""El Dorada"" county was changed to ""El Dorado"" county
 * The one instance of ""Superior"" court was changed to a county court
 
 \textcolor{red}{Is ``Colfax/Alta/Dutch Flat'' correct for Placer, as there is already a ``Colfax''?}"
+arrestingAgencies,Arresting Agencies,arresting_agencies.csv,arrestingAgencies,0,1,"for (name in c('agency', 'type')) arrestingAgencies[[name]] <- as.factor(arrestingAgencies[[name]])",Pulled from the 1982-2014 OBTS Tech Manual.
+cjisCodes,CJIS Codes,cjis_codes.csv,cjisCodes,0,1,"for (name in c('statue_code', 'code_type', 'literal', 'toc')) cjisCodes[[name]] <- as.factor(cjisCodes[[name]]); cjisCodes$cjis_code <- as.character(cjisCodes$cjis_code); while (sum(shortNames <- nchar(cjisCodes$cjis_code) < 5L) != 0L) { cjisCodes$cjis_code[shortNames] <- paste0('0', cjisCodes$cjis_code[shortNames]) }; rm(shortNames)",Pulled from the 1982-2014 OBTS Tech Manual.

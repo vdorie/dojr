@@ -1,0 +1,11 @@
+known quantities,sought quantities,attackers,example
+demographics,that arrested,"stalker, blackmailer, background check, employer",minority job interview in small county
+demographics,that prosecuted,"stalker, blackmailer, background check, employer",minority job interview in small county
+demographics,that convicted,"stalker, blackmailer, background check, employer",minority job interview in small county
+"demographics, specific individual arrested","offense codes, disposition","nosy-neighbor, paparazzi, gossips",saw elderly neighbor get arrested
+"partial demographics, offense code",complete quasi-identifiers,"blackmailers, journalists","crime blotter mentions age, gender, and crime but not race"
+"offense code, disposition",demographics,"journalist, blackmailer / fisher",unusual crime committed by minority
+"offense code, arrest circumstances",demographics,"coworkers, gossips",tweet mentions crime by an employee at a business
+"specific individual, offense code",disposition,"journalist, employer",local crime blotter mentions name and crime
+"conviction offense, sentence type, demographics",arrest offense,"blackmailers, journalists",local paper reports on conviction and sentence of a well-known person
+"arrest offense, demographics","whether prosecuted, conviction offense, sentence type","blackmailers, stalker","see known individual on arrest publisher website, try to find out what happened to him"

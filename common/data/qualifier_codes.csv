@@ -1,4 +1,4 @@
-Qualifier,Literal (Short),Code Section,Code Type,Literal (Long)
+qualifier,literal_short,code_section,code_type,literal_long
 AB,ZZZZ,00ATTEMPTED,XX,ATTEMPTED
 AC,ZZZZ,00BENCH WARRANT,XX,BENCH WARRANT
 AF,ZZZZ,00CONTEMPT,XX,CONTEMPT

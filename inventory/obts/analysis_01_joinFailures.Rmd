@@ -95,6 +95,22 @@ rm(numUnmatched, unmatchedByAgency, unmatchedByYear)
 
 ## Offense Codes
 
+```{r echo = FALSE}
+## helper function
+
+## merges together two univariate tables into a dataframe with the first column being
+## the names of the values and the second being the counts
+joinTables <- function(t1, t2, names = NULL) {
+  df <- data.frame(name = union(base::names(t1), base::names(t2)), t1 = 0L, t2 = 0L)
+  df[match(base::names(t1), df$name), "t1"] <- unname(t1)
+  df[match(base::names(t2), df$name), "t2"] <- unname(t2)
+  
+  df <- df[order(df$t1 + df$t2, decreasing = TRUE),]
+  if (!is.null(names)) base::names(df) <- names
+  df
+}
+```
+
 ```{r 'analysis_joinFailures_offenseCodes', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_joinFailures_offenseCodes.txt")
 if (!file.exists(txtFile)) {
@@ -120,29 +136,17 @@ if (!file.exists(txtFile)) {
   unmatchedArrestOffenseTable <- as.data.frame(table(unmatchedArrestOffenses))
   unmatchedCourtDispositionOffenseTable <- as.data.frame(table(unmatchedCourtDispositionOffenses))
   
-  unmatchedOffensesTable <- data.frame(code = union(unmatchedArrestOffenseTable[[1L]], unmatchedCourtDispositionOffenseTable[[1L]]),
-                                       arrest_offense = 0L,
-                                       court_disposition_offense = 0L)
-  unmatchedOffensesTable[match(unmatchedArrestOffenseTable[[1L]], unmatchedOffensesTable[[1L]]), "arrest_offense"] <-
-    unmatchedArrestOffenseTable[[2L]]
-  
-  unmatchedOffensesTable[match(unmatchedCourtDispositionOffenseTable[[1L]], unmatchedOffensesTable[[1L]]), "court_disposition_offense"] <-
-    unmatchedCourtDispositionOffenseTable[[2L]]
-  
+  unmatchedOffensesTable <- joinTables(unmatchedArrestOffenseTable, unmatchedCourtDispositionOffenseTable,
+                                       c("code", "arrest_offense", "court_disposition_offense"))
   unmatchedByOffense <-
     rmdFormat(unmatchedOffensesTable[order(unmatchedOffensesTable[[2L]] + unmatchedOffensesTable[[3L]], decreasing = TRUE),])
   
   unmatchedArrestOffenseTable <- table(obts$court_event_year[unmatchedArrestOffenseRows])
   unmatchedCourtDispositionOffenseTable <- table(obts$court_event_year[unmatchedCourtDispositionOffenseRows])
   
-  unmatchedYearsTable <- data.frame(court_event_year =
-                                      sort(union(names(unmatchedArrestOffenseTable), names(unmatchedCourtDispositionOffenseTable))),
-                                    arrest_offense = 0L,
-                                    court_disposition_offense = 0L)
-  unmatchedYearsTable[match(names(unmatchedArrestOffenseTable), unmatchedYearsTable$court_event_year), "arrest_offense"] <-
-    as.integer(unmatchedArrestOffenseTable)
-  unmatchedYearsTable[match(names(unmatchedCourtDispositionOffenseTable), unmatchedYearsTable$court_event_year), "court_disposition_offense"] <-
-    as.integer(unmatchedCourtDispositionOffenseTable)
+  unmatchedYearsTable <- joinTables(unmatchedArrestOffenseTable, unmatchedCourtDispositionOffenseTable,
+                                    c("court_event_year", "arrest_offense", "court_disposition_offense"))
+  unmatchedYearsTable <- unmatchedYearsTable[order(unmatchedYearsTable$court_event_year),]
   
   unmatchedByYear <- rmdFormat(unmatchedYearsTable[order(unmatchedYearsTable$court_event_year),], maxRows = NA)
   
@@ -159,8 +163,8 @@ if (!file.exists(txtFile)) {
      unmatchedArrestOffenseTable, unmatchedCourtDispositionOffenseTable)
 } else {
   lines <- readLines(txtFile)
-  numUnmatchedArrestOffenses <- lines[1L]
-  numUnmatchedCourtDispositionOffenses <- lines[2L]
+  numUnmatchedArrestOffenses <- as.integer(lines[1L])
+  numUnmatchedCourtDispositionOffenses <- as.integer(lines[2L])
   unmatchedByOffense <- lines[seq.int(3L, 55L)]
   unmatchedByYear <- tail(lines, -55L)
   rm(lines)
@@ -180,4 +184,98 @@ A total of `r numUnmatchedArrestOffenses` rows have arrest offense codes that ca
 
 ```{r, echo = FALSE}
 rm(numUnmatchedArrestOffenses, numUnmatchedCourtDispositionOffenses, unmatchedByOffense, unmatchedByYear)
+```
+
+## Qualifier Codes
+
+```{r 'analysis_joinFailures_qualifierCodes', echo = FALSE, results = "asis"}
+txtFile <- file.path("..", txtPath, "analysis_joinFailures_qualifierCodes.txt")
+if (!file.exists(txtFile)) {
+  loadData("qualifierCodes", "..")
+  loadData(mainTable, "..")
+  
+  arrestQualifierIndices <- t(sapply(as.character(obts$arrest_qualifier), function(qualifier) {
+    qualifiers <- substring(qualifier, seq.int(1L, 13L, 2L), seq.int(2L, 14L, 2L))
+    indices <- match(qualifiers, qualifierCodes$qualifier)
+    unmatchedRows <- is.na(indices) & qualifiers != "  "
+    if (any(unmatchedRows)) indices[unmatchedRows] <- 0L
+    indices
+  }))
+  
+  unmatchedArrestQualifierRows <- apply(arrestQualifierIndices, 1L, function(row) any(row == 0L, na.rm = TRUE))
+  
+  unmatchedArrestQualifiers <- lapply(which(unmatchedArrestQualifierRows), function(i) {
+    qualifierIndices <- arrestQualifierIndices[i,] == 0L & !is.na(arrestQualifierIndices[i,])
+    startIndices <- seq.int(1L, 13L, 2L)[qualifierIndices]
+    endIndices   <- seq.int(2L, 14L, 2L)[qualifierIndices]
+    substring(obts$arrest_qualifier[i], startIndices, endIndices)
+  })
+  
+  unmatchedArrestQualifiersTable <- table(unlist(unmatchedArrestQualifiers))
+  
+  
+  courtQualifierIndices <- t(sapply(as.character(obts$court_qualifier), function(qualifier) {
+    qualifiers <- substring(qualifier, seq.int(1L, 13L, 2L), seq.int(2L, 14L, 2L))
+    indices <- match(qualifiers, qualifierCodes$qualifier)
+    unmatchedRows <- is.na(indices) & qualifiers != "  "
+    if (any(unmatchedRows)) indices[unmatchedRows] <- 0L
+    indices
+  }))
+  
+  unmatchedCourtQualifierRows <- apply(courtQualifierIndices, 1L, function(row) any(row == 0L, na.rm = TRUE))
+  
+  unmatchedCourtQualifiers <- lapply(which(unmatchedCourtQualifierRows), function(i) {
+    qualifierIndices <- courtQualifierIndices[i,] == 0L & !is.na(courtQualifierIndices[i,])
+    startIndices <- seq.int(1L, 13L, 2L)[qualifierIndices]
+    endIndices   <- seq.int(2L, 14L, 2L)[qualifierIndices]
+    substring(obts$court_qualifier[i], startIndices, endIndices)
+  })
+  
+  unmatchedCourtQualifiersTable <- table(unlist(unmatchedCourtQualifiers))
+  
+  unmatchedByQualifierTable <- joinTables(unmatchedArrestQualifiersTable, unmatchedCourtQualifiersTable,
+                                          c("code", "arrest_qualifier", "court_qualifier"))
+  
+  unmatchedByYearTable <- joinTables(table(obts$court_event_year[unmatchedArrestQualifierRows]),
+                                     table(obts$court_event_year[unmatchedCourtQualifierRows]),
+                                     c("court_event_year", "arrest_qualifier", "court_qualifier"))
+  unmatchedByYearTable <- unmatchedByYearTable[order(unmatchedByYearTable$court_event_year),]
+  
+  numUnmatchedArrestQualifiers <- sum(unmatchedArrestQualifierRows)
+  numUnmatchedCourtQualifiers  <- sum(unmatchedCourtQualifierRows)
+  unmatchedByQualifier <- rmdFormat(unmatchedByQualifierTable)
+  unmatchedByYear      <- rmdFormat(unmatchedByYearTable, maxRows = NA)
+  
+  writeLines(c(as.character(numUnmatchedArrestQualifiers),
+               as.character(numUnmatchedCourtQualifiers),
+               unmatchedByQualifier,
+               unmatchedByYear),
+             txtFile)
+  
+  rm(arrestQualifierIndices, unmatchedArrestQualifierRows, unmatchedArrestQualifiers, unmatchedArrestQualifiersTable,
+     courtQualifierIndices, unmatchedCourtQualifierRows, unmatchedCourtQualifiers, unmatchedCourtQualifiersTable,
+     unmatchedByQualifierTable, unmatchedByYearTable)
+} else {
+  lines <- readLines(txtFile)
+  numUnmatchedArrestQualifiers <- as.integer(lines[1L])
+  numUnmatchedCourtQualifiers <- as.integer(lines[2L])
+  unmatchedByQualifier <- lines[seq.int(3L, 55L)]
+  unmatchedByYear <- tail(lines, -55L)
+  rm(lines)
+}
+rm(txtFile)
+```
+
+A total of `r numUnmatchedArrestQualifiers` rows have arrest qualifier codes that cannot be matched, while `r numUnmatchedCourtQualifiers` rows have court disposition offense codes that cannot be matched. Because rows can have multiple qualifier codes, the following tables do not necessarily add up to these numbers.
+
+#### Unmatched by Offense Code Tabulation
+
+`r paste0(unmatchedByQualifier, collapse = "\n")`
+
+#### Unmatched by Court Event Year Tabulation
+
+`r paste0(unmatchedByYear, collapse = "\n")`
+
+```{r, echo = FALSE}
+rm(joinTables)
 ```

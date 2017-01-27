@@ -1,25 +1,30 @@
 # Disposition Types
 
-There are two disposition fields in the OBTS, one corresponding to the arrest segment and one corresponding to the court segment. In general, when an arrest disposition is present that implies that the subject was released and no court disposition should be present. Conversely, if a court disposition is present, the subject was _not_ released and thus should have no arrest disposition. In fact, whenever one is missing the other is present, however some records have _both_.
-
 ```{r 'analysis_dispositionTypes', echo = FALSE}
 txtFile <- file.path("..", txtPath, "analysis_dispositionTypes.txt")
 if (!file.exists(txtFile)) {
-  dispositionTable <- table(obts[, c("arrest_disposition_type", "court_disposition_type")], useNA = "ifany")
+  numWithBoth <- with(obts, sum(!is.na(arrest_disposition_type) & !is.na(court_disposition_type)))
+  
+  dispositionTable <- table(obts[,c("arrest_disposition_type", "court_disposition_type")], useNA = "ifany")
   rownames(dispositionTable) <- truncateString(rownames(dispositionTable), 13L)
   colnames(dispositionTable) <- truncateString(colnames(dispositionTable), 6L)
   names(dimnames(dispositionTable)) <- c("arrest_disp", "court_disp")
   
   dispositionTable <- rmdFormat(dispositionTable)
-  writeLines(dispositionTable, txtFile)
+  writeLines(c(as.character(numWithBoth), dispositionTable), txtFile)
 } else {
-  dispositionTable <- readLines(txtFile)
+  lines <- readLines(txtFile)
+  numWithBoth <- as.integer(lines[1L])
+  dispositionTable <- lines[-1L]
+  rm(lines)
 }
 rm(txtFile)
 ```
 
+There are two disposition fields in the OBTS, one corresponding to the arrest segment and one corresponding to the court segment. In general, when an arrest disposition is present that implies that the subject was released and no court disposition should be present. Conversely, if a court disposition is present, the subject was _not_ released and thus should have no arrest disposition. In fact, whenever one is missing the other is present, however `r numWithBoth` records have _both_.
+
 `r paste0(dispositionTable, collapse = "\n")`
 
 ```{r echo = FALSE}
-rm(dispositionTable)
+rm(numWithBoth, dispositionTable)
 ```

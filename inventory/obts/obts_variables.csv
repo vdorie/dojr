@@ -10,7 +10,7 @@ processing the form.",,
 pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
-* 09 - delete CII",\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10% - that implies only 10% of people arrested for a felony have a prior felony arrest???}
+* 09 - delete CII",\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}
 name,name,,Individual's name.,1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
 birth_year,birth year,,Individual's birth year.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,
 birth_month,birth month,,Individual's birth month.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.,,

@@ -205,20 +205,23 @@ rmdFormat.matrix <- function(x, colWidths = NULL, ...)
     cat("-+\n")
   }
   
-  
   stringResult <- NULL
   stringConnection <- textConnection("stringResult", "w", local = TRUE)
   sink(stringConnection)
   
   x.char  <- sapply(seq_len(ncol(x)), function(col) format(x[,col], ...))
   if (!is.matrix(x.char)) x.char <- t(as.matrix(x.char))
-  maxLengths <- sapply(seq_len(ncol(x)), function(col) max(nchar(x.char[1L, col]), nchar(colnames(x))[col]))
+  
   colnames(x.char) <- colnames(x)
+  if (anyNA(colnames(x.char))) colnames(x.char)[is.na(colnames(x.char))] <- "NA"
+  
+  maxLengths <- sapply(seq_len(ncol(x)), function(col) max(nchar(x.char[1L, col]), nchar(colnames(x.char))[col]))
   rownames(x.char) <- NULL
   
   if (!is.null(rownames(x))) {
     x.char <- cbind(rownames(x), x.char)
-    maxLengths <- c(max(nchar(rownames(x))), maxLengths)
+    if (anyNA(x.char[,1L])) x.char[is.na(x.char[,1L]),1L] <- "NA"
+    maxLengths <- c(max(nchar(x.char[,1L])), maxLengths)
   }
   
   hasExtraHeaders <- if (!is.null(dimnames(x))) any(!is.null(names(dimnames(x)))) else FALSE

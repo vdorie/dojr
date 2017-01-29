@@ -75,13 +75,18 @@ discrete.histogram <- function(x, gap = 0.5, xlab = xname, ylab = "Freq",
 
 getGridDim <- function(widthToHeight, n) {
   rows <- sqrt(n / widthToHeight)
-  cols <- widthToHeight * rows
+  cols <- rows * widthToHeight
   
   result <- matrix(c(
     floor(rows), floor(cols),
     floor(rows), ceiling(cols),
     ceiling(rows), floor(cols),
     ceiling(rows), ceiling(cols)), 2L)
+  if (rows > cols) {
+    temp <- result[,2L]
+    result[,2L] <- result[,3L]
+    result[,3L] <- temp
+  }
   
   sizes <- apply(result, 2L, prod)
   validResults <- which(sizes >= n)

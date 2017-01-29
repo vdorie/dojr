@@ -1,8 +1,8 @@
-# Table Joins
+## Table Joins
 
 Some entries in the OBTS do not have matching values in the related tables, specifically the judicial districts, arresting agencies, and CJIS codes.
 
-## Judicial Districts
+### Judicial Districts
 
 ```{r 'analysis_joinFailures_judicialDistricts', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_joinFailures_judicialDistricts.txt")
@@ -48,7 +48,7 @@ A total of `r numUnmatched` rows have listed judicial districts that cannot be m
 rm(numUnmatched, unmatchedByJurisdiction, unmatchedByYear)
 ```
 
-## Arresting Agencies
+### Arresting Agencies
 
 ```{r 'analysis_joinFailures_arrestingAgencies', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_joinFailures_arrestingAgencies.txt")
@@ -93,7 +93,7 @@ A total of `r numUnmatched` rows have listed arresting agencies that cannot be m
 rm(numUnmatched, unmatchedByAgency, unmatchedByYear)
 ```
 
-## Offense Codes
+### Offense Codes
 
 ```{r echo = FALSE}
 ## helper function
@@ -186,7 +186,7 @@ A total of `r numUnmatchedArrestOffenses` rows have arrest offense codes that ca
 rm(numUnmatchedArrestOffenses, numUnmatchedCourtDispositionOffenses, unmatchedByOffense, unmatchedByYear)
 ```
 
-## Qualifier Codes
+### Qualifier Codes
 
 ```{r 'analysis_joinFailures_qualifierCodes', echo = FALSE, results = "asis"}
 txtFile <- file.path("..", txtPath, "analysis_joinFailures_qualifierCodes.txt")

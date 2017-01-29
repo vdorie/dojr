@@ -1,0 +1,131 @@
+## Qualifier Codes Over Time
+
+```{r 'analysis_qualifierCodes', echo = FALSE}
+imgFiles <- file.path("..", imgPath, c("analysis_qualifierCodes_arrestQualifiers.pdf",
+                                       "analysis_qualifierCodes_courtQualifiers.pdf"))
+if (any(!file.exists(imgFiles))) {
+  addTables <- function(t1, t2) {
+    names <- sort(union(names(t1), names(t2)))
+    counts <- integer(length(names))
+    base::names(counts) <- names; rm(names)
+    
+    counts[match(names(t1), names(counts))] <- unname(t1)
+    counts[match(names(t2), names(counts))] <- counts[match(names(t2), names(counts))] + unname(t2)
+    
+    structure(counts, dim = length(counts), dimnames = list(names(counts)), class = "table")
+  }
+
+  loadData("qualifierCodes", "..")
+  loadData(mainTable, "..")
+  years <- sort(unique(obts$court_event_year))
+  
+  ## arrest qualifiers
+  usageByYear <- lapply(years, function(year) {
+    yearRows <- obts$court_event_year == year
+    codeTable <- table(substring(obts$arrest_qualifier[yearRows], 1L, 2L))
+    for (i in seq.int(2L, 7L)) {
+      codeTable <- addTables(codeTable, table(substring(obts$arrest_qualifier[yearRows], 2L * i - 1L, 2L * i)))
+    }
+    codeTable
+  })
+  
+  allCodes <- names(usageByYear[[1L]])
+  for (i in seq.int(2L, length(years))) allCodes <- union(allCodes, names(usageByYear[[i]]))
+  
+  codeTable <- matrix(0L, length(allCodes), length(years), dimnames = list(allCodes, NULL))
+  for (i in seq_along(years))
+    codeTable[match(names(usageByYear[[i]]), allCodes),i] <- usageByYear[[i]]
+  rm(usageByYear, allCodes)
+  
+  codeTable <- codeTable[rownames(codeTable) != "  ",]
+  codeTable <- codeTable[order(rowSums(codeTable), decreasing = TRUE),]
+  
+  
+  totalCounts <- sort(rowSums(codeTable))
+  countOrder <- order(rowSums(codeTable))
+  
+  cutoffs <- c(100000L, 10000L, 1000L, 100L, 10L, 1L)
+  indexSets <- list()
+  indexSets[[1L]] <- countOrder[unname(totalCounts > cutoffs[1L])]
+  for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- countOrder[unname(totalCounts <= cutoffs[i - 1L] & totalCounts > cutoffs[i])]
+  rm(cutoffs, totalCounts, countOrder)
+  
+  pdf(imgFiles[1L], 4.5, 4.5)
+  par(mfrow = getGridDim(8.5 / 11, length(indexSets)), mar = c(2.2, 2.2, 0.1, 2.0))
+  
+  for (i in seq_along(indexSets)) {
+    indices <- indexSets[[i]]
+    plot(NULL, type = "n", xlim = range(years), ylim = c(0, max(codeTable[indices,])),
+         xlab = "year", ylab = "count", xaxs = "i")
+    plotColors <- rep_len(seq_len(8L), length(indices))
+    plotLineTypes <- rep.int(seq_len(8L), length(indices) %/% 8L + if (length(indices) %% 8L != 0L) 1L else 0L)[seq_len(length(indices))]
+    for (j in seq_along(indices)) 
+      lines(years, codeTable[indices[j],], col = plotColors[j], lty = plotLineTypes[j])
+    mtext(rownames(codeTable)[indices], side = 4, line = 0.5, at = codeTable[indices,length(years)],
+          cex = 0.6, las = 2, col = plotColors)
+  }
+  dev.off()
+  rm(plotLineTypes, plotColors, indices, indexSets, codeTable)
+  
+  ## court qualifiers
+  usageByYear <- lapply(years, function(year) {
+    yearRows <- obts$court_event_year == year
+    codeTable <- table(substring(obts$court_qualifier[yearRows], 1L, 2L))
+    for (i in seq.int(2L, 7L)) {
+      codeTable <- addTables(codeTable, table(substring(obts$court_qualifier[yearRows], 2L * i - 1L, 2L * i)))
+    }
+    codeTable
+  })
+  
+  allCodes <- names(usageByYear[[1L]])
+  for (i in seq.int(2L, length(years))) allCodes <- union(allCodes, names(usageByYear[[i]]))
+  
+  codeTable <- matrix(0L, length(allCodes), length(years), dimnames = list(allCodes, NULL))
+  for (i in seq_along(years))
+    codeTable[match(names(usageByYear[[i]]), allCodes),i] <- usageByYear[[i]]
+  rm(usageByYear, allCodes)
+  
+  codeTable <- codeTable[rownames(codeTable) != "  ",]
+  codeTable <- codeTable[order(rowSums(codeTable), decreasing = TRUE),]
+  
+  
+  totalCounts <- sort(rowSums(codeTable))
+  countOrder <- order(rowSums(codeTable))
+  
+  cutoffs <- c(39000L, 10000L, 1000L, 100L, 10L, 1L)
+  indexSets <- list()
+  indexSets[[1L]] <- countOrder[unname(totalCounts > cutoffs[1L])]
+  for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- countOrder[unname(totalCounts <= cutoffs[i - 1L] & totalCounts > cutoffs[i])]
+  rm(cutoffs, totalCounts, countOrder)
+  
+  pdf(imgFiles[2L], 4.5, 4.5)
+  par(mfrow = getGridDim(8.5 / 11, length(indexSets)), mar = c(2.2, 2.2, 0.1, 2.0))
+  
+  for (i in seq_along(indexSets)) {
+    indices <- indexSets[[i]]
+    plot(NULL, type = "n", xlim = range(years), ylim = c(0, max(codeTable[indices,])),
+         xlab = "year", ylab = "count", xaxs = "i")
+    plotColors <- rep_len(seq_len(8L), length(indices))
+    plotLineTypes <- rep.int(seq_len(8L), length(indices) %/% 8L + if (length(indices) %% 8L != 0L) 1L else 0L)[seq_len(length(indices))]
+    for (j in seq_along(indices)) 
+      lines(years, codeTable[indices[j],], col = plotColors[j], lty = plotLineTypes[j])
+    mtext(rownames(codeTable)[indices], side = 4, line = 0.5, at = codeTable[indices,length(years)],
+          cex = 0.6, las = 2, col = plotColors)
+  }
+  dev.off()
+  rm(plotLineTypes, plotColors, indices, indexSets, codeTable)
+  
+  rm(i, j, years, addTables)
+}
+rm(imgFiles)
+```
+
+This section shows the usage of qualifier codes over time. The vast majority of codes are used $< 10$ times overall, while a few have usages in the thousands.
+
+#### Arrest Qualifiers
+
+`r rmdImageInline(file.path(imgPath, "analysis_qualifierCodes_arrestQualifiers.pdf"))`
+
+#### Court Qualifiers
+
+`r rmdImageInline(file.path(imgPath, "analysis_qualifierCodes_courtQualifiers.pdf"))`

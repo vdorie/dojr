@@ -120,6 +120,8 @@ rm(i, pageBreak, firstVariable, variable, variableSummary)
 ```{r 'analysis_include', echo = FALSE, results = 'asis'}
 analysisFiles <- list.files(datasetDir, "analysis_")
 if (length(analysisFiles) > 0L) {
+  cat("# Analyses\n\n")
+  
   analysisDir <- file.path(normalizePath(getwd()), datasetDir)
   
   for (i in seq_along(analysisFiles)) {

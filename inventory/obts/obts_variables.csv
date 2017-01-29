@@ -66,7 +66,7 @@ court_record_id,final court id,court of final disposition,Court of final disposi
 * 21 - final disposition in lower court",
 court_bypass,court bypass,,Internal processing code.,0,0,,,
 court_converted_data,court converted data,,Internal processing code.,0,0,,,
-court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,
+court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
 court_event_month,court event month,,Last date of court proceedings.,0,0,,,
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,
 court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,

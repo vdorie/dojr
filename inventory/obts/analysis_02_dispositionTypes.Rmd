@@ -1,8 +1,10 @@
-# Disposition Types
+## Arrest and Court Disposition Types
 
 ```{r 'analysis_dispositionTypes', echo = FALSE}
 txtFile <- file.path("..", txtPath, "analysis_dispositionTypes.txt")
 if (!file.exists(txtFile)) {
+  loadData(mainTable, "..")
+  
   numWithBoth <- with(obts, sum(!is.na(arrest_disposition_type) & !is.na(court_disposition_type)))
   
   dispositionTable <- table(obts[,c("arrest_disposition_type", "court_disposition_type")], useNA = "ifany")

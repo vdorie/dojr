@@ -25,7 +25,7 @@
 "arrest_disposition_day","dod_dy",83,2,89,2,"smallint"
 "arrest_disposition_type","arr_tod",85,2,91,2,"'01' = lea_rel_complaintant_refuses; '02' = lea_rel_arrestee_exonerated; '03' = lea_rel_further_investigation; '04' = lea_rel_insuff_admiss_evidence; '05' = lea_rel_insuff_ascert_evidence; '06' = lea_rel_other; '07' = lea_rel_unspecified; '10' = da_dec_lack_of_corpus; '11' = da_dec_lack_of_probcaus; '12' = da_dec_inadmissable_search; '13' = da_dec_complaintant_refuses; '14' = da_dec_witness_unavailable; '15' = da_dec_interest_of_justice; '16' = da_dec_other; '17' = da_dec_deferred_recovation_of_parole; '18' = da_dec_prosecution_prefiling_deferred; '19' = da_dec_probation_revoked_1203_2pc; '20' = da_dec_combined_cases"
 "arrest_multiple_dispositions","mad",87,1,93,1,"smallint"
-"prior_record_code","prc",88,1,94,1,"'0' = no_prior_record; '1' = misc_prior_record; '7' = one_prior_commitment; '8' = two_prior_commitments; '9' = three_or_more_prior_commitments; ' ' = length_record"
+"prior_record_code","prc",88,1,94,1,"'0' = no_prior_record; '1' = misc_prior_record; '7' = one_prior_commitment; '8' = two_prior_commitments; '9' = three_or_more_prior_commitments; ' ' = lengthy_record"
 "arrest_offense","arr_off",89,5,95,5,"character(5)"
 "arrest_qualifier","arr_qua",94,14,100,14,"character(14)"
 "arrest_summary_code","sum",108,2,114,2,"smallint"

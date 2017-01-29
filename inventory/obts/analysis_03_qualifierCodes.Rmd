@@ -119,7 +119,7 @@ if (any(!file.exists(imgFiles)) || !file.exists(txtFile)) {
   
   rm(i, j, years, addTables)
   
-  pdf(imgFiles[3L], 4.5, 4.5)
+  pdf(imgFiles[3L], 4.5, 3)
   par(mfrow = c(1L, 2L))
   hist(rowSums(arrestCodeTable), breaks = 20, main = "Histogram Arrest QC Count",
        xlab = "total count", freq = TRUE)
@@ -143,7 +143,7 @@ if (any(!file.exists(imgFiles)) || !file.exists(txtFile)) {
   topCodesTable$type <- qualifierCodes$code_type[qualifierCodeRows]
   topCodesTable$literal <- qualifierCodes$literal_long[qualifierCodeRows]
   
-  topCodesTable <- rmdFormat(topCodesTable)
+  topCodesTable <- rmdFormat(topCodesTable, maxRows = NA)
   
   writeLines(topCodesTable,
              txtFile)

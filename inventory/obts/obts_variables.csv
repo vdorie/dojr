@@ -1,84 +1,84 @@
-name	display_name	short_description	description	contains_pii	skip	question_text	value_labels	notes
-id	database_id			0	1			
-cii_record_type	CII record type	digital and/or fingerprint-based records	whether the individual in the record has other records that are digitized and whether those records can be linked using fingerprints	0	0		"* 1 - automated
+name,display_name,short_description,description,contains_pii,skip,question_text,value_labels,notes
+id,database_id,,,0,1,,,
+cii_record_type,CII record type,digital and/or fingerprint-based records,whether the individual in the record has other records that are digitized and whether those records can be linked using fingerprints,0,0,,"* 1 - automated
 * 2- manual
 * 3 - OBN (no CII record on file)
-* 4 - Hybrid (began 1993)"	 automated: fully digitized record; manual: paper records only; hybrid: mix of paper and digitized records; OBN: records that are not linked via fingerprints
-cii_number	CII number	Criminal Identification and Information number	Statewide unique identification number for an individual.	1	0	"Enter the unique state identification number, referred to as the ``CII#'', assigned to the subject’s criminal
+* 4 - Hybrid (began 1993)", automated: fully digitized record; manual: paper records only; hybrid: mix of paper and digitized records; OBN: records that are not linked via fingerprints
+cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the ``CII#'', assigned to the subject's criminal
 history record. If no CII number is available or known to the agency, leave the area blank and continue
-processing the form."		
-pdr_id	PDR ID	Personal Descriptor Record ID	The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]}	0	0		"* 00 - new offender (no arrest before 8/23/82)
+processing the form.",,
+pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
-* 09 - delete CII"	\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}
-name	name		Individual's name.	1	0	"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required."		
-birth_year	birth year		Individual's birth year.	0	0	Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.		
-birth_month	birth month		Individual's birth month.	0	0	Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.		
-birth_day	birth day		Individual's birth day.	0	0	Enter the month/day/year (MM/DD/YYYY) of the subject’s birth.		
-gender	gender		Individual's sex/gender.	0	0	Enter the appropriate sex code abbreviation for the subject.	"* M = Male
+* 09 - delete CII",\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}
+name,name,,Individual's name.,1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
+birth_year,birth year,,Individual's birth year.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
+birth_month,birth month,,Individual's birth month.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
+birth_day,birth day,,Individual's birth day.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
+gender,gender,,Individual's sex/gender.,0,0,Enter the appropriate sex code abbreviation for the subject.,"* M = Male
 * F = Female
-* X = Unknown"	
-race	race or ethnicity		Individual's race/ethnicity.	0	0	Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.	see race_or_ethnicity.csv	"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
-deceased	deceased	whether individual is deceased	"Whether individual is deceased, alive, or unknown."	0	0		"* 0 - not deceased or no information
+* X = Unknown",
+race,race or ethnicity,,Individual's race/ethnicity.,0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,see race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
+deceased,deceased,whether individual is deceased,"Whether individual is deceased, alive, or unknown.",0,0,,"* 0 - not deceased or no information
 * 1 - deceased
-* 2 - deceased (homicide)"	
-arrest_record_id	last reported step	last reported step in crim justice process	where final disposition received or last reported step in criminal justice process.	0	0		"* 10 - court disposition
+* 2 - deceased (homicide)",
+arrest_record_id,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
 * 11 - prosecutor
-* 12 - police"	
-arrest_bypass	arrest bypass		Internal processing code.	0	0			
-arrest_converted_data	arrest converted data	converted from old format	Internal processing code.	0	0			
-arrest_event_year	arrest event year		Arrest year.	0	0	"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation."		
-arrest_event_month	arrest_event month		Arrest month.	0	0	"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation."		
-arrest_event_day	arrest event day		Arrest day.	0	0	"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject’s arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation."		
-arresting_agency	arresting agency	arresting or booking agency	Arresting or booking agency.	0	0	"Enter the complete name of the agency that arrested, cited, or requested a complaint be filed against the subject. Abbreviates for Type of Agency are acceptable; however, the county or city name should be spelled out followed by SO, PD, etc. "	"* PD Police Department
-* SO Sheriff’s Office (Department)
+* 12 - police",
+arrest_bypass,arrest bypass,,Internal processing code.,0,0,,,
+arrest_converted_data,arrest converted data,converted from old format,Internal processing code.,0,0,,,
+arrest_event_year,arrest event year,,Arrest year.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
+arrest_event_month,arrest_event month,,Arrest month.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
+arrest_event_day,arrest event day,,Arrest day.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
+arresting_agency,arresting agency,arresting or booking agency,Arresting or booking agency.,0,0,"Enter the complete name of the agency that arrested, cited, or requested a complaint be filed against the subject. Abbreviates for Type of Agency are acceptable; however, the county or city name should be spelled out followed by SO, PD, etc. ","* PD Police Department
+* SO Sheriff's Office (Department)
 * CHP California Highway Patrol
 * MR Marshal
 * INS United States Immigration and Naturalization Service
 * FBI Federal Bureau of Investigation
 * DA District Attorney
 * CA City Attorney
-* NTF Narcotic Task Force"	may actually be booking and not arresting agency
-local_file_number	local file number		Sealed.	1	0			
-arrest_charge_type	arrest offense level		Arrest offense level.	0	0		"* F - felony
+* NTF Narcotic Task Force",may actually be booking and not arresting agency
+local_file_number,local file number,,Sealed.,1,0,,,
+arrest_charge_type,arrest offense level,,Arrest offense level.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
-* X - unknown"	
-multiple_arrest_charges	number arrest charges		Number of arrest charges.	0	0		1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one	
-arrest_disposition_year	arrest disposition year	date of arresting officer disposition	Date of final disposition decided by arresting officer.	0	0			
-arrest_disposition_month	arrest disposition month		Date of final disposition decided by arresting officer.	0	0			
-arrest_disposition_day	arrest disposition day		Date of final disposition decided by arresting officer.	0	0			
-arrest_disposition_type	release or decline to prosecute rationale		Release or decline to prosecute rationale.	0	0		see dispositions.csv table	prosecutor rejects is only the final disposition if the Court Record ID is blank
-arrest_multiple_dispositions	number of arrest dispositions		Number of arrest dispositions.	0	0		"* 0 - subject did not receive all final dispositions at arrest level
+* X - unknown",
+multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one,
+arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
+arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
+arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,prosecutor rejects is only the final disposition if the Court Record ID is blank
+arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
-* pre-1986 coding: 1 - one offense and 2 - more than one"	
-prior_record_code	prior prison commitments		Number of prior prison commitments.	0	0		"* 0 - no prior record
+* pre-1986 coding: 1 - one offense and 2 - more than one",
+prior_record_code,prior prison commitments,,Number of prior prison commitments.,0,0,,"* 0 - no prior record
 * 1 - misc prior record
 * 7 - one prior prison commitment
 * 8 - two prior prison commitments
 * 9 - three or more prior prison commitments
-* blank - pre-1982 means lengthy record"	
-arrest_offense	arrest offense		Offense for which individual was arrested.	0	0		see cjis_codeTable.csv	
-arrest_qualifier	arrest offense qualifier		Arrest offense qualifier.	0	0		see qualifier_codes.csv	
-arrest_summary_code	arrest offense summary code	BCS summary code for arrest offense	BCS summary code for arrest offense.	0	0		see bcs_offense_codes_variables.csv	
-arrest_edit_error_code	arrest edit error code		Internal processing code.	0	0			
-court_record_id	final court id	court of final disposition	Court of final disposition.	0	0		"* 20 - final disposition in superior court
-* 21 - final disposition in lower court"	
-court_bypass	court bypass		Internal processing code.	0	0			
-court_converted_data	court converted data		Internal processing code.	0	0			
-court_event_year	court event year	last date of court proceedings	Last date of court proceedings.	0	0			"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
-court_event_month	court event month		Last date of court proceedings.	0	0			"\textcolor{red}{does ""court event"" refer to beginning of trial or conclusion of trial?}"
-court_event_day	court event day		Last date of court proceedings.	0	0			
-court_judicial_district	court judicial district		Court judicial district.	0	0		see judicial_districts.csv	
-court_number	court number		Sealed.	1	0			
-court_disposition_type	court disposition type	outcome of court trial	Outcome of court trial.	0	0		"* 21 - convicted
+* blank - pre-1982 means lengthy record",
+arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,see cjis_codeTable.csv,
+arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,see qualifier_codes.csv,
+arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
+arrest_edit_error_code,arrest edit error code,,Internal processing code.,0,0,,,
+court_record_id,final court id,court of final disposition,Court of final disposition.,0,0,,"* 20 - final disposition in superior court
+* 21 - final disposition in lower court",
+court_bypass,court bypass,,Internal processing code.,0,0,,,
+court_converted_data,court converted data,,Internal processing code.,0,0,,,
+court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
+court_event_month,court event month,,Last date of court proceedings.,0,0,,,"\textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?}}"
+court_event_day,court event day,,Last date of court proceedings.,0,0,,,
+court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,
+court_number,court number,,Sealed.,1,0,,,
+court_disposition_type,court disposition type,outcome of court trial,Outcome of court trial.,0,0,,"* 21 - convicted
 * 22 - acquitted
 * 23 - not guilty, insane
 * 24 - certified to juvenile court
 * 25 - defendant deceased
 * 26 - dismissed
-* 27 - diversion dismissed (begins 1988)"	
-court_multiple_dispositions	number of court dispositions		Number of court dispositions.	0	0		"Pre 1986: 
+* 27 - diversion dismissed (begins 1988)",
+court_multiple_dispositions,number of court dispositions,,Number of court dispositions.,0,0,,"Pre 1986: 
 
 * 1 - one disposition
 * 2 - more than one
@@ -87,10 +87,10 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ dispositions"	
-court_proceeding_type	court proceeding type		Court proceeding type.	0	0			
-sentence_type	sentence type	\textcolor{red}{[HOW QUESTIONABLE IS SENTENCE TYPE?]}	Court sentence type.	0	0			
-sentence	sentence		Court sentence.	0	0		"* 01 - death
+* 9 - 9+ dispositions",
+court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,
+sentence_type,sentence type,\textcolor{red}{[EG: HOW QUESTIONABLE IS SENTENCE TYPE?]},Court sentence type.,0,0,,,
+sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA
 * 04 - CRC
@@ -100,13 +100,13 @@ sentence	sentence		Court sentence.	0	0		"* 01 - death
 * 08 - probation
 * 09 - fine
 * 10 - other: sentence suspended; work program; volunteer program; no sentence
-* 11 - prison term suspended (post 1984)"	
-court_charge_type	conviction offense level	offense level of conviction crime	Offense level of conviction crime.	0	0		"* F - felony
+* 11 - prison term suspended (post 1984)",
+court_charge_type,conviction offense level,offense level of conviction crime,Offense level of conviction crime.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
 * N - place holder codes
-* X - unknown level of arrest"	
-court_multiple_disposition_charges	number of disposition charges		Number of disposition charges.	0	0		"Pre 1986: 
+* X - unknown level of arrest",
+court_multiple_disposition_charges,number of disposition charges,,Number of disposition charges.,0,0,,"Pre 1986: 
 
 * 1 - one offense
 * 2 - more than one
@@ -115,8 +115,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ offenses"	"\textcolor{red}{EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions? Ask Alyson?}"
-court_disposition_offense	conviction offense		Conviction offense.	0	0		see cjis_codeTable.csv	
-court_qualifier	conviction offense qualifiers		Conviction offense qualifiers.	0	0		see qualifier_codes.csv	
-court_summary_code	conviction offense summary code		Conviction offense summary code.	0	0		see bcs_offense_codes_variables.csv	
-court_edit_error_code	court edit error code		Internal processing code.	0	0			
+* 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions? Ask Alyson?]}"
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,
+court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,
+court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

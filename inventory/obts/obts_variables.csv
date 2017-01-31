@@ -104,7 +104,7 @@ conviction_offense_level,conviction offense level,offense level of conviction cr
 * M - misdemeanor
 * I - infraction
 * N - place holder codes
-* X - unknown level of arrest",among cases with a value of ""placeholder"" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied. 
+* X - unknown level of arrest",among cases with a value of ""placeholder"" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied.
 court_multiple_disposition_charges,number of disposition charges,,Number of disposition charges.,0,0,,"Pre 1986: 
 
 * 1 - one offense

@@ -43,7 +43,6 @@ arrest_charge_type,arrest offense level,,Arrest offense level.,0,0,,"* F - felon
 * M - misdemeanor
 * I - infraction
 * X - unknown",
-multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,"1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one","NA values appear to be true missings (distributed over various offenses and sentences) and only apply to arrests made in 1981 and 1982 or court cases in 1982"
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,

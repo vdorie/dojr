@@ -6,10 +6,10 @@ cii_record_type,CII record type,digital and/or fingerprint-based records,whether
 * 4 - Hybrid (began 1993)", automated: fully digitized record; manual: paper records only; hybrid: mix of paper and digitized records; OBN: records that are not linked via fingerprints
 cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the CII#, assigned to the subject's criminal
 history record. If no CII number is available or known to the agency, leave the area blank and continue processing the form.",,
-pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
+pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system "\textcolor{red}{[CORRECT?]}",0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
-* 09 - delete CII",\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}
+* 09 - delete CII","\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}"
 name,name,,"Individual's name.",1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
 birth_year,birth year,,"Individual's birth year.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,
 birth_month,birth month,,"Individual's birth month.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,
@@ -86,9 +86,9 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ dispositions",all NAs are from court events taking place in 1982 and those records still have a sentence type (approx. 41K records)
-court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,\textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}
-sentence_type,sentence type,,Court sentence type.,0,0,,,\textcolor{red}{although the OBTS tech manual says that this field is very unreliable but much of the missing data here comes from cases that were dismissed or diversion_dismissed. Is this field unreliable for other reasons? Does filing as 17b4_PC mean that a case is a retroactive effort to lower a felony conviction to a misdemeanor?} 
+* 9 - 9+ dispositions",all NAs are from court events taking place in 1982 and those records still have a sentence type (approximately 41K records)
+court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"\textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}"
+sentence_type,sentence type,,Court sentence type.,0,0,,,"\textcolor{red}{although the OBTS tech manual says that this field is very unreliable but much of the missing data here comes from cases that were dismissed or diversion_dismissed. Is this field unreliable for other reasons? Does filing as 17b4_PC mean that a case is a retroactive effort to lower a felony conviction to a misdemeanor?}"
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA
@@ -117,5 +117,5 @@ post 1985:
 * 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
 court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"\textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
 court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"\textcolor{red}{[are there other/older qualifier code tables that we can use? Most often missing are AW, XX, KA, MJ, ML, MC, ME, MB, MD}"
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?}
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,"\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?}"
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

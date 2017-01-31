@@ -117,5 +117,5 @@ post 1985:
 * 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
 court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"\textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
 court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"\textcolor{red}{[are there other/older qualifier code tables that we can use? Most often missing are AW, XX, KA, MJ, ML, MC, ME, MB, MD}"
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?}"
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?}
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

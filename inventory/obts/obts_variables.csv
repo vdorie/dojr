@@ -24,7 +24,7 @@ deceased,deceased,whether individual is deceased,"Whether individual is deceased
 * 2 - deceased (homicide)",
 arrest_record_id,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
 * 11 - prosecutor
-* 12 - police",
+* 12 - police",,
 arrest_bypass,arrest bypass,,Internal processing code.,0,0,,,
 arrest_converted_data,arrest converted data,converted from old format,Internal processing code.,0,0,,,
 arrest_event_year,arrest event year,,Arrest year.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,

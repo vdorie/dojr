@@ -44,7 +44,7 @@ arrest_charge_type,arrest offense level,,Arrest offense level.,0,0,,"* F - felon
 * M - misdemeanor
 * I - infraction
 * X - unknown",
-multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one,
+multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,1-9 where 9 is 9+; prior to 1986 only used: 1 - one offense and 2 - more than one,NA values appear to be true missings (distributed over various offenses and sentences) and only apply to arrests made in 1981 and 1982 or court cases in 1982 
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,
@@ -53,10 +53,10 @@ arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dis
 * 1-9 where 9 is 9+; 
 * pre-1986 coding: 1 - one offense and 2 - more than one",
 prior_record_code,prior prison commitments,,Number of prior prison commitments.,0,0,,"* 0 - no prior record
-* 1 - misc prior record
-* 7 - one prior prison commitment
-* 8 - two prior prison commitments
-* 9 - three or more prior prison commitments
+* 1 - misdemeanor conviction or "miscellaneous prior record"
+* 7 - one prior prison commitment (felony conviction)
+* 8 - two prior prison commitments (felony convictions)
+* 9 - three or more prior prison commitments (felony convictions)
 * blank - pre-1982 means lengthy record",
 arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,see cjis_codeTable.csv,
 arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,see qualifier_codes.csv,
@@ -66,8 +66,8 @@ court_record_id,final court id,court of final disposition,Court of final disposi
 * 21 - final disposition in lower court",
 court_bypass,court bypass,,Internal processing code.,0,0,,,
 court_converted_data,court converted data,,Internal processing code.,0,0,,,
-court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn. \textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?] [VD: how is it that every record has this, even if not every record ends up in court?]}"
-court_event_month,court event month,,Last date of court proceedings.,0,0,,,
+court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
+court_event_month,court event month,,Last date of court proceedings.,0,0,,,"\textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?}}"
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,
 court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,
 court_number,court number,,Sealed.,1,0,,,
@@ -87,9 +87,9 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ dispositions",
-court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,
-sentence_type,sentence type,\textcolor{red}{[EG: HOW QUESTIONABLE IS SENTENCE TYPE?]},Court sentence type.,0,0,,,
+* 9 - 9+ dispositions",all NAs are from court events taking place in 1982 and those records still have a sentence type (approx. 41K records)
+court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,\textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}
+sentence_type,sentence type,,Court sentence type.,0,0,,,\textcolor{red}{although the OBTS tech manual says that this field is very unreliable but much of the missing data here comes from cases that were dismissed or diversion_dismissed. Is this field unreliable for other reasons? Does filing as 17b4_PC mean that a case is a retroactive effort to lower a felony conviction to a misdemeanor?} 
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA
@@ -101,11 +101,11 @@ sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 09 - fine
 * 10 - other: sentence suspended; work program; volunteer program; no sentence
 * 11 - prison term suspended (post 1984)",
-court_charge_type,conviction offense level,offense level of conviction crime,Offense level of conviction crime.,0,0,,"* F - felony
+conviction_offense_level,conviction offense level,offense level of conviction crime,Offense level of conviction crime.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
 * N - place holder codes
-* X - unknown level of arrest",
+* X - unknown level of arrest",among cases with a value of "placeholder" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied. 
 court_multiple_disposition_charges,number of disposition charges,,Number of disposition charges.,0,0,,"Pre 1986: 
 
 * 1 - one offense
@@ -115,8 +115,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions? Ask Alyson?]}"
-court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,
-court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,
+* 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"\textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
+court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,\textcolor{red}{[are there other/older qualifier code tables that we can use? Most often missing are AW, XX, KA, MJ, ML, MC, ME, MB, MD}"
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?}"
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,

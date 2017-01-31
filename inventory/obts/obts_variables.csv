@@ -4,34 +4,33 @@ cii_record_type,CII record type,digital and/or fingerprint-based records,whether
 * 2- manual
 * 3 - OBN (no CII record on file)
 * 4 - Hybrid (began 1993)", automated: fully digitized record; manual: paper records only; hybrid: mix of paper and digitized records; OBN: records that are not linked via fingerprints
-cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the ``CII#'', assigned to the subject's criminal
-history record. If no CII number is available or known to the agency, leave the area blank and continue
-processing the form.",,
+cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the 'CII#', assigned to the subject's criminal
+history record. If no CII number is available or known to the agency, leave the area blank and continue processing the form.",,
 pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
 * 09 - delete CII",\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}
-name,name,,Individual's name.,1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
-birth_year,birth year,,Individual's birth year.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
-birth_month,birth month,,Individual's birth month.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
-birth_day,birth day,,Individual's birth day.,0,0,Enter the month/day/year (MM/DD/YYYY) of the subject's birth.,,
-gender,gender,,Individual's sex/gender.,0,0,Enter the appropriate sex code abbreviation for the subject.,"* M = Male
+name,name,,"Individual's name.",1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,
+birth_year,birth year,,"Individual's birth year.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,
+birth_month,birth month,,"Individual's birth month.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,
+birth_day,birth day,,"Individual's birth day.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,
+gender,gender,,"Individual's sex/gender.",0,0,"Enter the appropriate sex code abbreviation for the subject.","* M = Male
 * F = Female
 * X = Unknown",
-race,race or ethnicity,,Individual's race/ethnicity.,0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,see race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
+race,race or ethnicity,,"Individual's race/ethnicity.",0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,see race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
 deceased,deceased,whether individual is deceased,"Whether individual is deceased, alive, or unknown.",0,0,,"* 0 - not deceased or no information
 * 1 - deceased
 * 2 - deceased (homicide)",
 arrest_record_id,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
 * 11 - prosecutor
-* 12 - police",,
+* 12 - police",
 arrest_bypass,arrest bypass,,Internal processing code.,0,0,,,
 arrest_converted_data,arrest converted data,converted from old format,Internal processing code.,0,0,,,
 arrest_event_year,arrest event year,,Arrest year.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
 arrest_event_month,arrest_event month,,Arrest month.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
 arrest_event_day,arrest event day,,Arrest day.,0,0,"Enter the month/day/year (MM-DD-YYYY) of: 1) the subject's arrest as it was submitted on the arrest fingerprint submission, 2) the date the complaint was sought or filed, or 3) the date of citation.",,
 arresting_agency,arresting agency,arresting or booking agency,Arresting or booking agency.,0,0,"Enter the complete name of the agency that arrested, cited, or requested a complaint be filed against the subject. Abbreviates for Type of Agency are acceptable; however, the county or city name should be spelled out followed by SO, PD, etc. ","* PD Police Department
-* SO Sheriff's Office (Department)
+* SO Sheriff Office (Department)
 * CHP California Highway Patrol
 * MR Marshal
 * INS United States Immigration and Naturalization Service

@@ -4,7 +4,7 @@ cii_record_type,CII record type,digital and/or fingerprint-based records,whether
 * 2- manual
 * 3 - OBN (no CII record on file)
 * 4 - Hybrid (began 1993)", automated: fully digitized record; manual: paper records only; hybrid: mix of paper and digitized records; OBN: records that are not linked via fingerprints
-cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the 'CII#', assigned to the subject's criminal
+cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the CII#, assigned to the subject's criminal
 history record. If no CII number is available or known to the agency, leave the area blank and continue processing the form.",,
 pdr_id,PDR ID,Personal Descriptor Record ID,The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]},0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
@@ -52,7 +52,7 @@ arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dis
 * 1-9 where 9 is 9+; 
 * pre-1986 coding: 1 - one offense and 2 - more than one",
 prior_record_code,prior prison commitments,,Number of prior prison commitments.,0,0,,"* 0 - no prior record
-* 1 - misdemeanor conviction or "miscellaneous prior record"
+* 1 - misdemeanor conviction or ""miscellaneous prior record""
 * 7 - one prior prison commitment (felony conviction)
 * 8 - two prior prison commitments (felony convictions)
 * 9 - three or more prior prison commitments (felony convictions)
@@ -66,7 +66,7 @@ court_record_id,final court id,court of final disposition,Court of final disposi
 court_bypass,court bypass,,Internal processing code.,0,0,,,
 court_converted_data,court converted data,,Internal processing code.,0,0,,,
 court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
-court_event_month,court event month,,Last date of court proceedings.,0,0,,,"\textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?}}"
+court_event_month,court event month,,Last date of court proceedings.,0,0,,,"\textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?][VD: how is it that every record has this, even if not every record ends up in court?]}"
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,
 court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,
 court_number,court number,,Sealed.,1,0,,,
@@ -104,7 +104,7 @@ conviction_offense_level,conviction offense level,offense level of conviction cr
 * M - misdemeanor
 * I - infraction
 * N - place holder codes
-* X - unknown level of arrest",among cases with a value of "placeholder" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied. 
+* X - unknown level of arrest",among cases with a value of ""placeholder"" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied. 
 court_multiple_disposition_charges,number of disposition charges,,Number of disposition charges.,0,0,,"Pre 1986: 
 
 * 1 - one offense

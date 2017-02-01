@@ -20,7 +20,7 @@ gender,gender,,"Individual's sex/gender.",0,0,"Enter the appropriate sex code ab
 race,race or ethnicity,,"Individual's race/ethnicity.",0,0,Enter the appropriate race code abbreviation for the subject. The criteria for determining race categories are in the TABLES Section.,see race_or_ethnicity.csv,"The codes for Asian/Pacific Islander became more detailed in 1991. San Francisco did not change its reporting practices until 2012, when it adopted the FBI's categories for race: white, black, American Indian, other Asian, and other. Since 2012, San Francisco has not distinguished between non-Hispanic whites and Hispanic whites."
 deceased,deceased,whether individual is deceased,"Whether individual is deceased, alive, or unknown.",0,0,,"* 0 - not deceased or no information
 * 1 - deceased
-* 2 - deceased (homicide)",
+* 2 - deceased (homicide)","All NAs are for records with court event dates of 1982 (likely assigned for record-keeping) and predominantly for arrest dates in 1981 and 1982."
 arrest_record_id,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
 * 11 - prosecutor
 * 12 - police",

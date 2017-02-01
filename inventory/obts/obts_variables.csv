@@ -7,6 +7,7 @@ cii_record_type,CII record type,digital and/or fingerprint-based records,whether
 * manual: paper records only
 * hybrid: mix of paper and digitized records
 * OBN: records that are not linked via fingerprints.  
+
 All NAs correspond to records with 1982 court dates."
 cii_number,CII number,Criminal Identification and Information number,Statewide unique identification number for an individual.,1,0,"Enter the unique state identification number, referred to as the CII#, assigned to the subject's criminal
 history record. If no CII number is available or known to the agency, leave the area blank and continue processing the form.",,not included in scientific-use file 

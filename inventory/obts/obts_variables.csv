@@ -47,10 +47,10 @@ multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,"1
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,not included in Scientific-Use File (SUF)
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,not included in Scientific-Use File (SUF)
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,not included in Scientific-Use File (SUF)
-arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,"Disposition here refers to the last step in the criminal justice process. The field is NA if the final disposition was not release from a law enforcement agency or decline to prosecute from the district attorney. \textcolor{red}{Prosecutor rejects is only the final disposition if the Court Record ID is blank. What does it mean if there is a court_record_id and an arrest_disposition_type? What does probation_revoked_1203_2PC mean?}."
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,"Disposition here refers to the last step in the criminal justice process. The field is NA if the final disposition was not release from a law enforcement agency or decline to prosecute from the district attorney. \textcolor{red}{What does probation_revoked_1203_2PC mean?}."
 arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
-* pre-1986 coding: 1 - one offense and 2 - more than one",
+* pre-1986 coding: 1 - one offense and 2 - more than one",all NA records correspond to 1982 court dates.
 prior_record_code,prior prison commitments,,Number of prior prison commitments.,0,0,,"* 0 - no prior record
 * 1 - misdemeanor conviction or ""miscellaneous prior record""
 * 7 - one prior prison commitment (felony conviction)
@@ -62,7 +62,7 @@ arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,see qu
 arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
 arrest_edit_error_code,arrest edit error code,,Internal processing code.,0,0,,,not included in Scientific-Use File (SUF)
 court_record_id,final court id,court of final disposition,Court of final disposition.,0,0,,"* 20 - final disposition in superior court
-* 21 - final disposition in lower court",
+* 21 - final disposition in lower court","all NAs reflect dispositions that prior to court - i.e., at the law enforcement agency or district attorney's office"
 court_bypass,court bypass,,Internal processing code.,0,0,,,not included in Scientific-Use File (SUF)
 court_converted_data,court converted data,,Internal processing code.,0,0,,,not included in Scientific-Use File (SUF)
 court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
@@ -76,7 +76,7 @@ court_disposition_type,court disposition type,outcome of court trial,Outcome of 
 * 24 - certified to juvenile court
 * 25 - defendant deceased
 * 26 - dismissed
-* 27 - diversion dismissed (begins 1988)",
+* 27 - diversion dismissed (begins 1988)","all NAs reflect dispositions that prior to court - i.e., at the law enforcement agency or district attorney's office"
 court_multiple_dispositions,number of court dispositions,,Number of court dispositions.,0,0,,"Pre 1986: 
 
 * 1 - one disposition
@@ -86,8 +86,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ dispositions",all NAs are from court events taking place in 1982 and those records still have a sentence type (approximately 41K records)
-court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"\textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}"
+* 9 - 9+ dispositions","Most NAs are for dispositions that occured prior to court. The remaining ~41K NAs are from court events taking place in 1982 (those records still have a sentence type)."
+court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"Vast majority of NAs are for dispositions that occur prior to court. \textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}"
 sentence_type,sentence type,,Court sentence type.,0,0,,,"\textcolor{red}{although the OBTS tech manual says that this field is very unreliable but much of the missing data here comes from cases that were dismissed or diversion\_dismissed. Is this field unreliable for other reasons? Does filing as 17b4\_PC mean that a case is a retroactive effort to lower a felony conviction to a misdemeanor?}"
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
@@ -99,12 +99,12 @@ sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 08 - probation
 * 09 - fine
 * 10 - other: sentence suspended; work program; volunteer program; no sentence
-* 11 - prison term suspended (post 1984)",
+* 11 - prison term suspended (post 1984)","\textcolor{red}{Apart from those that never made it to court, many of the NAs here come from cases that were dismissed or diversion\_dismissed. Is this field unreliable for other reasons? }"
 court_charge_type,conviction offense level,offense level of conviction crime,Offense level of conviction crime.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
 * N - place holder codes
-* X - unknown level of arrest",among cases with a value of ""placeholder"" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied.
+* X - unknown level of arrest",Vast majority of NAs reflect charges that did not make it to court. Among cases with a value of ""placeholder"" all had an arrest offense level of felony. Almost all of the placeholder offenses correspond to a conviction offense of 66085. Sentences varied.
 court_multiple_disposition_charges,number of disposition charges,,Number of disposition charges.,0,0,,"Pre 1986: 
 
 * 1 - one offense
@@ -114,8 +114,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ offenses","\textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
-court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"\textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
+* 9 - 9+ offenses","The vast majority of NAs reflect charges that did not make it to court. \textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"NAs reflect charges that did not make it to court (vast majority of NAs), cases that were dismissed, and not guilty findings. \textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
 court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"\textcolor{red}{[are there other/older qualifier code tables that we can use? Most often missing are AW, XX, KA, MJ, ML, MC, ME, MB, MD]}"
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,"\textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?]}"
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,"NAs primarily reflect charges that did not make it to court, secondarily reflect charges that did not result in a conviction. \textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?]}"
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,not included in Scientific-Use File (SUF)

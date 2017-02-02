@@ -38,7 +38,7 @@
 "court_event_day","crt_doe_dy",123,2,131,2,"smallint"
 "court_judicial_district","jud",125,6,133,6,"character(6)"
 "court_number","ctn",131,9,139,9,"character(9)"
-"court_disposition_type","crt_tod",140,2,148,2,"'21' = convicted; '22' = acquited; '23' = not_guilty_insane; '24' = certified_to_juvenile_court; '25' = defendant_deceased; '26' = dismissed; '27' = diversion_dismissed"
+"court_disposition_type","crt_tod",140,2,148,2,"'21' = convicted; '22' = acquitted; '23' = not_guilty_insane; '24' = certified_to_juvenile_court; '25' = defendant_deceased; '26' = dismissed; '27' = diversion_dismissed"
 "court_multiple_dispositions","mds",142,1,150,1,"smallint"
 "court_proceeding_type","pro",143,1,151,1,"'1' = information; '2' = indictment; '3' = certification; '4' = felony_complaint_filed; '5' = misdemeanor_complaint_filed; '6' = filed_as_infraction"
 "sentence_type","tos",144,1,152,1,"'1' = felony_convicted_offense_felony_sentence; '2' = felony_convicted_offense_misdemeanor_sentence; '3' = felony_convicted_offense_misdemeanor_per_17c; '4' = misdemeanor_convicted_offense; '5' = filing_as_17b4_pc; '6' = infraction_convicted_offense"

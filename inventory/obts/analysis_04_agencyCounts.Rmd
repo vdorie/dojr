@@ -1,0 +1,100 @@
+## Agency Counts Over Time
+
+```{r 'analysis_agencyCounts', echo = FALSE}
+imgFiles <- file.path("..", imgPath, c("analysis_agencyCounts_agencyCounts.pdf",
+                                       "analysis_agencyCounts_agencyCourtDispositions.pdf"))
+if (any(!file.exists(imgFiles))) {
+  remapFactor <- function(x, groups, name, droplevels = TRUE) {
+    x[x %in% groups[-1L]] <- groups[1L]
+    levels(x)[levels(x) == groups[1L]] <- name
+    if (droplevels) x <- base::droplevels(x)
+    x
+  }
+  
+  loadData(mainTable, "..")
+  
+  obts.sub <- obts[,c("arresting_agency", "court_event_year")]
+  obts.sub$disposition <-
+    as.factor(with(obts,
+                   ifelse(!is.na(court_disposition_type), as.character(court_disposition_type), as.character(arrest_disposition_type))))
+
+  obts.sub$disposition <-
+    remapFactor(obts.sub$disposition,
+                c("acquited", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
+                  "diversion_dismissed", "not_guilty_insane"),
+                "crt",
+                FALSE)
+  
+  obts.sub$disposition <-
+    remapFactor(obts.sub$disposition,
+                c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                  "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified"),
+                "lea",
+                FALSE)
+  
+  obts.sub$disposition <- 
+    remapFactor(obts.sub$disposition,
+                c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
+                  "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
+                  "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
+                  "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable"),
+                "da",
+                FALSE)
+  obts.sub$disposition <- droplevels(obts.sub$disposition)
+  rm(remapFactor)
+  
+  dispoTable <- table(obts.sub)
+  totals <- apply(dispoTable, c(1L, 2L), sum)
+  
+  totalsByJurisdiction <- apply(totals, 1L, sum)
+  
+  cutoffs <- seq(log(max(totalsByJurisdiction) + 1), 0, length.out = 10L)[-1L]
+  
+  indexSets <- list()
+  indexSets[[1L]] <- unname(which(log(totalsByJurisdiction + 1) > cutoffs[1L]))
+  for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- unname(which(cutoffs[i] < log(totalsByJurisdiction + 1) & log(totalsByJurisdiction + 1) <= cutoffs[i - 1L]))
+  
+  rm(totalsByJurisdiction, cutoffs)
+
+  years <- sort(unique(obts.sub$court_event_year))
+  
+  pdf(imgFiles[1L], 6, 6)
+  par(mfrow = getGridDim(8.5 / 11, length(indexSets)), mar = c(2.2, 2.2, 0.1, 0.1))
+  
+  for (i in seq_along(indexSets)) {
+    indices <- indexSets[[i]]
+    plot(NULL, type = "n", xlim = range(years), ylim = c(0, max(totals[indices,])),
+         xlab = "year", ylab = "count", xaxs = "i")
+    for (j in seq_along(indices)) 
+      lines(years, totals[indices[j],], lwd = 1, col = rgb(0, 0, 0, 0.4))
+    plotRange <- par()$usr
+    xVal <- 0.975 * (plotRange[2L] - plotRange[1L]) + plotRange[1L]
+    yVal <- 0.975 * (plotRange[4L] - plotRange[3L]) + plotRange[3L]
+    text(xVal, yVal, paste0("n = ", length(indices)), adj = c(1, 0.5))
+  }
+  dev.off()
+  
+  pdf(imgFiles[2L], 6, 6)
+  par(mfrow = getGridDim(8.5 / 11, length(indexSets)), mar = c(2.2, 2.2, 0.1, 0.1))
+  
+  for (i in seq_along(indexSets)) {
+    indices <- indexSets[[i]]
+    plot(NULL, type = "n", xlim = range(years), ylim = c(0, 1),
+         xlab = "year", ylab = "% crt", xaxs = "i")
+    for (j in seq_along(indices)) 
+      lines(years, dispoTable[indices[j],,"crt"] / totals[indices[j],], lwd = 1, col = rgb(0, 0, 0, 0.4))
+  }
+  dev.off()
+
+  rm(i, j, indices, xVal, yVal, plotRange)
+  
+  rm(years, indexSets, dispoTable, totals)
+}
+rm(imgFiles)
+```
+
+This section shows the total number of dispositions by arresting agency over time, as well as the percentage of records that have a court disposition. Since there are a few agencies that account for most of the arrests, the break points in the following plots are made uniform over the log of the number of arrests, plus 1.
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyCounts.pdf"))`
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyCourtDispositions.pdf"))`

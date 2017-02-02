@@ -173,6 +173,8 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
   lowCountyInfo$years <- sapply(lowCounties, function(index) {
     paste0(as.character(years[which(percentages[index,] <= 0.4)]), collapse = ", ")
   })
+  lowCountyInfo$ave_yearly_count <- round(totalsByCounty[lowCounties] / length(years), 0)
+  lowCountyInfo <- lowCountyInfo[order(lowCountyInfo$ave_yearly_count, decreasing = TRUE),]
   lowCountyInfo <- rmdFormat(lowCountyInfo, maxRows = NA)
   rm(countyNameMap, lowCounties)
   

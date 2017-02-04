@@ -41,8 +41,9 @@ if (file.exists(cleanRmdFile)) {
   source("clean.R")
   unlink("clean.R")
   setwd("..")
+  rm(sourceFile)
 }
-rm(cleanRmdFile, sourceFile)
+rm(cleanRmdFile)
 ```
 
 ```{r 'abstract_include', child = if (file.exists(abstractFile <- file.path(datasetDir, "abstract.Rmd"))) abstractFile else NULL }

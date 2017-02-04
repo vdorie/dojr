@@ -26,7 +26,7 @@ race,race or ethnicity,,"Individual's race/ethnicity.",0,0,Enter the appropriate
 deceased,deceased,whether individual is deceased,"Whether individual is deceased, alive, or unknown.",0,0,,"* 0 - not deceased or no information
 * 1 - deceased
 * 2 - deceased (homicide)","All NAs are for records with court event dates of 1982 (likely assigned for record-keeping) and predominantly for arrest dates in 1981 and 1982."
-arrest_record_id,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
+last_step,last reported step,last reported step in crim justice process,where final disposition received or last reported step in criminal justice process.,0,0,,"* 10 - court disposition
 * 11 - prosecutor
 * 12 - police",
 arrest_bypass,arrest bypass,,Internal processing code.,0,0,,,not included in scientific-use file
@@ -44,7 +44,7 @@ arresting_agency,arresting agency,arresting or booking agency,Arresting or booki
 * CA City Attorney
 * NTF Narcotic Task Force",may actually be booking and not arresting agency
 local_file_number,local file number,,Sealed.,1,0,,,not included in scientific-use file
-arrest_charge_type,arrest offense level,,Arrest offense level.,0,0,,"* F - felony
+arrest_offense_level,arrest offense level,,Arrest offense level.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
 * X - unknown",
@@ -66,7 +66,7 @@ arrest_offense,arrest offense,,Offense for which individual was arrested.,0,0,,s
 arrest_qualifier,arrest offense qualifier,,Arrest offense qualifier.,0,0,,see qualifier_codes.csv,
 arrest_summary_code,arrest offense summary code,BCS summary code for arrest offense,BCS summary code for arrest offense.,0,0,,see bcs_offense_codes_variables.csv,
 arrest_edit_error_code,arrest edit error code,,Internal processing code.,0,0,,,not included in scientific-use file
-court_record_id,final court id,court of final disposition,Court of final disposition.,0,0,,"* 20 - final disposition in superior court
+court_level,final court id,court of final disposition,Court of final disposition.,0,0,,"* 20 - final disposition in superior court
 * 21 - final disposition in lower court","all NAs reflect dispositions that prior to court - i.e., at the law enforcement agency or district attorney's office"
 court_bypass,court bypass,,Internal processing code.,0,0,,,not included in scientific-use file
 court_converted_data,court converted data,,Internal processing code.,0,0,,,not included in scientific-use file

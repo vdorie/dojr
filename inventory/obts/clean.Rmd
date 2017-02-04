@@ -102,7 +102,6 @@ if (performClean) {
   numOutOfRange <- with(obts.clean, sum(arrest_event_year < 70L | (arrest_event_year >= 100L & arrest_event_year < 1970L)))
   
   
-  
   updateRows <- obts.clean$arrest_event_year <= 100L
   obts.clean$arrest_event_year[updateRows] <- obts.clean$arrest_event_year[updateRows] + 1900L
   rm(updateRows)

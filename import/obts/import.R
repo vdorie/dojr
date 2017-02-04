@@ -750,7 +750,7 @@ con <- connectToDatabase(drv, "obts")
 obts <- dbGetQuery(con, "SELECT * FROM obts_typed")
 
 ## enum types in obts
-for (variableName in c("cii_record_type", "pdr_id", "gender", "race", "deceased", "arrest_record_id", "arrest_bypass", "arrest_converted_data", "arrest_charge_type", "arrest_disposition_type", "prior_record_code", "court_record_id", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence_type", "sentence", "court_charge_type"))
+for (variableName in c("cii_record_type", "pdr_id", "gender", "race", "deceased", "last_step", "arrest_bypass", "arrest_converted_data", "arrest_offense_level", "arrest_disposition_type", "prior_record_code", "court_level", "court_bypass", "court_disposition_type", "court_proceeding_type", "sentence_type", "sentence", "court_charge_type"))
   obts[[variableName]] <- as.factor(obts[[variableName]])
 
 ## integer types that are really categorical

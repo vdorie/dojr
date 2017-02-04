@@ -1,7 +1,7 @@
 ## Arrest and Court Disposition Types
 
-```{r 'analysis_dispositionTypes', echo = FALSE}
-txtFile <- file.path("..", txtPath, "analysis_dispositionTypes.txt")
+```{r 'analysis_dispositionTypes_overlap', echo = FALSE}
+txtFile <- file.path("..", txtPath, "analysis_dispositionTypes_overlap.txt")
 if (!file.exists(txtFile)) {
   loadData(mainTable, "..")
   
@@ -29,4 +29,25 @@ There are two disposition fields in the OBTS, one corresponding to the arrest se
 
 ```{r echo = FALSE}
 rm(numWithBoth, dispositionTable)
+```
+
+Finally, there are a few discrepancies between the `record id` field (here renamed to `last_step`) and the disposition fields. For every record shown above, the record id is listed as police or prosecutor, but the court disposition is also present. In addition, the following rows have a record id of `police` but the arrest disposition field indicates a DA decline-to-prosecute.
+
+```{r 'analyis_dispositionTypes_lastStep', echo = FALSE, results = 'asis'}
+txtFile <- file.path("..", txtPath, "analysis_dispositionTypes_lastStep.txt")
+if (!file.exists(txtFile)) {
+  loadData(mainTable, "..")
+  
+  daDispositionTypes <- c("da_dec_combined_cases", "da_dec_complainant_refuses", "da_dec_deferred_recovation_of_parole", "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_corpus", "da_dec_lack_of_probcaus", "da_dec_other", "da_dec_probation_revoked_1203_2pc", "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
+  lastStepRows <- subset(obts, arrest_disposition_type %in% daDispositionTypes & last_step != "prosecutor",
+                         c("arrest_event_date", "court_event_date", "last_step", "arrest_disposition_type", "court_disposition_type"))
+  lastStepRows <- rmdFormat(lastStepRows)
+  rm(daDispositionTypes)
+  
+  writeLines(lastStepRows, txtFile)
+} else {
+  lastStepRows <- readLines(txtFile)
+}
+cat(paste0(lastStepRows, collapse = "\n"))
+rm(lastStepRows, txtFile)
 ```

@@ -225,7 +225,7 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
 rm(txtFile, imgFiles)
 ```
 
-Here, we replicate the above plots but first aggregate arresting agencies into their counties.
+Here, we replicate the above plots but first aggregate arresting agencies into their counties. 
 
 #### Count Totals
 
@@ -234,6 +234,8 @@ Here, we replicate the above plots but first aggregate arresting agencies into t
 `r rmdPageBreak()`
 
 #### County Court Disposition Percentages
+
+Sharp dips in the arrests associated with a court disposition are likely due to reporting problems at the DA or court level. 
 
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_countyCourtDispositions.pdf"))`
 

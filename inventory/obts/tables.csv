@@ -3,10 +3,9 @@ obts,OBTS Main Database,obts_clean.Rdata,obts,1,1,,"The Offender Based Transacti
 
 Background: 
 
-* Only 65-75% of felony arrest dispositions are captured annually \textcolor{red}{(DO WE KNOW WHY?)}
-* The representativeness of OBTS data may vary by county \textcolor{red}{(CONFIRM WITH MARIE OR RANDIE)}
+* Only 65-75% of felony arrest dispositions are captured annually. Nearly all felony arrests are booked so the arrest may appear in OBTS, but not the disposition. Not only are arrests missing because of failure to file subsequent paperwork, but many records lack fingerprints at each stage of the process and must instead be matched by an algorithm. For example, an algorithm in ACHS matches arrest and court events.
 * Disposition data come from form <JUS 8715>[link](https://github.com/vdorie/dojr/tree/master/inventory/obts/adultDisposition_form.pdf), which is filled out by law enforcement, the district attorney's office, and the courts
-* OBTS only captures final dispositions, intermediate dispositions such as diversion programs or retrials are not included \textcolor{red}{[WHAT DEFINES A DISPOSITION AS FINAL?]}
+* OBTS only captures final dispositions, intermediate dispositions such as diversion programs or retrials are not included
 * If there are multiple arrest offenses, the one shown is the most serious offense in terms of potential incarceration sentence
 * If there are multiple conviction offenses, the one shown is the most serious offense in terms of potential incarceration sentence
 * OBTS contains data about juveniles whose final disposition was in the adult criminal justice system
@@ -15,7 +14,6 @@ Historical Changes:
  
 * Beginning in 1998, lower and superior courts could unify their data reporting
 * From 1992 through 1997, convictions were prioritized for data entry, non-conviction records may be missing in higher numbers
-* \textcolor{red}{[FILE CREATION DATES AFFECTS NUMBER OF RECORDS PER YEAR - HOW DOES THIS WORK?]}
 * Offense data for 2002 may be missing due to data being entered in the wrong field
 
 County-specific issues:

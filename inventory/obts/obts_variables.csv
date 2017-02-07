@@ -14,7 +14,7 @@ history record. If no CII number is available or known to the agency, leave the 
 pdr_id,PDR ID,Personal Descriptor Record ID,"The Personal Descriptor Record ID indicates whether the offender is new to the system \textcolor{red}{[CORRECT?]}",0,0,,"* 00 - new offender (no arrest before 8/23/82)
 * 01 - current offender (arrested before 8/23/82)
 * 02 - unknown
-* 09 - delete CII","\textcolor{red}{proportion of current offenders highest when the data begin in 1982 but rapidly decreases to less than 10\% - that implies only 10\% of people arrested for a felony have a prior felony arrest???}"
+* 09 - delete CII","The proportion of current offenders is too low to be plausible. One possible explanation offered is that a search for prior records was not run on the entire database, but only on a batch of records that had yet to be added to the database. Another possibility is that only CII numbers, and not fingerprints, were used to match previous records."
 name,name,,"Individual's name.",1,0,"Enter the complete name of the subject as it was submitted on the arrest fingerprint submission or as indicated on the citation. Aliases, nicknames, or monikers are not required.",,not included in scientific-use file
 birth_year,birth year,,"Individual's birth year.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,not included in scientific-use file
 birth_month,birth month,,"Individual's birth month.",0,0,"Enter the month/day/year (MM/DD/YYYY) of the subject's birth.",,not included in scientific-use file
@@ -52,7 +52,7 @@ multiple_arrest_charges,number arrest charges,,Number of arrest charges.,0,0,,"1
 arrest_disposition_year,arrest disposition year,date of arresting officer disposition,Date of final disposition decided by arresting officer.,0,0,,,not included in scientific-use file
 arrest_disposition_month,arrest disposition month,,Date of final disposition decided by arresting officer.,0,0,,,not included in scientific-use file
 arrest_disposition_day,arrest disposition day,,Date of final disposition decided by arresting officer.,0,0,,,not included in scientific-use file
-arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,"Disposition here refers to the last step in the criminal justice process. The field is NA if the final disposition was not release from a law enforcement agency or decline to prosecute from the district attorney. \textcolor{red}{What does probation revoked 1203 2PC mean?}"
+arrest_disposition_type,release or decline to prosecute rationale,,Release or decline to prosecute rationale.,0,0,,see dispositions.csv table,"Disposition here refers to the last step in the criminal justice process. The field is NA if the final disposition was not release from a law enforcement agency or decline to prosecute from the district attorney. 1203 PC means that a violation led to a probation revocation. An individual whose probation is revoked will go to a revocation hearing for a sentence."
 arrest_multiple_dispositions,number of arrest dispositions,,Number of arrest dispositions.,0,0,,"* 0 - subject did not receive all final dispositions at arrest level
 * 1-9 where 9 is 9+; 
 * pre-1986 coding: 1 - one offense and 2 - more than one",all NA records correspond to 1982 court dates.
@@ -70,8 +70,8 @@ court_level,final court id,court of final disposition,Court of final disposition
 * 21 - final disposition in lower court","all NAs reflect dispositions that prior to court - i.e., at the law enforcement agency or district attorney's office"
 court_bypass,court bypass,,Internal processing code.,0,0,,,not included in scientific-use file
 court_converted_data,court converted data,,Internal processing code.,0,0,,,not included in scientific-use file
-court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Seems to ""root"" the record as is the only year value that is the same as the year of the flat file from which the data are drawn."
-court_event_month,court event month,,Last date of court proceedings.,0,0,,,"\textcolor{red}{[EG: does ""court event"" refer to beginning of trial or conclusion of trial?][VD: how is it that every record has this, even if not every record ends up in court?]}"
+court_event_year,court event year,last date of court proceedings,Last date of court proceedings.,0,0,,,"Year court proceedings finished. Court date is used to organize OBTS data chronologically. As a result, all records have a court ID even though not all people arrested on a felony make it to court. In about 85% of cases in which the the final disposition occured at the police agency or prosecutor's office, the court date matches the arrest_disposition_date."
+court_event_month,court event month,,Last date of court proceedings.,0,0,,,"Month court proceedings finished. Court date is used to organize OBTS data chronologically. As a result, all records have a court ID even though not all people arrested on a felony make it to court. In about 85% of cases in which the the final disposition occured at the police agency or prosecutor's office, the court date matches the arrest_disposition_date."
 court_event_day,court event day,,Last date of court proceedings.,0,0,,,not included in scientific-use file
 court_judicial_district,court judicial district,,Court judicial district.,0,0,,see judicial_districts.csv,
 court_number,court number,,Sealed.,1,0,,,not included in scientific-use file
@@ -81,7 +81,7 @@ court_disposition_type,court disposition type,outcome of court trial,Outcome of 
 * 24 - certified to juvenile court
 * 25 - defendant deceased
 * 26 - dismissed
-* 27 - diversion dismissed (begins 1988)","all NAs reflect dispositions that prior to court - i.e., at the law enforcement agency or district attorney's office"
+* 27 - diversion dismissed (begins 1988)","All NAs reflect dispositions that took place prior to court - i.e., at the law enforcement agency or district attorney's office."
 court_multiple_dispositions,number of court dispositions,,Number of court dispositions.,0,0,,"Pre 1986: 
 
 * 1 - one disposition
@@ -92,8 +92,13 @@ post 1985:
 * 1 - only one 
 * 2 - 8 - two to eight
 * 9 - 9+ dispositions","Most NAs are for dispositions that occured prior to court. The remaining ~41K NAs are from court events taking place in 1982 (those records still have a sentence type)."
-court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"Vast majority of NAs are for dispositions that occur prior to court. \textcolor{red}{[EG: HOW RELIABLE IS PROCEEDING TYPE?]}"
-sentence_type,sentence type,,Court sentence type.,0,0,,,"\textcolor{red}{although the OBTS tech manual says that this field is very unreliable but much of the missing data here comes from cases that were dismissed or diversion\_dismissed. Is this field unreliable for other reasons? Does filing as 17b4\_PC mean that a case is a retroactive effort to lower a felony conviction to a misdemeanor?}"
+court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"Vast majority of NAs are for dispositions that occured prior to court."
+sentence_type,sentence type,,Court sentence type.,0,0,,,"17b4 refers to filing a felony as a misdemeanor, 17C refers to sentencing for juveniles.  * CA PC 17  
++ (b) When a crime is punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail, it is a misdemeanor for all purposes under the following circumstances:
+++ (4)When the prosecuting attorney files in a court having jurisdiction over misdemeanor offenses a complaint specifying that the offense is a misdemeanor, unless the defendant at the time of his or her arraignment or plea objects to the offense being made a misdemeanor, in which event the complaint shall be amended to charge the felony and the case shall proceed on the felony complaint.  
++ (c) When a defendant is committed to the Division of Juvenile Justice for a crime punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail not exceeding one year, the offense shall, upon the discharge of the defendant from the Division of Juvenile Justice, thereafter be deemed a misdemeanor for all purposes."
+
+CA PC 17(c) When a defendant is committed to the Division of Juvenile Justice for a crime punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail not exceeding one year, the offense shall, upon the discharge of the defendant from the Division of Juvenile Justice, thereafter be deemed a misdemeanor for all purposes."
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA
@@ -104,7 +109,7 @@ sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 08 - probation
 * 09 - fine
 * 10 - other: sentence suspended; work program; volunteer program; no sentence
-* 11 - prison term suspended (post 1984)","\textcolor{red}{Apart from those that never made it to court, many of the NAs here come from cases that were dismissed or diversion\_dismissed. Is this field unreliable for other reasons? }"
+* 11 - prison term suspended (post 1984)","Apart from records that never made it to court, many of the NAs here come from cases that were dismissed or diversion\_dismissed."
 court_charge_type,conviction offense level,offense level of conviction crime,Offense level of conviction crime.,0,0,,"* F - felony
 * M - misdemeanor
 * I - infraction
@@ -119,8 +124,8 @@ post 1985:
 
 * 1 - only one 
 * 2 - 8 - two to eight
-* 9 - 9+ offenses","The vast majority of NAs reflect charges that did not make it to court. \textcolor{red}{[EG: is this always the number of conviction charges, or are there charges associated with non-conviction dispositions?]}"
-court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"NAs reflect charges that did not make it to court (vast majority of NAs), cases that were dismissed, and not guilty findings. \textcolor{red}{[are there other/older CJIS code tables that we can use? most often missing are 66085, 13998, and 66038}"
-court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"\textcolor{red}{[are there other/older qualifier code tables that we can use? Most often missing are AW, XX, KA, MJ, ML, MC, ME, MB, MD]}"
-court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,"NAs primarily reflect charges that did not make it to court, secondarily reflect charges that did not result in a conviction. \textcolor{red}{[why are the missings for conviction summary code and conviction CJIS code the same - was there never a CJIS code for some of the values in OBTS?]}"
+* 9 - 9+ offenses","Figure includes charges that did not result in a conviction. The vast majority of NAs reflect charges that did not make it to court."
+court_disposition_offense,conviction offense,,Conviction offense.,0,0,,see cjis_codeTable.csv,"NAs reflect charges that did not make it to court (vast majority of NAs), cases that were dismissed, and not guilty findings. A small percentage reflect instances with a missing CJIS offense code."
+court_qualifier,conviction offense qualifiers,,Conviction offense qualifiers.,0,0,,see qualifier_codes.csv,"Qualifier codes appear to be used inconsistently over time. An empty field simply means there was no qualifier."
+court_summary_code,conviction offense summary code,,Conviction offense summary code.,0,0,,see bcs_offense_codes_variables.csv,"NAs primarily reflect charges that did not make it to court, secondarily reflect charges that did not result in a conviction. A small percentage reflect instances in which no CJIS was provided, making it impossible to assign a summary BCS code."
 court_edit_error_code,court edit error code,,Internal processing code.,0,0,,,not included in scientific-use file

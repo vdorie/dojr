@@ -93,10 +93,14 @@ post 1985:
 * 2 - 8 - two to eight
 * 9 - 9+ dispositions","Most NAs are for dispositions that occured prior to court. The remaining ~41K NAs are from court events taking place in 1982 (those records still have a sentence type)."
 court_proceeding_type,court proceeding type,,Court proceeding type.,0,0,,,"Vast majority of NAs are for dispositions that occured prior to court."
-sentence_type,sentence type,,Court sentence type.,0,0,,,"17b4 refers to filing a felony as a misdemeanor, 17C refers to sentencing for juveniles. * CA PC 17  
-+ (b) When a crime is punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail, it is a misdemeanor for all purposes under the following circumstances:
-++ (4)When the prosecuting attorney files in a court having jurisdiction over misdemeanor offenses a complaint specifying that the offense is a misdemeanor, unless the defendant at the time of his or her arraignment or plea objects to the offense being made a misdemeanor, in which event the complaint shall be amended to charge the felony and the case shall proceed on the felony complaint.  
-+ (c) When a defendant is committed to the Division of Juvenile Justice for a crime punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail not exceeding one year, the offense shall, upon the discharge of the defendant from the Division of Juvenile Justice, thereafter be deemed a misdemeanor for all purposes."
+sentence_type,sentence type,,Court sentence type.,0,0,,,"17b4 refers to filing a felony as a misdemeanor, 17C refers to sentencing for juveniles.  
+    
+**CA PC 17**  
+*...  
+-- (b) When a crime is punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail, it is a misdemeanor for all purposes under the following circumstances:  
+...  
+--- (4)When the prosecuting attorney files in a court having jurisdiction over misdemeanor offenses a complaint specifying that the offense is a misdemeanor, unless the defendant at the time of his or her arraignment or plea objects to the offense being made a misdemeanor, in which event the complaint shall be amended to charge the felony and the case shall proceed on the felony complaint.  
+-- (c) When a defendant is committed to the Division of Juvenile Justice for a crime punishable, in the discretion of the court, either by imprisonment in the state prison or imprisonment in a county jail under the provisions of subdivision (h) of Section 1170, or by fine or imprisonment in the county jail not exceeding one year, the offense shall, upon the discharge of the defendant from the Division of Juvenile Justice, thereafter be deemed a misdemeanor for all purposes.*"
 sentence,sentence,,Court sentence.,0,0,,"* 01 - death
 * 02 - prison
 * 03 - CYA

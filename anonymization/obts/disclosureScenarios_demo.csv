@@ -1,0 +1,5 @@
+know,seek,example,requires
+demographics,"that arrested, arrested for",job interview,small $k$ in database and population
+"demographics, that arrested","arrested for, outcome",witness arrest but not crime,small $k$ or $l$ from demo on arrest offense
+"demographics, arrested for",outcome,witness crime and arrest,small $k$ or $l$ from demo on disposition
+"demographics, arrested for, disposition",reason for release or sentence,"know of crime and arrest, detention status",small $k$ or $l$ from demo + offense on disposition/sentence

@@ -1,4 +1,3 @@
-attack type,disclosure when,risk,remedy
-"exclude prosecuted using court records, perform simple attack on released or not charged","after exclusion, failure to protect against simple attacks",arrested and released,assume all prosecuted can be matched; anonymize released and not charged as a group
-exclude convicted using public records or background check service,"after exclusion, failure to protect against simple attacks","arrested and released, not charged, or not convicted","anonymize released, not charged or not convicted as a group"
-"exclude convicted using public records etc, examine prosecuted subset","after reviewing court records of those who were prosecuted but not convicted, attacker has not already identified all pertinent data about an individual or crime",any remaining information not already disclosed in court records,"none, disclosure already took place via court records"
+attack type,pop at risk,remedy
+"exclude prosecuted using court records",arrested and released or not charged,assume all prosecuted can be matched; anonymize released and not charged as a group
+exclude convicted using public records or background check service,"arrested and released, not charged, or not convicted; those whose court records are no longer available","anonymize released, not charged, not convicted, and record-unavailable as a group"

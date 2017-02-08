@@ -225,7 +225,7 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
 rm(txtFile, imgFiles)
 ```
 
-Here, we replicate the above plots but first aggregate arresting agencies into their counties. 
+Here, we replicate the above plots but first aggregate arresting agencies into their counties.
 
 #### Count Totals
 

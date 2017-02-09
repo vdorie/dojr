@@ -1,0 +1,62 @@
+## Time to Disposition
+
+```{r 'analysis_dispositionTimes', echo = FALSE}
+imgFiles <- file.path("..", imgPath, c("analysis_dispositionTimes_1.pdf",
+                                       "analysis_dispositionTimes_2.pdf"))
+if (any(!file.exists(imgFiles))) {
+  loadData(mainTable, "..")
+  
+  ## create a unified disposition
+  disposition <- with(obts, factor(ifelse(!is.na(court_disposition_type),
+                                      as.integer(court_disposition_type),
+                                      as.integer(arrest_disposition_type) + nlevels(court_disposition_type)),
+                               labels = c(levels(court_disposition_type), levels(arrest_disposition_type))))
+  leaReleasedLevels <- c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                         "lea_rel_insuff_admiss_evidence", "lea_rel_insuff_ascert_evidence", "lea_rel_other",
+                         "lea_rel_unspecified")
+  daDeclinedLevels <- c("da_dec_combined_cases", "da_dec_complainant_refuses", "da_dec_deferred_recovation_of_parole",
+                        "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_corpus",
+                        "da_dec_lack_of_probcaus", "da_dec_other", "da_dec_probation_revoked_1203_2pc",
+                        "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
+  courtLevels <- setdiff(levels(disposition), c(leaReleasedLevels, daDeclinedLevels))
+  
+  timeToDisposition <- with(obts,
+    as.integer(ifelse(disposition %in% courtLevels,
+                      difftime(court_event_date, arrest_event_date, units = "days"),
+                      difftime(arrest_disposition_date, arrest_event_date, units = "days"))))
+  
+  pdf(imgFiles[1L], 6, 3)
+  par(mfrow = c(1L, 3L))
+  hist(timeToDisposition[disposition %in% leaReleasedLevels], freq = TRUE, breaks = 20L,
+       main = "LEA Released", xlab = "days")
+  hist(timeToDisposition[disposition %in% daDeclinedLevels], freq = TRUE, breaks = 20L,
+       main = "DA Declined", xlab = "days")
+  hist(timeToDisposition[disposition %in% courtLevels], freq = TRUE, breaks = 20L,
+       main = "Court", xlab = "days")
+  dev.off()
+  
+  pdf(imgFiles[2L], 6, 3)
+  par(mfrow = c(1L, 3L))
+  hist(evalx(timeToDisposition[disposition %in% leaReleasedLevels], x[-5 <= x & x <= 40]),
+       freq = TRUE, breaks = 20L,
+       main = "LEA Released Closeup", xlab = "days")
+  hist(evalx(timeToDisposition[disposition %in% daDeclinedLevels], x[-10 <= x & x <= 220]),
+       freq = TRUE, breaks = 20L,
+       main = "DA Declined Closeup", xlab = "days")
+  hist(evalx(timeToDisposition[disposition %in% courtLevels], x[-50 <= x & x <= 1200]),
+       freq = TRUE, breaks = 20L,
+       main = "Court Closeup", xlab = "days")
+  dev.off()
+  
+  rm(disposition, leaReleasedLevels, daDeclinedLevels, courtLevels, timeToDisposition)
+}
+rm(imgFiles)
+```
+
+Here we look at the length of time from arrest to disposition. For rows with a court disposition, the court event date is used, otherwise the arrest disposition date is used.
+
+`r rmdImageInline(file.path(imgPath, "analysis_dispositionTimes_1.pdf"))`
+
+Clearly there are some outliers, with days to dispositions reaching into the tends of thousands or negative hundreds. In the following, we zoom in to include approximately 98% of arrests.
+
+`r rmdImageInline(file.path(imgPath, "analysis_dispositionTimes_2.pdf"))`

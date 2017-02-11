@@ -1,3 +1,3 @@
 know,seek,example,requires
-"arrest offense, that arrested",demographics,news report,small $l$ on demographics-key from arrest offense
-"partial demographics, arrested for","complete demographics, outcome","blotter has arrest offense with age, gender, and crime but not race",small $k$ on demos or $l$ on demo-key from offense
+,demographics,news report of an arrest,small $l$ on demographics-key from arrest offense
+partial demographics,complete demographics,"blotter has arrest offense with age, gender, and crime but not race",small $k$ on demos or $l$ on demo-key from arrest offense

@@ -29,6 +29,10 @@ uniqueCodeNames <- sapply(uniqueCodes, function(code) {
   names(tab)[which.max(tab)]
 })
 bcsSummaryOffenseCodes <- data.frame(summary_offense_code = uniqueCodes, summary_offense_type = uniqueCodeNames, stringsAsFactors = FALSE)
+bcsSummaryOffenseCodes$offense_category <- sapply(uniqueCodes, function(code) {
+  tab <- table(subset(bcsOffenseCodes, summary_offense_code == code, "offense_category"))
+  names(tab)[which.max(tab)]
+})
 bcsSummaryOffenseCodes <- bcsSummaryOffenseCodes[order(bcsSummaryOffenseCodes$summary_offense_code),]
 rownames(bcsSummaryOffenseCodes) <- as.character(seq_len(nrow(bcsSummaryOffenseCodes)))
 

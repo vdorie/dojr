@@ -141,7 +141,7 @@ nativeFormat <- function(x, type = rmdGetOutputFormat(), ...) { UseMethod("nativ
 nativeFormat.data.frame <- function(x, type = rmdGetOutputFormat(), style = "classic", alignment = "center", width = 1, colWidths = NULL, rowHeight = NULL, fontSize = NULL, color = NULL, ...)
 {
   x.char <- sapply(x, function(x.i) format(x.i, ...))
-  if (!is.matrix(x.char)) x.char <- matrix(x.char, ncol = length(x))
+  if (!is.matrix(x.char)) x.char <- matrix(x.char, ncol = length(x), dimnames = dimnames(x))
   
   nativeFormat.matrix(x.char, type, style, alignment, width, colWidths, rowHeight, fontSize, color, ...)
 }

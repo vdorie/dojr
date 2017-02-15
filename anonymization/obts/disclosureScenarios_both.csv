@@ -1,2 +1,2 @@
-know,seek,example,requires
-arrest offense,outcome,"website shows name, photo, age, and arrest offense",small $k$ on demos or $l$ on court-outcome-key from demos/offense
+know,seek,example
+arrested for,outcome,"website shows name, photo, age, and arrest offense; crime and arrest in public place with known actor"

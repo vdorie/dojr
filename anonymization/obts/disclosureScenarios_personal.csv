@@ -1,5 +1,4 @@
-know,seek,example,requires
-,"that arrested, arrested for",job interview,small $k$ in database and population
-that arrested,arrested for,witness arrest but not crime,small $k$ or $l$ from demo on arrest offense
-that arrested,outcome,witness arrest but not crime,small $k$ or $l$ from demo on disposition/sentence
-arrested for,outcome,witness crime and arrest,small $k$ or $l$ from demo/arrest offense on disposition/sentence
+know,seek,example
+,"that arrested, arrested for",job interview
+that arrested,arrested for,see neighbor arrested
+that arrested,outcome,see neighbor arrested

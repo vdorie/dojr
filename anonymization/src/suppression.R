@@ -9,7 +9,7 @@ enforceKAnonymity <- function(x, across, by, inQuasiIdentifiers, suppressing, k)
     
     sdc <- createSdcObj(x.sub, keyVars = inQuasiIdentifiers)
     
-    dropRows <- sdc@risk$individual[,2L] <= k & !is.na(x.sub[,suppressing])
+    dropRows <- sdc@risk$individual[,2L] < k & !is.na(x.sub[,suppressing])
     
     numSuppressed[i,"k #"] <- sum(dropRows)
     numSuppressed[i,"k %"] <- 100 * numSuppressed[i,"k #"] / nrow(x.sub)
@@ -37,7 +37,7 @@ enforceLDiversity <- function(x, across, by, inQuasiIdentifiers, forSensitiveVal
     sdc <- createSdcObj(x.sub, keyVars = inQuasiIdentifiers)
     sdc <- ldiversity(sdc, ldiv_index = "sensitive_key")
     
-    dropRows <- sdc@risk$ldiversity[,"sensitive_key_Distinct_Ldiversity"] <= l & !is.na(x.sub[,suppressing])
+    dropRows <- sdc@risk$ldiversity[,"sensitive_key_Distinct_Ldiversity"] < l & !is.na(x.sub[,suppressing])
     
     numSuppressed[i,"l #"] <- sum(dropRows)
     numSuppressed[i,"l %"] <- 100 * numSuppressed[i,"l #"] / nrow(x.sub)

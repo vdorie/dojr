@@ -53,7 +53,7 @@ model {
     
       y[indices_j,j] ~ binomial_logit(n[indices_j,j], x[indices_j,] * beta + x_j[indices_j,] * beta_j[,j]);
     } else {
-      y[,j] ~ binomial_logit(n[,j], x * beta + x_j * beta_j[j]);
+      y[,j] ~ binomial_logit(n[,j], x * beta + x_j * beta_j[,j]);
     }
   }
   

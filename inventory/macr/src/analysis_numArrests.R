@@ -5,8 +5,9 @@ imgFiles <- c(
   file.path("..", imgPath, "analysis_arrestNumHistogram.pdf"),
   file.path("..", imgPath, "analysis_numArrestsZeroCounts.pdf"))
 
-if (all(file.exists(txtFiles)) && all(file.exists(imgFiles))) {
-  stop(simpleMessage("all files exist"))
+if (all(file.exists(txtFiles)) && all(file.exists(imgFiles)))
+#  stop(simpleMessage("all files exist"))
+  stop("all files exist")
 
 if (require(rstan, quietly = TRUE) == FALSE) {
   repos <- getOption("repos", default = "https://cran.cnr.berkeley.edu/")
@@ -429,6 +430,9 @@ rm(z)
 
 }
 
+## analysis of released proportion disabled for now
+if (FALSE) {
+
 samples2 <- sampling(model2, data = data)
 pars2 <- extract(samples2)
 
@@ -478,3 +482,5 @@ plotArray(numReleasedByJurisYear / numArrestsByJurisYear, which(fitJurisdictions
           getPosteriorPredictions(data, pars2, plotIndices), totals = numArrestsByJurisYear, ylim = c(0, 1))
 
 linPreds <- getPosteriorLinearPredictor(data, pars2, plotIndices[1L])
+
+}

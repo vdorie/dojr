@@ -109,6 +109,9 @@ for (i in seq_len(nrow(variables))) {
     cat("\n")
   }
 }
+
+if (nrow(variables) > 0L) cat(pageBreak)
+
 rm(i, pageBreak, firstVariable, variable, variableSummary)
 ```
 

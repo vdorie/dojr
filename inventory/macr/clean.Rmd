@@ -2,18 +2,14 @@
 cleanDataFile <- file.path("..", dataPath, tables$file[match(mainTable, tables$name)])
 
 txtFiles <- file.path("..", txtPath, c("clean_type_32.txt",
-                                       "clean_arrestDate.txt",
-                                       "clean_birthdate_1.txt",
-                                       "clean_birthdate_2.txt",
-                                       "clean_birthdate_3.txt"))
-imgFiles <- file.path("..", imgPath, "clean_birthmonthHistogram.pdf")
+                                       "clean_arrestDate.txt"))
 
-performClean <- !file.exists(cleanDataFile) || any(!file.exists(txtFiles) || any(!file.exists(imgFiles)))
+performClean <- !file.exists(cleanDataFile) || any(!file.exists(txtFiles))
 
 if (performClean)
   macr.clean <- loadData(paste0(mainTable, "_dirty"), path = "..")
 
-rm(txtFiles, imgFiles)
+rm(txtFiles)
 ```
 
 `r rmdPageBreak()`
@@ -29,7 +25,7 @@ txtFile <- file.path("..", txtPath, "clean_type_32.txt")
 if (performClean) {
   badRows <- macr.clean$record_type_id == "32"
   
-  type32 <- rmdDisplayDataFrameHead(macr[which(badRows)[seq_len(4L)],], maxCols = 10L, maxColWidth = 5L)
+  type32 <- rmdDisplayDataFrameHead(macr.clean[which(badRows)[seq_len(4L)],], maxCols = 10L, maxColWidth = 5L)
   writeLines(type32, txtFile)
   
   macr.clean <- macr.clean[!badRows,]
@@ -114,141 +110,30 @@ A total of `r arrestDate[1L]` records cannot be parsed into valid dates, i.e. th
 * Records at the end of a month with the `arrest_month` field prematurely incremented:
 
 ```{r, echo = FALSE, results = "asis"}
-cat(arrestDate[seq.int(2L, 10L)], "\n\n", sep = "\n")
+cat(arrestDate[seq.int(2L, 18L)], "\n\n", sep = "\n")
 ```
 
 * Records where the digits in `arrest_day` appear to be transposed:
 
 ```{r echo = FALSE, results = "asis"}
-cat(arrestDate[seq.int(11L, 19L)], "\n\n", sep = "\n")
+cat(arrestDate[seq.int(19L, 35L)], "\n\n", sep = "\n")
 ```
 
 * Records where days were added at the end of a month:
 
 ```{r echo = FALSE, results = "asis"}
-cat(arrestDate[seq.int(20L, 28L)], "\n\n", sep = "\n")
+cat(arrestDate[seq.int(36L, 52L)], "\n\n", sep = "\n")
 rm(arrestDate)
 ```
 
 As for now determining a 'correct arrest date' requires estimation, we leave those as is and augment the data with a field `arrest_date` that contains `NA` for all rows where a date cannot be parsed.
 
-##  Birth Date
-
-MACR includes fields for both the birth date and age, which do not always align. Errors in the birth date include:
-
-* birth year recorded as `19xx` instead of `18xx`
-* birth year recorded as `9xx` instead of `19xx`
-* birth year in wrong millenia
-* birth day 0
-* birth month 0
-* birth date invalid (e.g. `02/31/1991`)
-
-```{r 'clean_birthdate_1', echo = FALSE}
-txtFile <- file.path("..", txtPath, "clean_birthdate_1.txt")
-if (performClean) {
-  birth_year.clean <- macr.clean$birth_year
-
-  discrepancyRows <- with(macr.clean, abs(arrest_year - birth_year - age) > 1L)
-  discrepancyRows[is.na(discrepancyRows)] <- FALSE
-  numDiscrepancyBirthYear <- as.character(sum(discrepancyRows))
-  
-  offBy100 <- discrepancyRows & with(macr.clean, abs(arrest_year - (birth_year - 100L) - age) <= 1L)
-  offBy100[is.na(offBy100)] <- FALSE
-  
-  birth_year.clean[offBy100] <- birth_year.clean[offBy100] - 100L
-  
-  discrepancyRows <- discrepancyRows & !offBy100
-  
-  offBy1000 <- discrepancyRows & with(macr.clean, abs(arrest_year - (birth_year + 1000L) - age) <= 1L)
-  offBy1000[is.na(offBy1000)] <- FALSE
-
-  birth_year.clean[offBy1000] <- birth_year.clean[offBy1000] + 1000L
-  
-  discrepancyRows <- discrepancyRows & !offBy1000
-  
-  birth_year.clean[which(birth_year.clean == 3082L)] <- 1982L
-  birth_year.clean[which(birth_year.clean == 5010L)] <- 1910L
-  
-  macr.clean$birth_year <- birth_year.clean
-  rm(discrepancyRows, offBy100, offBy1000, birth_year.clean)
-  
-  writeLines(numDiscrepancyBirthYear, txtFile)
-} else {
-  numDiscrepancyBirthYear <- as.integer(readLines(txtFile))
-}
-rm(txtFile)
-```
-
-Errors in the birth year are detected by looking for when the age and distance from arrest year to birth year exceed 1 in absolute value, and are `r numDiscrepancyBirthYear` in number. Cases where there difference is 100 or 1000 years can be resolved automatically, which leaves only 2 cases to be resolved by hand.
-
-```{r 'clean_birthdate_2', echo = FALSE}
-rm(numDiscrepancyBirthYear)
-
-txtFile <- file.path("..", txtPath, "clean_birthdate_2.txt")
-if (performClean) {
-  macr.clean$birth_month[macr.clean$birth_month <= 0L] <- NA
-  macr.clean$birth_day  [macr.clean$birth_day   <= 0L] <- NA
-  
-  macr.clean$birth_date <- with(macr.clean, as.Date(paste(birth_year,  birth_month,  birth_day,  sep = "-"), format = "%F"))
-  
-  ## load getTimeDifferenceInYears
-  source(file.path("..", commonSrcPath, "time.R"))
-  age.est <- with(macr.clean, getTimeDifferenceInYears(arrest_date, birth_date))
-  discrepancyRows <- macr.clean$age != age.est
-  discrepancyRows[is.na(discrepancyRows)] <- FALSE
-  
-  numDiscrepancyBirthYear <- sum(discrepancyRows)
-  rm(age.est, discrepancyRows, getTimeDifferenceInYears)
-  
-  writeLines(as.character(numDiscrepancyBirthYear), txtFile)
-} else {
-  numDiscrepancyBirthYear <- as.integer(readLines(txtFile))
-}
-rm(txtFile)
-```
-
-Of the remaining cases where a valid birth date can be derived from the birth year, month, and day, there `r pl <- numDiscrepancyBirthYear != 1L; paste(if (pl) "are" else "is", numDiscrepancyBirthYear, if (pl) "cases" else "case")` where the distance from arrest date to birth date does not yield the recorded age.
-
-```{r 'clean_birthdate_3', echo = FALSE}
-rm(numDiscrepancyBirthYear); if (exists("pl")) rm(pl)
-
-txtFile <- file.path("..", txtPath, "clean_birthdate_3.txt")
-imgFile <- file.path("..", imgPath, "clean_birthmonthHistogram.pdf")
-if (performClean) {
-  naRows <- with(macr.clean, is.na(birth_date) & !is.na(birth_month) & !is.na(birth_day))
-  
-  numInvalidBirthDates       <- sum(naRows)
-  numInvalidBirthDates.feb30 <- with(macr.clean, sum(birth_day[naRows] == 30L & birth_month[naRows] == 2L))
-  writeLines(as.character(c(numInvalidBirthDates, numInvalidBirthDates.feb30)), txtFile)
-  
-  pdf(imgFile, 4.5, 4.5)
-  with(macr.clean,
-       discrete.histogram(birth_month[naRows & (birth_day != 30L | birth_month != 2L)],
-                          xlab = "Month", col = "gray", border = NA, main = "Birth Date Invalid, Not 02/30"))
-  dev.off()
-  
-  rm(naRows)
-} else {
-  lines <- readLines(txtFile)
-  numInvalidBirthDates <- as.integer(lines[1L])
-  numInvalidBirthDates.feb30 <- as.integer(lines[2L])
-  rm(lines)
-}
-rm(txtFile, imgFile)
-```
-
-The MACR manual states that if the specific birth date is unknown, the birth month and day should be recorded as February 30th. This accounts for `r numInvalidBirthDates.feb30` of the remaining `r numInvalidBirthDates` records with an invalid birth date. After excluding these records, there are still an anomalous amount of birth dates in February.
-
-`r rmdImageInline(file.path(imgPath, "clean_birthmonthHistogram.pdf"))`
-
-```{r 'clean_birthdate_4', echo = FALSE}
-rm(numInvalidBirthDates, numInvalidBirthDates.feb30)
-
+```{r 'clean_results', echo = FALSE}
 if (performClean) {
   macr <- macr.clean
   save(macr, file = cleanDataFile)
   
-  rm(macr.clean, )
+  rm(macr.clean)
   invisible(gc(FALSE))
 }
 rm(performClean, cleanDataFile)

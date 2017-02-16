@@ -80,7 +80,7 @@ if (!file.exists(txtFile)) {
   
   macr.sub <- subset(macr,
                      arrest_year == 1991L & age >= 89L & age <= 91L,
-                     c("ncic_jurisdiction", "arrest_date", "age", "birth_month", "birth_day", "birth_date"))
+                     c("ncic_jurisdiction", "arrest_date", "age"))
   millenials <- rmdFormat(macr.sub[sample(nrow(macr.sub), 15L),])
   rm(macr.sub)
   
@@ -101,7 +101,7 @@ if (!file.exists(txtFile)) {
   macr <- loadData(path = "..")
   macr.sub <- subset(macr,
                      arrest_year == 2003 & age == 88L,
-                     c("ncic_jurisdiction", "arrest_date", "age", "birth_month", "birth_day", "birth_date"))
+                     c("ncic_jurisdiction", "arrest_date", "age"))
   eightyEight <- rmdFormat(macr.sub[seq_len(10L),])
   rm(macr.sub)
   

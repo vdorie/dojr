@@ -166,7 +166,7 @@ rmdFormat <- function(x, ...) { UseMethod("rmdFormat", x) }
 rmdFormat.data.frame <- function(x, colWidths = NULL, maxRows = 25L, ...)
 {
   x.char <- sapply(x, function(x.i) format(x.i, ...))
-  if (!is.matrix(x.char)) x.char <- t(as.matrix(x.char))
+  if (!is.matrix(x.char)) x.char <- matrix(x.char, ncol = length(x), dimnames = dimnames(x))
   if (!is.na(maxRows) && nrow(x) > maxRows)
     x.char[maxRows,] <- "..."
   printLimit <- if (!is.na(maxRows) && maxRows < nrow(x)) maxRows else nrow(x)

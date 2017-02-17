@@ -6,7 +6,6 @@ imgFiles <- c(
   file.path("..", imgPath, "analysis_numArrestsZeroCounts.pdf"))
 
 if (all(file.exists(txtFiles)) && all(file.exists(imgFiles)))
-#  stop(simpleMessage("all files exist"))
   stop("all files exist")
 
 if (require(rstan, quietly = TRUE) == FALSE) {

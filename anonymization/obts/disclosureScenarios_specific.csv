@@ -1,3 +1,4 @@
 know,seek,example
 "arrested for, arrest disposition",reason for release or sentence,"know of crime and arrest, detained or not"
 "court outcomes, arrest date",arrest offense,plea bargain for testimony/information
+partial demographics,complete demographics,"blotter has arrest offense with age, gender, and crime but not race"

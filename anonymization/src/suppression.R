@@ -1,5 +1,6 @@
-enforceKAnonymity <- function(x, across, by, inQuasiIdentifiers, suppressing, k)
+enforceKAnonymity <- function(x, across, inQuasiIdentifiers, suppressing, k)
 {
+  by <- if (is.factor(x[,across])) levels(x[,acrros]) else sort(unique(x[,across]))
   numSuppressed <- matrix(NA_real_, length(by), 2L, dimnames = list(as.character(by), c("k #", "k %")))
   
   for (i in seq_along(by)) {
@@ -20,8 +21,9 @@ enforceKAnonymity <- function(x, across, by, inQuasiIdentifiers, suppressing, k)
   list(suppressed = x[,suppressing], numSuppressed = numSuppressed)
 }
 
-enforceLDiversity <- function(x, across, by, inQuasiIdentifiers, forSensitiveValues, suppressing, l)
+enforceLDiversity <- function(x, across, inQuasiIdentifiers, forSensitiveValues, suppressing, l)
 {
+  by <- if (is.factor(x[,across])) levels(x[,acrros]) else sort(unique(x[,across]))
   numSuppressed <- matrix(NA_real_, length(by), 2L, dimnames = list(as.character(by), c("l #", "l %")))
   
   for (i in seq_along(by)) {
@@ -49,41 +51,39 @@ enforceLDiversity <- function(x, across, by, inQuasiIdentifiers, forSensitiveVal
 }
 
 ## the lesser category should come first in mappedFrom, mappedTo
-enforceOrderedDiversity <- function(x, across, by, inQuasiIdentifiers, forSensitiveValue, mappedFrom, mappedTo, suppressing)
+enforceOrderedDiversity <- function(x, across, inQuasiIdentifiers, forSensitiveValue, mappedFrom, mappedTo, suppressing)
 {
+  by <- if (is.factor(x[,across])) levels(x[,acrros]) else sort(unique(x[,across]))
   numSuppressed <- matrix(NA_real_, length(by), 2L, dimnames = list(as.character(by), c("o #", "o %")))
   
-  for (i in seq_along(by)) {
-    subRows <- x[,across] == by[i]
-    
-    x.sub <- x[subRows, union(inQuasiIdentifiers, c(suppressing, forSensitiveValue))]
-    
-    x.sub[,"sensitive_key"] <- remapFactor(x.sub[,forSensitiveValue], mappedFrom, mappedTo)
-    
-    summaryTable <- table(x.sub[,c(inQuasiIdentifiers, "sensitive_key")])
-    atRiskTable <- apply(summaryTable, seq_len(length(dim(summaryTable)) - 1L), function(x) {
-      ifelse(x[mappedTo[2L]] > 0L & x[mappedTo[1L]] == 0L, TRUE, FALSE)
-    })
-    
-    tableDims <- dim(atRiskTable)
-    dimNames <- dimnames(atRiskTable)
-   
-    indexExpression <- quote(match(x.sub[,inQuasiIdentifiers[1L]], dimNames[[1L]]))
-    for (j in seq.int(2L, length(dim(atRiskTable)))) {
-      temp <- quote(a + b)
-      temp[[2L]] <- indexExpression
-      temp[[3L]] <- substitute((match(x.sub[,inQuasiIdentifiers[j]], dimNames[[j]]) - 1L) * prod(head(tableDims, j - 1L)), list2env(list(j = j)))
-      indexExpression <- temp
-    }
-    
-    suppressRows <- atRiskTable[eval(indexExpression)]
-    suppressRows[is.na(suppressRows)] <- FALSE
-    
-    numSuppressed[i,"o #"] <- sum(suppressRows)
-    numSuppressed[i,"o %"] <- 100 * numSuppressed[i,"o #"] / nrow(x.sub)
-    
-    x[subRows, suppressing][suppressRows] <- NA
+  x.sub <- x[,unique(c(across, inQuasiIdentifiers, forSensitiveValue, suppressing))]
+  
+  x.sub[,"sensitive_key"] <- remapFactor(x.sub[,forSensitiveValue], mappedFrom, mappedTo)
+  
+  summaryTable <- table(x.sub[,c(across, inQuasiIdentifiers, "sensitive_key")])
+  atRiskTable <- apply(summaryTable, seq.int(2L, length(dim(summaryTable)) - 1L), function(x) {
+    ifelse(x[,mappedTo[2L]] > 0L & x[,mappedTo[1L]] == 0L, TRUE, FALSE)
+  })
+  
+  tableDims <- dim(atRiskTable)
+  dimNames <- dimnames(atRiskTable)
+  
+  indexExpression <- quote(match(x.sub[,across], dimNames[[1L]]))
+  for (j in seq.int(2L, length(dim(atRiskTable)))) {
+    temp <- quote(a + b)
+    temp[[2L]] <- indexExpression
+    temp[[3L]] <- substitute((match(x.sub[,inQuasiIdentifiers[j - 1L]], dimNames[[j]]) - 1L) * prod(head(tableDims, j - 1L)), list2env(list(j = j)))
+    indexExpression <- temp
   }
+  
+  suppressRows <- atRiskTable[eval(indexExpression)]
+  suppressRows[is.na(suppressRows)] <- FALSE
+  
+  suppressedTable <- table(data.frame(a = x.sub[,across], x = suppressRows), useNA = "ifany")
+  numSuppressed[,1L] <- suppressedTable[match(rownames(suppressedTable), rownames(numSuppressed)), "TRUE"]
+  numSuppressed[,2L] <- 100 * numSuppressed[,1L] / rowSums(suppressedTable[match(rownames(suppressedTable), rownames(numSuppressed)),])
+  
+  x[suppressRows,suppressing] <- NA
   
   list(suppressed = x[,suppressing], numSuppressed = numSuppressed)
 }

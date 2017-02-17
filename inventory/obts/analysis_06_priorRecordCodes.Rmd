@@ -1,0 +1,51 @@
+## Blank Prior Record
+
+```{r 'analysis_priorRecordCodes', echo = FALSE}
+imgFiles <- file.path("..", imgPath, c("analysis_priorRecordCodes_1.pdf",
+                                       "analysis_priorRecordCodes_2.pdf"))
+if (!all(file.exists(imgFiles))) {
+  loadData(mainTable, "..")
+  
+  ageAtArrest <- with(obts, arrest_event_year - birth_year +
+                            ifelse(arrest_event_month > birth_month | 
+                                   (arrest_event_month == birth_month & arrest_event_day >= birth_day) |
+                                   is.na(birth_month), 0L, -1L))
+  obts$age_at_arrest <- ageAtArrest
+  blanksOverTime <- table(subset(obts, prior_record_code == "lengthy_record", c("court_event_year", "age_at_arrest")))
+  obts$age_at_arrest <- NULL
+  rm(ageAtArrest)
+  
+  pdf(imgFiles[1L], 4.5, 4.5)
+  plot(NULL, type = "n", xlim = c(15, 85), ylim = c(0, 8000),
+       ylab = "frequency", xlab = "age at arrest", main = "Blank Priors Over Time")
+  for (i in seq_len(nrow(blanksOverTime))) {
+    dns <- density(rep.int(as.integer(colnames(blanksOverTime)), blanksOverTime[i,]))
+    dns$y <- dns$y * max(blanksOverTime[i,]) / max(dns$y)
+    lines(dns$x, dns$y, lty = (i - 1L) %% 6L + 1L, lwd = 0.75,
+          col = (i - 1L) %/% 6L + 1L)
+  }
+  dev.off()
+  
+  pdf(imgFiles[2L], 4.5, 4.5)
+  i <- 29L
+  dns <- density(rep.int(as.integer(colnames(blanksOverTime)), blanksOverTime[i,]))
+  dns$y <- dns$y * max(blanksOverTime[i,]) / max(dns$y)
+  plot(dns$x, dns$y, type = "l",
+       main = paste0("Blank Priors ", rownames(blanksOverTime)[i]),
+       xlab = "age at arrest", ylab = "frequency")
+  dev.off()
+  
+  rm(blanksOverTime, i, dns)
+}
+rm(imgFiles)
+```
+
+In this section we look at the usage of the prior record code blank (literally an empty space) as a function of the age at arrest as a function over the time. The OBTS Technical Manual lists blank as indicating "Lengthy record (prior to 1982)", which would seem to indicate that the prior record extends in time beyond 1982 when data collection began. However, evidence exists that code was subsequently used to indicate a "not-available".
+
+`r rmdImageInline(file.path(imgPath, "analysis_priorRecordCodes_1.pdf"))`
+
+The above graph shows the frequency of the usage of this code over time. Court event years progress first through line types (solid, dashed, dotted-dashed, etc) and then through colors (black, red, green, etc), but can also be distinguished from one another by their peaks. The movement of the peaks through time reflects an aging population that progressive commits fewer crimes. The $y$ axis is truncated to show the most relevant portion, however the maximum for arrest in the first year (1982) is around 13500. What is important here is that the usage decreases over time - as one would expect if the code meant that a prior record existed from before 1982 - but also that subsequent years show signficant usage for individuals whose age makes it impossible for them to have a record before 1982.
+
+For example, the following graph highlights the solid cyan line, 2010. In it, any individual that has an age of arrest of less than 28 was not even born in 1982, so the blank prior record code must have a different meaning. However, the mode centered around 50 likely does indicate a "lengthy record".
+
+`r rmdImageInline(file.path(imgPath, "analysis_priorRecordCodes_2.pdf"))`

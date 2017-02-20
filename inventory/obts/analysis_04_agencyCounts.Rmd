@@ -1,16 +1,51 @@
 ## Agency Arrests Over Time
 
+```{r 'analysis_agencyCounts_agencyTotals', echo = FALSE}
+txtFile <- file.path("..", txtPath, "analysis_agencyCounts_agencyTotals.txt")
+imgFile <- file.path("..", imgPath, "analysis_agencyCounts_agencyTotals.pdf")
+if (!file.exists(txtFile) || !file.exists(imgFile)) {
+  loadData(mainTable, "..")
+  
+  numAgencies <- nlevels(obts$arresting_agency)
+  numYears <- length(unique(obts.sub$court_event_year))
+  
+  writeLines(as.character(c(numAgencies, numYears)),
+             txtFile)
+  
+  agencyTable <- table(obts$arresting_agency)
+  
+  pdf(imgFile, 6, 3)
+  par(mfrow = c(1L, 2L))
+  hist(agencyTable,
+       breaks = 25L, freq = TRUE, xlab = "Num Arrests",
+       main = "Agency Histogram")
+  hist(evalx(agencyTable, x[x < quantile(x, 0.95)]),
+       breaks = 25L, freq = TRUE, xlab = "Num Arrests",
+       main = "Agency Histogram Lower 95%")
+  dev.off()
+  
+  rm(agencyTable)
+} else {
+  lines <- readLines(txtFile)
+  numAgencies <- as.integer(lines[1L])
+  numYears <- as.integer(lines[2L])
+  rm(lines)
+}
+rm(txtFile, imgFile)
+```
+
+This section attempts to show the distribution of the number of arrests as a function of agency as time. As there are `r numAgencies` agencies and `r numYears` years this involves a lot of data, so we settle first for giving a rough presentation before picking a few anomalous agencies to examine in more detail. However, first we show the distribution of the number of arrests for each agency by aggregating over time.
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyTotals.pdf"))`
+
+```{r echo = FALSE}
+rm(numAgencies, numYears)
+```
+
 ```{r 'analysis_agencyCounts_byAgency', echo = FALSE}
 imgFiles <- file.path("..", imgPath, c("analysis_agencyCounts_agencyCounts.pdf",
                                        "analysis_agencyCounts_agencyCourtDispositions.pdf"))
 if (any(!file.exists(imgFiles))) {
-  remapFactor <- function(x, groups, name, droplevels = TRUE) {
-    x[x %in% groups[-1L]] <- groups[1L]
-    levels(x)[levels(x) == groups[1L]] <- name
-    if (droplevels) x <- base::droplevels(x)
-    x
-  }
-  
   loadData(mainTable, "..")
   
   obts.sub <- obts[,c("arresting_agency", "court_event_year")]
@@ -18,32 +53,19 @@ if (any(!file.exists(imgFiles))) {
     as.factor(with(obts,
                    ifelse(!is.na(court_disposition_type), as.character(court_disposition_type), as.character(arrest_disposition_type))))
 
+  courtDispositions <- c("acquitted", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
+                         "diversion_dismissed", "not_guilty_insane")
+  releasedDispositions <- c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                            "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified")
+  declinedDispositions <- c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
+                            "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
+                            "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
+                            "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
   obts.sub$disposition <-
     remapFactor(obts.sub$disposition,
-                c("acquited", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
-                  "diversion_dismissed", "not_guilty_insane"),
-                "crt",
-                FALSE)
-  
-  obts.sub$disposition <-
-    remapFactor(obts.sub$disposition,
-                c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
-                  "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified"),
-                "lea",
-                FALSE)
-  
-  obts.sub$disposition <- 
-    remapFactor(obts.sub$disposition,
-                c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
-                  "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
-                  "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
-                  "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable"),
-                "da",
-                FALSE)
-  obts.sub$disposition <- droplevels(obts.sub$disposition)
-  rm(remapFactor)
-  
-  years <- sort(unique(obts.sub$court_event_year))
+                list(courtDispositions, releasedDispositions, declinedDispositions),
+                c("crt", "lea", "da"))
+  rm(courtDispositions, releasedDispositions, declinedDispositions)
   
   dispoTable <- table(obts.sub)
   totals <- apply(dispoTable, c(1L, 2L), sum)
@@ -57,6 +79,8 @@ if (any(!file.exists(imgFiles))) {
   for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- unname(which(cutoffs[i] < log(totalsByJurisdiction + 1) & log(totalsByJurisdiction + 1) <= cutoffs[i - 1L]))
   
   rm(totalsByJurisdiction, cutoffs)
+  
+  years <- sort(unique(obts.sub$court_event_year))
   
   pdf(imgFiles[1L], 6, 6)
   par(mfrow = getGridDim(8.5 / 11, length(indexSets)), mar = c(2.2, 2.2, 0.1, 0.1))
@@ -93,9 +117,9 @@ if (any(!file.exists(imgFiles))) {
 rm(imgFiles)
 ```
 
-This section shows the total number of dispositions by arresting agency over time, as well as the percentage of records that have a court disposition. Since there are a few agencies that account for most of the arrests, the break points in the following plots are made uniform over the log of the number of arrests, plus 1.
-
 #### Agency Totals
+
+In what follows, we plot individual time trends for all of the agencies. Because of the wide spread in ranges for the number of arrests per agency, we divide the trends up based on the logarithm of the total number of arrests per jurisdictions (across all years), plus 1. Binning the jurisdictions uniformly across this range produces a roughly equivalent number of in each plot, with the expection of those making the most arrests. `n` refers to the number of jursidictions being displayed. What is important to note is that some jurisdictions show very sharp increases and decreases in the number of arrests.
 
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyCounts.pdf"))`
 
@@ -103,9 +127,41 @@ This section shows the total number of dispositions by arresting agency over tim
 
 #### Agency Court Disposition Percentages
 
+Here we produce plots similar to those above, but instead look at the percentage of arrests that have a court disposition, i.e. were not released by law enforcement or declined to prosecute by the DA. The agencies in each grid square correspond to those in the previous plot, and again it is the sharp increases and decreases that are of interest. Also concerning are values near 0 or 1 when the number of arrests are large, as they may potentially indicate under-reporting.
+
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyCourtDispositions.pdf"))`
 
 `r rmdPageBreak()`
+
+#### Anomalous Agencies
+
+```{r 'analysis_agencyCounts_anomalousAgencies', echo = FALSE}
+if (FALSE) {
+  obts.sub <- obts[,c("arresting_agency", "court_event_year")]
+  obts.sub$disposition <-
+    as.factor(with(obts,
+                   ifelse(!is.na(court_disposition_type), as.character(court_disposition_type), as.character(arrest_disposition_type))))
+
+  courtDispositions <- c("acquitted", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
+                         "diversion_dismissed", "not_guilty_insane")
+  releasedDispositions <- c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                            "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified")
+  declinedDispositions <- c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
+                            "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
+                            "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
+                            "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
+  obts.sub$disposition <-
+    remapFactor(obts.sub$disposition,
+                list(courtDispositions, releasedDispositions, declinedDispositions),
+                c("crt", "lea", "da"))
+  rm(courtDispositions, releasedDispositions, declinedDispositions)
+  
+  dispoTable <- table(obts.sub)
+  totals <- apply(dispoTable, c(1L, 2L), sum)
+  
+  ratios <- apply(totals, 1L, function(row) evalx(tail(row, -1L) / head(row, -1L)))
+}
+```
 
 ## County Arrests Over Time
 

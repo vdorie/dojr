@@ -70,15 +70,15 @@ if (any(!file.exists(imgFiles))) {
   dispoTable <- table(obts.sub)
   totals <- apply(dispoTable, c(1L, 2L), sum)
   
-  totalsByJurisdiction <- apply(totals, 1L, sum)
+  totalsByAgency <- apply(totals, 1L, sum)
   
-  cutoffs <- seq(log(max(totalsByJurisdiction) + 1), 0, length.out = 10L)[-1L]
+  cutoffs <- seq(log(max(totalsByAgency) + 1), 0, length.out = 10L)[-1L]
   
   indexSets <- list()
-  indexSets[[1L]] <- unname(which(log(totalsByJurisdiction + 1) > cutoffs[1L]))
-  for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- unname(which(cutoffs[i] < log(totalsByJurisdiction + 1) & log(totalsByJurisdiction + 1) <= cutoffs[i - 1L]))
+  indexSets[[1L]] <- unname(which(log(totalsByAgency + 1) > cutoffs[1L]))
+  for (i in seq.int(2L, length(cutoffs))) indexSets[[i]] <- unname(which(cutoffs[i] < log(totalsByAgency + 1) & log(totalsByAgency + 1) <= cutoffs[i - 1L]))
   
-  rm(totalsByJurisdiction, cutoffs)
+  rm(totalsByAgency, cutoffs)
   
   years <- sort(unique(obts.sub$court_event_year))
   
@@ -91,9 +91,9 @@ if (any(!file.exists(imgFiles))) {
          xlab = "year", ylab = "count", xaxs = "i")
     for (j in seq_along(indices)) 
       lines(years, totals[indices[j],], lwd = 1, col = rgb(0, 0, 0, 0.4))
-    plotRange <- par()$usr
-    xVal <- 0.975 * (plotRange[2L] - plotRange[1L]) + plotRange[1L]
-    yVal <- 0.975 * (plotRange[4L] - plotRange[3L]) + plotRange[3L]
+    plotRegion <- par()$usr
+    xVal <- 0.975 * (plotRegion[2L] - plotRegion[1L]) + plotRegion[1L]
+    yVal <- 0.975 * (plotRegion[4L] - plotRegion[3L]) + plotRegion[3L]
     text(xVal, yVal, paste0("n = ", length(indices)), adj = c(1, 0.75))
   }
   dev.off()
@@ -110,16 +110,16 @@ if (any(!file.exists(imgFiles))) {
   }
   dev.off()
 
-  rm(i, j, indices, xVal, yVal, plotRange)
+  rm(i, j, indices, xVal, yVal, plotRegion)
   
   rm(years, indexSets, dispoTable, totals)
 }
 rm(imgFiles)
 ```
 
-#### Agency Totals
+### Agency Totals
 
-In what follows, we plot individual time trends for all of the agencies. Because of the wide spread in ranges for the number of arrests per agency, we divide the trends up based on the logarithm of the total number of arrests per jurisdictions (across all years), plus 1. Binning the jurisdictions uniformly across this range produces a roughly equivalent number of in each plot, with the expection of those making the most arrests. `n` refers to the number of jursidictions being displayed. What is important to note is that some jurisdictions show very sharp increases and decreases in the number of arrests.
+In what follows, we plot individual time trends for all of the agencies. Because of the wide spread in ranges for the number of arrests per agency, we divide the trends up based on the logarithm of the total number of arrests per agency (across all years), plus 1. Binning the jurisdictions uniformly across this range produces a roughly equivalent number of in each plot, with the expection of those making the most arrests. `n` refers to the number of jursidictions being displayed. What is important to note is that some agencies show very sharp increases and decreases in the number of arrests.
 
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_agencyCounts.pdf"))`
 
@@ -133,10 +133,17 @@ Here we produce plots similar to those above, but instead look at the percentage
 
 `r rmdPageBreak()`
 
-#### Anomalous Agencies
+### Agencies with Large Jumps
 
 ```{r 'analysis_agencyCounts_anomalousAgencies', echo = FALSE}
-if (FALSE) {
+txtFile <- file.path("..", txtPath, "analysis_agencyCounts_anomalousAgencies_largeAgencies.txt")
+imgFiles <- file.path("..", imgPath, c("analysis_agencyCounts_anomalousAgencies_numArrestIncreases.pdf",
+                                       "analysis_agencyCounts_anomalousAgencies_numArrestDecreases.pdf",
+                                       "analysis_agencyCounts_anomalousAgencies_dispositionIncreases.pdf",
+                                       "analysis_agencyCounts_anomalousAgencies_dispositionDecreases.pdf",
+                                       "analysis_agencyCounts_anomalousAgencies_dispositionMaxes.pdf",
+                                       "analysis_agencyCounts_anomalousAgencies_dispositionMins.pdf"))
+if (!file.exists(txtFile) || !all(file.exists(imgFiles))) {
   obts.sub <- obts[,c("arresting_agency", "court_event_year")]
   obts.sub$disposition <-
     as.factor(with(obts,
@@ -158,25 +165,243 @@ if (FALSE) {
   
   dispoTable <- table(obts.sub)
   totals <- apply(dispoTable, c(1L, 2L), sum)
+  totalsByAgency <- apply(totals, 1L, sum)
   
-  ratios <- apply(totals, 1L, function(row) evalx(tail(row, -1L) / head(row, -1L)))
+  cdf <- cumsum(sort(totalsByAgency)) / sum(totalsByAgency)
+  agencyCutoff <- totalsByAgency[order(totalsByAgency)[which.min(cdf < 0.02) - 1L]]
+  agenciesToKeep <- totalsByAgency > agencyCutoff
+  rm(cdf, agencyCutoff)
+  
+  
+  arrestingAgencies <- loadData("arrestingAgencies", "..")
+  years <- sort(unique(obts.sub$court_event_year))
+  
+  numAgenciesKept <- sum(agenciesToKeep)
+  writeLines(as.character(numAgenciesKept), txtFile)
+} else {
+  numAgenciesKept <- as.character(readLines(txtFile))
 }
+```
+
+Next we single out agencies with the largest increases and decreases year over year, excluding those years with 0 arrests. We focus only on those agencies responsible for 98% of arrests, or the top `r numAgenciesKept` agencies.
+
+```{r, echo = FALSE}
+rm(numAgenciesKept)
+```
+
+```{r 'analysis_agencyCounts_anomalousAgencies_numArrests', echo = FALSE}
+if (!file.exists(txtFile) || !all(file.exists(imgFiles))) {
+  ratios <- apply(totals[agenciesToKeep,], 1L, function(row) evalx(tail(row, -1L) / head(row, -1L), x[is.finite(x) & x > 0]))
+  increases <- sapply(ratios, function(x) if (length(x) > 0L) max(x) else 0)
+  decreases <- sapply(ratios, function(x) if (length(x) > 0L) min(x) else 1)
+  rm(ratios)
+  
+  ratioOrder <- order(increases, decreasing = TRUE)
+  
+  pdf(imgFiles[1L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, totals[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         main = agencyName, cex.main = 0.7,
+         ylab = "num arrests", xlab = "year")
+  }
+  dev.off()
+  
+  ratioOrder <- order(decreases)
+  
+  pdf(imgFiles[2L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, totals[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         main = agencyName, cex.main = 0.7,
+         ylab = "num arrests", xlab = "year")
+  }
+  dev.off()
+  
+  rm(i, agency, agencyName, ratioOrder, increases, decreases, totals)
+}
+```
+
+#### Largest Increases - Agency Number of Arrests
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_numArrestIncreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest Decreases - Agency Number of Arrests
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_numArrestDecreases.pdf"))`
+
+`r rmdPageBreak()`
+
+```{r 'analysis_agencyCounts_anomalousAgencies_dispositions', echo = FALSE}
+if (!file.exists(txtFile) || !all(file.exists(imgFiles))) {
+  percentages <- apply(dispoTable, c(1L, 2L), function(x) x["crt"] / sum(x))
+  
+  ratios <- apply(percentages[agenciesToKeep,], 1L, function(row) evalx(qlogis(tail(row, -1L)) - qlogis(head(row, -1L)), x[is.finite(x)]))
+  increases <- sapply(ratios, function(x) if (length(x) > 0L) max(x) else 0)
+  decreases <- sapply(ratios, function(x) if (length(x) > 0L) min(x) else 1)
+  rm(ratios)
+  
+  ratioOrder <- order(increases, decreasing = TRUE)
+  
+  pdf(imgFiles[3L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, percentages[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         ylim = c(0, 1),
+         main = agencyName, cex.main = 0.7,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByAgency[agenciesToKeep][ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  ratioOrder <- order(decreases)
+  
+  pdf(imgFiles[4L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, percentages[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         ylim = c(0, 1),
+         main = agencyName, cex.main = 0.7,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByAgency[agenciesToKeep][ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  rm(increases, decreases)
+  
+  medians <- apply(percentages[agenciesToKeep,], 1L, function(row) median(row, na.rm = TRUE))
+  
+  ratioOrder <- order(medians, decreasing = TRUE)
+  
+  pdf(imgFiles[5L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, percentages[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         ylim = c(0, 1),
+         main = agencyName, cex.main = 0.7,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByAgency[agenciesToKeep][ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  ratioOrder <- order(medians)
+  
+  pdf(imgFiles[6L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    agency <- subset(arrestingAgencies, code == levels(obts$arresting_agency)[agenciesToKeep][ratioOrder[i]])
+    agencyName <- if (nrow(agency) > 0L) paste0(agency$agency, "\n", agency$type) else "Unknown"
+    plot(years, percentages[which(agenciesToKeep)[ratioOrder[i]],], type = "l",
+         ylim = c(0, 1),
+         main = agencyName, cex.main = 0.7,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByAgency[agenciesToKeep][ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  rm(i, plotRegion, agency, agencyName, ratioOrder, medians)
+}
+```
+
+#### Largest Increases - Agency Court Disposition Percentage
+
+We perform a similar analysis, looking just at the court disposition percentage.
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_dispositionIncreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest Decreases - Agency Court Disposition Percentage
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_dispositionDecreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest Agency Court Disposition Percentages
+
+Finally, we order the agencies based on the median of their court disposition sentences across all years.
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_dispositionMaxes.pdf"))`"
+
+`r rmdPageBreak()`
+
+#### Smallest Agency Court Disposition Percentages
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousAgencies_dispositionMins.pdf"))`"
+
+`r rmdPageBreak()`
+
+```{r echo = FALSE}
+if (!file.exists(txtFile) || !all(file.exists(imgFiles)))
+  rm(obts.sub, dispoTable, totalsByAgency, agenciesToKeep, years)
+rm(txtFile, imgFiles)
 ```
 
 ## County Arrests Over Time
 
+```{r 'analysis_agencyCounts_countyTotals', echo = FALSE}
+txtFile <- file.path("..", txtPath, "analysis_agencyCounts_countyTotals.txt")
+imgFile <- file.path("..", imgPath, "analysis_agencyCounts_countyTotals.pdf")
+if (!file.exists(txtFile) || !file.exists(imgFile)) {
+  loadData(mainTable, "..")
+  
+  county <- as.factor(substr(as.character(obts$arresting_agency), 1L, 2L))
+  
+  numCounties <- nlevels(county)
+  
+  writeLines(as.character(numCounties),
+             txtFile)
+  
+  countyTable <- table(county)
+  
+  pdf(imgFile, 4.5, 4.5)
+  par(mfrow = c(1L, 2L))
+  hist(countyTable,
+       breaks = 25L, freq = TRUE, xlab = "Num Arrests",
+       main = "County Histogram")
+  dev.off()
+  
+  rm(county, countyTable)
+} else {
+  numCounties <- as.integer(readLines(txtFile))
+}
+rm(txtFile, imgFile)
+```
+
+Due to natural circumstances, the arrests for some agencies can be moved to neighboring ones so that the variability shown above might be mitigated by looking at the county level. In contrast to the large number of agencies, only `r numCounties` counties are represented in the data.
+
+```{r echo = FALSE}
+rm(numCounties)
+```
+
 ```{r 'analysis_agencyCounts_byCounty', echo = FALSE}
-txtFile <- file.path("..", txtPath, c("analysis_agencyCounts_lowCounties.txt"))
 imgFiles <- file.path("..", imgPath, c("analysis_agencyCounts_countyCounts.pdf",
                                        "analysis_agencyCounts_countyCourtDispositions.pdf"))
-if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
-  remapFactor <- function(x, groups, name, droplevels = TRUE) {
-    x[x %in% groups[-1L]] <- groups[1L]
-    levels(x)[levels(x) == groups[1L]] <- name
-    if (droplevels) x <- base::droplevels(x)
-    x
-  }
-  
+if (!all(file.exists(imgFiles))) {
   loadData(mainTable, "..")
   
   obts.sub <- obts[,c("arresting_agency", "court_event_year")]
@@ -184,30 +409,19 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
     as.factor(with(obts,
                    ifelse(!is.na(court_disposition_type), as.character(court_disposition_type), as.character(arrest_disposition_type))))
 
+  courtDispositions <- c("acquitted", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
+                         "diversion_dismissed", "not_guilty_insane")
+  releasedDispositions <- c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                            "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified")
+  declinedDispositions <- c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
+                            "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
+                            "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
+                            "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
   obts.sub$disposition <-
     remapFactor(obts.sub$disposition,
-                c("acquited", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
-                  "diversion_dismissed", "not_guilty_insane"),
-                "crt",
-                FALSE)
-  
-  obts.sub$disposition <-
-    remapFactor(obts.sub$disposition,
-                c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
-                  "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified"),
-                "lea",
-                FALSE)
-  
-  obts.sub$disposition <- 
-    remapFactor(obts.sub$disposition,
-                c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
-                  "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
-                  "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
-                  "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable"),
-                "da",
-                FALSE)
-  obts.sub$disposition <- droplevels(obts.sub$disposition)
-  rm(remapFactor)
+                list(courtDispositions, releasedDispositions, declinedDispositions),
+                c("crt", "lea", "da"))
+  rm(courtDispositions, releasedDispositions, declinedDispositions)
   
   obts.sub$county <- as.factor(substr(as.character(obts.sub$arresting_agency), 1L, 2L))
   obts.sub <- obts.sub[,c("county", "court_event_year", "disposition")]
@@ -218,21 +432,21 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
   totals <- apply(dispoTable, c(1L, 2L), sum)
   
   totalsByCounty <- apply(totals, 1L, sum)
-  
-  
-  loadData("judicialDistricts", "..")
-  countyNameMap <- unique(judicialDistricts[,c("county_code", "county")])
   percentages <- apply(dispoTable, c(1L, 2L), function(x) x["crt"]) / totals
   
-  lowCounties <- which(apply(percentages, 1L, function(row) any(row <= 0.4, na.rm = TRUE)))
-  lowCountyInfo <- data.frame(code = names(lowCounties), name = countyNameMap$county[match(names(lowCounties), countyNameMap$county_code)])
-  lowCountyInfo$years <- sapply(lowCounties, function(index) {
-    paste0(as.character(years[which(percentages[index,] <= 0.4)]), collapse = ", ")
-  })
-  lowCountyInfo$ave_yearly_count <- round(totalsByCounty[lowCounties] / length(years), 0)
-  lowCountyInfo <- lowCountyInfo[order(lowCountyInfo$ave_yearly_count, decreasing = TRUE),]
-  lowCountyInfo <- rmdFormat(lowCountyInfo, maxRows = NA)
-  rm(countyNameMap, lowCounties)
+  #loadData("judicialDistricts", "..")
+  #countyNameMap <- unique(judicialDistricts[,c("county_code", "county")])
+  
+  
+  #lowCounties <- which(apply(percentages, 1L, function(row) any(row <= 0.4, na.rm = TRUE)))
+  #lowCountyInfo <- data.frame(code = names(lowCounties), name = countyNameMap$county[match(names(lowCounties), countyNameMap$county_code)])
+  #lowCountyInfo$years <- sapply(lowCounties, function(index) {
+  #  paste0(as.character(years[which(percentages[index,] <= 0.4)]), collapse = ", ")
+  #})
+  #lowCountyInfo$ave_yearly_count <- round(totalsByCounty[lowCounties] / length(years), 0)
+  #lowCountyInfo <- lowCountyInfo[order(lowCountyInfo$ave_yearly_count, decreasing = TRUE),]
+  #lowCountyInfo <- rmdFormat(lowCountyInfo, maxRows = NA)
+  #rm(countyNameMap, lowCounties)
   
   cutoffs <- c(1000000L, 250000L, 100000L, 25000L, 10000L, 1L)
   
@@ -251,9 +465,9 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
          xlab = "year", ylab = "count", xaxs = "i")
     for (j in seq_along(indices)) 
       lines(years, totals[indices[j],], lwd = 1, col = rgb(0, 0, 0, 0.4))
-    plotRange <- par()$usr
-    xVal <- 0.975 * (plotRange[2L] - plotRange[1L]) + plotRange[1L]
-    yVal <- 0.975 * (plotRange[4L] - plotRange[3L]) + plotRange[3L]
+    plotRegion <- par()$usr
+    xVal <- 0.975 * (plotRegion[2L] - plotRegion[1L]) + plotRegion[1L]
+    yVal <- 0.975 * (plotRegion[4L] - plotRegion[3L]) + plotRegion[3L]
     text(xVal, yVal, paste0("n = ", length(indices)), adj = c(1, 0.75))
   }
   dev.off()
@@ -270,35 +484,237 @@ if (!file.exists(txtFile) || any(!file.exists(imgFiles))) {
   }
   dev.off()
 
-  rm(i, j, indices, xVal, yVal, plotRange)
+  rm(i, j, indices, xVal, yVal, plotRegion)
   
-  rm(years, indexSets, dispoTable, totals, percentages)
-  
-  writeLines(lowCountyInfo, txtFile)
-} else {
-  lowCountyInfo <- readLines(txtFile)
+  rm(years, indexSets, dispoTable, totals, percentages, obts.sub)
 }
-rm(txtFile, imgFiles)
+rm(imgFiles)
 ```
 
-Here, we replicate the above plots but first aggregate arresting agencies into their counties.
+### County Totals
 
-#### Count Totals
+Here we replicate the agency-level distribution display, but this time with arbitrarily chosen cutoffs.
 
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_countyCounts.pdf"))`
 
 `r rmdPageBreak()`
 
-#### County Court Disposition Percentages
+### County Court Disposition Percentages
 
 Sharp dips in the arrests associated with a court disposition are likely due to reporting problems at the DA or court level. 
 
 `r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_countyCourtDispositions.pdf"))`
 
-Those counties with court disposition percentages that dip below 40% are:
+`r rmdPageBreak()`
 
-`r paste0(lowCountyInfo, collapse = "\n")`
+### Counties with Large Jumps
+
+```{r 'analysis_agencyCounts_anomalousCounties', echo = FALSE}
+imgFiles <- file.path("..", imgPath, c("analysis_agencyCounts_anomalousCounties_numArrestIncreases.pdf",
+                                       "analysis_agencyCounts_anomalousCounties_numArrestDecreases.pdf",
+                                       "analysis_agencyCounts_anomalousCounties_dispositionIncreases.pdf",
+                                       "analysis_agencyCounts_anomalousCounties_dispositionDecreases.pdf",
+                                       "analysis_agencyCounts_anomalousCounties_dispositionMaxes.pdf",
+                                       "analysis_agencyCounts_anomalousCounties_dispositionMins.pdf"))
+if (!all(file.exists(imgFiles))) {
+  loadData(mainTable, "..")
+  
+  obts.sub <- obts[,c("arresting_agency", "court_event_year")]
+  obts.sub$disposition <-
+    as.factor(with(obts,
+                   ifelse(!is.na(court_disposition_type), as.character(court_disposition_type), as.character(arrest_disposition_type))))
+
+  courtDispositions <- c("acquitted", "certified_to_juvenile_court", "convicted", "defendant_deceased", "dismissed",
+                         "diversion_dismissed", "not_guilty_insane")
+  releasedDispositions <- c("lea_rel_arrestee_exonerated", "lea_rel_complaintant_refuses", "lea_rel_further_investigation",
+                            "lea_rel_inadmissable_search", "lea_rel_lack_of_corpus", "lea_rel_other", "lea_rel_unspecified")
+  declinedDispositions <- c("da_dec_combined_cases", "da_dec_complaintant_refuses", "da_dec_deferred_recovation_of_parole",
+                            "da_dec_inadmissable_search", "da_dec_interest_of_justice", "da_dec_lack_of_cause",
+                            "da_dec_lack_of_corpus", "da_dec_other", "da_dec_probation_revoked_1203_2PC",
+                            "da_dec_prosecution_prefiling_deferred", "da_dec_witness_unavailable")
+  obts.sub$disposition <-
+    remapFactor(obts.sub$disposition,
+                list(courtDispositions, releasedDispositions, declinedDispositions),
+                c("crt", "lea", "da"))
+  rm(courtDispositions, releasedDispositions, declinedDispositions)
+  
+  obts.sub$county <- as.factor(substr(as.character(obts.sub$arresting_agency), 1L, 2L))
+  obts.sub <- obts.sub[,c("county", "court_event_year", "disposition")]
+  
+  dispoTable <- table(obts.sub)
+  totals <- apply(dispoTable, c(1L, 2L), sum)
+  totalsByCounty <- apply(totals, 1L, sum)
+  
+  loadData("judicialDistricts", "..")
+  
+  years <- sort(unique(obts.sub$court_event_year))
+}
+```
+
+```{r 'analysis_agencyCounts_anomalousCounties_numArrests', echo = FALSE}
+if (!all(file.exists(imgFiles))) {
+  ratios <- apply(totals, 1L, function(row) evalx(tail(row, -1L) / head(row, -1L), x[is.finite(x) & x > 0]))
+  increases <- sapply(ratios, function(x) if (length(x) > 0L) max(x) else 0)
+  decreases <- sapply(ratios, function(x) if (length(x) > 0L) min(x) else 1)
+  rm(ratios)
+  
+  ratioOrder <- order(increases, decreasing = TRUE)
+  
+  pdf(imgFiles[1L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, totals[ratioOrder[i],], type = "l",
+         main = countyName,
+         ylab = "num arrests", xlab = "year")
+  }
+  dev.off()
+  
+  ratioOrder <- order(decreases)
+  
+  pdf(imgFiles[2L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, totals[ratioOrder[i],], type = "l",
+         main = countyName,
+         ylab = "num arrests", xlab = "year")
+  }
+  dev.off()
+  
+  rm(i, county, countyName, ratioOrder, increases, decreases, totals)
+}
+```
+
+#### Largest Increases - County Number of Arrests
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_numArrestIncreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest Decreases - County Number of Arrests
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_numArrestDecreases.pdf"))`
+
+`r rmdPageBreak()`
+
+```{r 'analysis_agencyCounts_anomalousCounties_dispositions', echo = FALSE}
+if (!all(file.exists(imgFiles))) {
+  percentages <- apply(dispoTable, c(1L, 2L), function(x) x["crt"] / sum(x))
+  
+  ratios <- apply(percentages, 1L, function(row) evalx(qlogis(tail(row, -1L)) - qlogis(head(row, -1L)), x[is.finite(x)]))
+  increases <- sapply(ratios, function(x) if (length(x) > 0L) max(x) else 0)
+  decreases <- sapply(ratios, function(x) if (length(x) > 0L) min(x) else 1)
+  rm(ratios)
+  
+  ratioOrder <- order(increases, decreasing = TRUE)
+  
+  pdf(imgFiles[3L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, percentages[ratioOrder[i],], type = "l",
+         ylim = c(0, 1),
+         main = countyName,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByCounty[ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  ratioOrder <- order(decreases)
+  
+  pdf(imgFiles[4L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, percentages[ratioOrder[i],], type = "l",
+         ylim = c(0, 1),
+         main = countyName,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByCounty[ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  rm(increases, decreases)
+  
+  medians <- apply(percentages, 1L, function(row) median(row, na.rm = TRUE))
+  
+  ratioOrder <- order(medians, decreasing = TRUE)
+  
+  pdf(imgFiles[5L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, percentages[ratioOrder[i],], type = "l",
+         ylim = c(0, 1),
+         main = countyName,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByCounty[ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  ratioOrder <- order(medians)
+  
+  pdf(imgFiles[6L], 6L, 6L)
+  par(mfrow = c(3L, 3L))
+  for (i in seq_len(9L)) {
+    county <- subset(countyNameMap, county_code == levels(obts.sub$county)[ratioOrder[i]])
+    countyName <- if (nrow(county) > 0L) paste0(county$county) else "Unknown"
+    plot(years, percentages[ratioOrder[i],], type = "l",
+         ylim = c(0, 1),
+         main = countyName,
+         ylab = "% crt", xlab = "year")
+    plotRegion <- par("usr")
+    mtext(paste0("n = ", totalsByCounty[ratioOrder[i]]),
+          at = c(plotRegion[2L], plotRegion[4L]), adj = c(1, 0.5),
+          cex = 0.6)
+  }
+  dev.off()
+  
+  rm(i, plotRegion, county, countyName, ratioOrder, medians, percentages)
+}
+```
+
+#### Largest Increases - County Court Disposition Percentage
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_dispositionIncreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest Decreases - County Court Disposition Percentage
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_dispositionDecreases.pdf"))`
+
+`r rmdPageBreak()`
+
+#### Largest County Court Disposition Percentages
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_dispositionMaxes.pdf"))`"
+
+`r rmdPageBreak()`
+
+#### Smallest County Court Disposition Percentages
+
+`r rmdImageInline(file.path(imgPath, "analysis_agencyCounts_anomalousCounties_dispositionMins.pdf"))`"
+
+`r rmdPageBreak()`
 
 ```{r echo = FALSE}
-rm(lowCountyInfo)
+if (!all(file.exists(imgFiles)))
+  rm(obts.sub, dispoTable, totalsByCounty, years)
+rm(imgFiles)
 ```

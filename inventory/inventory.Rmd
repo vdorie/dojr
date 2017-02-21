@@ -46,7 +46,7 @@ if (file.exists(cleanRmdFile)) {
 rm(cleanRmdFile)
 ```
 
-```{r 'preface_include', child = if (file.exists(abstractFile <- file.path(datasetDir, "preface.Rmd"))) abstractFile else NULL }
+```{r 'preface_include', child = if (file.exists(prefaceFile <- file.path(datasetDir, "preface.Rmd"))) prefaceFile else NULL }
 ```
 
 # Introduction

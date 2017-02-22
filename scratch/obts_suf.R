@@ -15,33 +15,59 @@ obts$birth_year <- NULL
 obts$birth_month <- NULL
 obts$birth_day <- NULL
 
-## redefine to use in join on qualifiers
-obts$id <- seq_len(nrow(obts))
+names(obts)[names(obts) == "db_id"] <- "db_id"
 
 arrestQualifiers <- lapply(as.character(obts$arrest_qualifier), function(qualifier) {
   qualifiers <- substring(qualifier, seq.int(1L, 13L, 2L), seq.int(2L, 14L, 2L))
   qualifiers[qualifiers != "  "]
 })
 
-arrestQualifiers <- data.frame(id = rep.int(obts$id, sapply(arrestQualifiers, length)),
+arrestQualifiers <- data.frame(db_id = rep.int(obts$db_id, sapply(arrestQualifiers, length)),
                                qualifier = as.factor(unlist(arrestQualifiers)))
-invisible(gc(FALSE))
 
 courtQualifiers <- lapply(as.character(obts$court_qualifier), function(qualifier) {
   qualifiers <- substring(qualifier, seq.int(1L, 13L, 2L), seq.int(2L, 14L, 2L))
   qualifiers[qualifiers != "  "]
 })
 
-courtQualifiers <- data.frame(id = rep.int(obts$id, sapply(courtQualifiers, length)),
+courtQualifiers <- data.frame(db_id = rep.int(obts$db_id, sapply(courtQualifiers, length)),
                               qualifier = as.factor(unlist(courtQualifiers)))
 
 obts$arrest_qualifier <- NULL
 obts$court_qualifier <- NULL
 
+invisible(gc(FALSE))
+
+## change to days between arrest_disposition and whatever
+obts$days_to_arrest_disposition <-
+  with(obts, as.integer(difftime(arrest_disposition_date, arrest_event_date, units = "days")))
+obts$days_to_court_disposition <- 
+  with(obts, as.integer(difftime(court_event_date, arrest_event_date, units = "days")))
+
 ## drop as redundant
 obts$court_event_date <- NULL
 obts$arrest_event_date <- NULL
 obts$arrest_disposition_date <- NULL
+
+## drop as TMI
+obts$arrest_event_day <- NULL
+obts$court_event_day <- NULL
+obts$court_event_month <- NULL
+obts$court_event_year <- NULL
+obts$arrest_disposition_day <- NULL
+obts$arrest_disposition_month <- NULL
+obts$arrest_disposition_year <- NULL
+
+obts$arrest_bypass <- NULL
+obts$cii_record_type <- NULL
+obts$arrest_edit_error_code <- NULL
+obts$arrest_converted_data <- NULL
+obts$court_bypass <- NULL
+obts$court_converted_data <- NULL
+obts$court_edit_error_code <- NULL
+
+levels(obts$pdr_id) <- c("false", "true", "unknown")
+names(obts)[names(obts) == "pdr_id"] <- "new_offender"
 
 write.csv(obts, file = "obts.csv", row.names = FALSE)
 write.csv(arrestQualifiers, file = "arrest_qualifiers.csv", row.names = FALSE)

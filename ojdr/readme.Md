@@ -5,6 +5,15 @@
   3. If on Windows
     1. A unix-like subsystem ([Cygwin](https://www.cygwin.com) recommended)
 
+`R` must be available from the command line. For Linux/OS X this happens by default. On Windows, the `PATH` variable must be modified by going to:
+
+    Right click on 'My Computer/This PC' ->
+	Change Settings ->
+	Advanced ->
+	Environment Variables
+
+Add to the path variable `;C:\Program Files\R\R-3.3.2\bin\x64`, or the path to where `R.exe` can be found.
+
 ## Installation
 
 Create a file named `dbCredentials.properties` in the installation directory. Edit it to contain contents of the form:
@@ -41,7 +50,9 @@ Finally, all of the raw files for a dataset go inside a folder named `raw` withi
 
 ## To Run
 
-Using the example of the `MACR`:
+These steps may require privilege escalation of the local user to install software. If on Windows, they are best from a Cygwin shell, (e.g. navigate to C:\Cygwin64, right click Cygwin and run as administrator).
+
+After navigating to the root of the `ojdr` installation directory (`cd /path/to/dojr/ojdr`, or with Cygwin `cd /cygdrive/c/path/to/dojr/ojdr`), and using the example of the `MACR`:
 
     bin/import macr
 

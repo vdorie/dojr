@@ -373,7 +373,8 @@ importIntoRawTable <- function(con, inputPath, fileName)
             stdin = inputFile,
             stdout = tempFile)
   } else {
-    system2("C:/cygwin/bin/run", args = "tr '\\000\\377' '  '",
+    Sys.setenv(LC_ALL = "C")
+    system2("tr", args = "'\\000\\377' '  '",
             stdin = inputFile,
             stdout = tempFile)
   }
@@ -692,11 +693,13 @@ tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFac
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
-  install.packages("PostgreSQL", repos, dependencies = TRUE)
+  if (is.null(repos)) repos <- getCRANMirrors()[1L,]
+  
+  install.packages("RPostgreSQL", repos = repos, dependencies = TRUE)
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  rm(repos)
 }
-
+if (FALSE) {
 drv <- dbDriver("PostgreSQL")
 
 ## "input" is the folder with files ACRPTARB00.TXT, ...
@@ -706,7 +709,7 @@ splitRawColumns(drv, tableDef)
 parseRawColumns(drv, tableDef)
 
 dbUnloadDriver(drv)
-
+}
 
 if (FALSE) {
 
@@ -719,9 +722,11 @@ tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFac
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
-  install.packages("PostgreSQL", repos, dependencies = TRUE)
+  if (is.null(repos)) repos <- getCRANMirrors()[1L,]
+  
+  install.packages("RPostgreSQL", repos = repos, dependencies = TRUE)
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  rm(repos)
 }
 
 drv <- dbDriver("PostgreSQL")

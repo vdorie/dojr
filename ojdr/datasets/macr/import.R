@@ -40,7 +40,7 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
   dbProperties <- if (.Platform$OS.type == "unix")
     "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C' TABLESPACE = pg_default CONNECTION LIMIT = -1"
   else
-    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF8' LC_CTYPE = 'en_US.UTF8' TABLESPACE = pg_default CONNECTION LIMIT = -1"
+    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252' TABLESPACE = pg_default CONNECTION LIMIT = -1"
   
   if (superuser) {
     ## if this fails, that likely means that the database does not exist
@@ -97,6 +97,7 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
     }
   }
   
+  if (is(connectionResult, "error")) stop(connectionResult)
   connectionResult
 }
 
@@ -699,7 +700,7 @@ if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
   rm(repos)
 }
-if (FALSE) {
+
 drv <- dbDriver("PostgreSQL")
 
 ## "input" is the folder with files ACRPTARB00.TXT, ...
@@ -709,7 +710,6 @@ splitRawColumns(drv, tableDef)
 parseRawColumns(drv, tableDef)
 
 dbUnloadDriver(drv)
-}
 
 if (FALSE) {
 

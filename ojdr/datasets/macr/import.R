@@ -722,7 +722,7 @@ tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFac
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANMirrors()[1L,]
+  if (is.null(repos) || is.na(repos["URL"])) repos <- getCRANmirrors()[1L,]
   
   install.packages("RPostgreSQL", repos = repos, dependencies = TRUE)
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")

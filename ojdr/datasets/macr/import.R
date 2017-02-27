@@ -378,6 +378,7 @@ importIntoRawTable <- function(con, inputPath, fileName)
     system2("tr", args = "'\\000\\377' '  '",
             stdin = inputFile,
             stdout = tempFile)
+	system2("chmod", c("644", basename(tempFile)))
   }
   lineLength <- nchar(readLines(tempFile, n = 1L))
   
@@ -430,13 +431,12 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
     
     currentEntry <- currentEntries[currentEntries$file_name == fileName,]
     
-    fileInfo <- file.info(file.path("input", fileName))
-  
+    fileInfo <- file.info(file.path(inputPath, fileName))
     if (fileInfo$mtime == currentEntry$timestamp && fileInfo$size == currentEntry$size) next
   
     ## only timestamps differ, check the hash
     if (fileInfo$size == currentEntry$size) {
-      hash <- tools::md5sum(file.path("input", inputFile))
+      hash <- tools::md5sum(file.path(inputPath, inputFile))
       if (hash == currentEntry$hash) {
         cat("updating timestamp for file '", fileName, "' in info table\n", sep = "")
         

@@ -63,6 +63,8 @@ invisible(gc(FALSE))
 
 source(file.path("..", "common", "src", "util.R"))
 
+cat("removing deleted records and re-mapping factors\n")
+
 macr <- subset(macr, !is.na(age) | !is.na(race) | !is.na(gender))
 
 for (i in seq_along(macr))
@@ -91,5 +93,7 @@ macr$race <- remapFactor(macr$race,
                               c("white", "white_w"), "Asian_Indian"),
                          c("American Indian", "black", "Chinese", "Filipino", "Hispanic", "Japanese", "other", "other Asian",
                            "Pacific Islander", "white", "Asian Indian"))
+						   
+cat("saving clean Rdata file\n")
 
 save(macr, file = file.path("datasets", "macr", "macr_clean.Rdata"))

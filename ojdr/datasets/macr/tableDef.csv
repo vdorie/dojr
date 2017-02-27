@@ -1,0 +1,24 @@
+"full_name","abbreviation","start","length","type"
+"db_id","db_id",NA,NA,"bigserial"
+record_id,rid,1,2,"smallint"
+bcs_jurisdiction,bcsj,3,5,"character(5)"
+ncic_jurisdiction,ncicj,8,4,"character(4)"
+blank,bnk,12,2,"character(2)"
+arrest_year,arr_yr,14,4,smallint
+arrest_month,arr_mo,18,2,smallint
+arrest_day,arr_dy,20,2,smallint
+summary_offense_level,sum_lvl,22,1,"'F' = felony; 'J' = juvenile; 'M' = misdemeanor"
+offense_level,off_lvl,23,1,"'1' = status_offense; '2' = misdemeanor; '3' = felony"
+bcs_offense_code,arr_off,24,3,smallint
+bcs_summary_offense_code,sum_off,27,2,"character(2)"
+fbi_offense_code,fbi_off,29,4,"character(4)"
+reference_number,rfn,33,7,"character(7)"
+name,nam,40,30,"character(30)"
+birth_year,dob_yr,70,4,smallint
+birth_month,dob_mo,74,2,smallint
+birth_day,dob_dy,76,2,smallint
+age,age,78,3,smallint
+race,rac,81,1,"'1' = white; '2' = Hispanic; '3' = black; '4' = American_Indian; '5' = Chinese; '6' = Japanese; '7' = Filipino; '8' = other; '9' = Pacific_Islander; 'W' = white_w; 'H' = Hispanic_h; 'B' = black_b; 'I' = American_Indian_i; 'C' = Chinese_c; 'J' = Japanese_j; 'F' = Filipino_f; 'O' = other_o; 'P' = Pacific_Islander_p; 'A' = other_Asian; 'D' = Cambodian; 'G' = Guamanian; 'K' = Korean; 'L' = Laotian; 'S' = Samoan; 'U' = Hawaiian; 'V' = Vietnamese; 'Z' = Asian_Indian"
+gender,sex,82,1,"'1' = male; '2' = female"
+status_type,sts_typ,83,1,"'1' = cited; '2' = booked; '3' = other"
+disposition,dsp,84,1,"'1' = released; '2' = turned_over_to_other_agency; '3' = misdemeanor_complaint_sought; '4' = felony_complaint_sought; '5' = referred_to_juvenile_probation_department; '6' = handled_within_department; '9' = complaint_sought"

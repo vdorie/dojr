@@ -69,7 +69,10 @@ obts$court_edit_error_code <- NULL
 levels(obts$pdr_id) <- c("false", "true", "unknown")
 names(obts)[names(obts) == "pdr_id"] <- "new_offender"
 
-write.csv(obts, file = "obts.csv", row.names = FALSE)
+#write.csv(obts, file = "obts.csv", row.names = FALSE)
+require(readstat13)
+colnames(obts) <- strtrim(colnames(obts), 32L)
+save.dta13(obts, file = "obts.dta")
 write.csv(arrestQualifiers, file = "arrest_qualifiers.csv", row.names = FALSE)
 write.csv(courtQualifiers, file = "court_qualifiers.csv", row.names = FALSE)
 

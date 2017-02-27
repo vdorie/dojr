@@ -1,0 +1,222 @@
+---
+title: "MACR Statistical Disclosure Analysis"
+date: "November 30, 2016"
+output: pdf_document
+---
+
+```{r 'data_prep', include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+commonSrcPath  <- file.path("..", "common", "src")
+commonDataPath <- file.path("..", "common", "data")
+
+jurisdictions <- read.csv(file.path(commonDataPath, "jurisdictions.csv"), stringsAsFactors = FALSE)
+bcsOffenseCodes <- read.csv(file.path(commonDataPath, "bcs_offense_codes.csv"), stringsAsFactors = FALSE)
+
+source(file.path(commonSrcPath, "knitr.R"))
+source(file.path(commonSrcPath, "util.R"))
+source(file.path(commonSrcPath, "jurisdictions.R"))
+source(file.path(commonSrcPath, "bcsOffenseCodes.R"))
+
+source(file.path("..", "anonymization", "src", "suppression.R"))
+
+load(file.path("datasets", "macr", "macr_clean.Rdata"))
+years <- sort(unique(macr$arrest_year))
+numYears <- length(years)
+
+## drop minors
+macr.puf <- subset(macr, age > 17L)
+
+## add county
+countyJurisdictionMap <- as.integer(substr(levels(macr.puf$ncic_jurisdiction), 1L, 2L))
+macr.puf$county <- countyJurisdictionMap[as.integer(macr.puf$ncic_jurisdiction)]
+rm(countyJurisdictionMap)
+
+## map specific Asian groups to "Asian or Pac Isl" and small, non-Asian groups to "Other"
+asianCategoryNames <- c("Chinese", "Asian Indian", "Cambodian", "Guamanian", "Filipino", "Hawaiian", "Japanese", "Korean", "Laotian", "other Asian", "Pacific Islander", "Samoan", "Vietnamese")
+
+countyRemapNames <- list(
+  c("Alpine County", "Tuolumne County", "Calaveras County", "Amador County"),
+  c("Colusa County", "Glenn County", "Yuba County", "Sutter County", "Lake County"),
+  c("Sierra County", "Plumas County", "Lassen County", "Modoc County", "Nevada County"),
+  c("Inyo County", "Mono County", "Mariposa County", "Madera County", "San Benito County"),
+  c("Trinity County", "Del Norte County", "Siskiyou County", "Tehama County"))
+countyNameMap <- unique(jurisdictions[,c("CntyCode", "County")])
+colnames(countyNameMap) <- c("code", "name")
+
+countyRemap <- lapply(countyRemapNames, function(names) countyNameMap$code[match(names, countyNameMap$name)])
+
+countyNameMap$name <- gsub("(.*) County", "\\1", countyNameMap$name, perl = TRUE)
+
+countyNameMap$code.new <- countyNameMap$code
+countyNameMap$name.new <- countyNameMap$name
+
+## replaces each code/county name with min matching code and collapsed name
+for (i in seq_along(countyRemap)) {
+  remapRows <- match(countyRemap[[i]], countyNameMap$code.new)
+  countyNameMap$code.new[remapRows[-1L]] <- countyRemap[[i]][1L]
+  countyNameMap$name.new[remapRows] <- paste0(countyNameMap$name.new[remapRows], collapse = "/")
+}
+
+## reorders codes starting from 1
+countyNameMap$code.new <- match(countyNameMap$code.new, sort(unique(countyNameMap$code.new)))
+```
+
+## Aggregating/Recoding/Binning
+
+We begin by dropping the direct identifiers and redefining the quasi identifiers as coarse grouping variables.
+
+```{r 'recode', echo = FALSE}
+macr.puf <- macr.puf[,c("arrest_year", "county", "gender", "race", "age", "summary_offense_level", "bcs_summary_offense_code", "disposition")]
+
+## rename columns to be less obscure
+colnames(macr.puf) <- c("year", "county", "gender", "race", "age", "offense_level", "offense_code", "disposition")
+
+## if we use the sdc code for this, it recomputes risk after every stage, making it take an incredibly long time
+
+## county is no longer a factor, so we re-code by hand
+macr.puf$county <- countyNameMap$code.new[match(macr.puf$county, countyNameMap$code)]
+macr.puf$county <- as.factor(macr.puf$county)
+
+macr.puf$race <- remapFactor(macr.puf$race, list(asianCategoryNames, "American Indian"), c("Asian or Pac Isl", "other"))
+  
+macr.puf$age <- cut(macr.puf$age, c(17, 24, 32, 44, 150), labels = c("18-24", "25-32", "33-44", "45+"))
+
+macr.puf$disposition <- remapFactor(macr.puf$disposition, c("felony complaint sought", "misdemeanor complaint sought"), "complaint sought")
+
+for (i in seq_along(macr.puf))
+  if (is.factor(macr.puf[[i]])) macr.puf[[i]] <- droplevels(macr.puf[[i]])
+
+invisible(gc(FALSE))
+```
+
+## Protecting That Arrested
+
+```{r 'that_arrested', echo = FALSE, results = "asis"}
+subRows <- with(macr.puf, disposition %in% "released")
+selectOffenseCodes <- with(bcsSummaryOffenseCodes, summary_offense_code[match(c("Prostitution", "Drunk"), summary_offense_type)])
+releasedResult <- enforceKAnonymity(macr.puf[subRows,],
+                                    across = "year",
+                                    inQuasiIdentifiers = c("gender", "race", "age"),
+                                    suppressing = "county",
+                                    k = 5L,
+                                    matchingCriteria = macr.puf$offense_code[subRows] %in% selectOffenseCodes)
+macr.puf[subRows, "county"] <- releasedResult$suppressed
+
+subRows <- with(macr.puf, disposition %in% "complaint sought" & offense_level %in% "felony")
+felonyReferredResult <- enforceKAnonymity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          suppressing = "county",
+                                          k = 5L)
+macr.puf[subRows, "county"] <- felonyReferredResult$suppressed
+
+subRows <- with(macr.puf, disposition %in% "released" & offense_level %in% "felony")
+felonyReleasedResult <- enforceKAnonymity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          suppressing = "county",
+                                          k = 5L)
+macr.puf[subRows, "county"] <- felonyReleasedResult$suppressed
+
+subRows <- with(macr.puf, disposition %not_in% "complaint sought" | offense_level %not_in% "felony")
+notFelonyReferredResult <- enforceKAnonymity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          suppressing = "county",
+                                          k = 5L)
+macr.puf[subRows, "county"] <- notFelonyReferredResult$suppressed
+
+totalPopulationResult <- enforceKAnonymity(macr.puf,
+                                           across = "year",
+                                           inQuasiIdentifiers = c("gender", "race", "age"),
+                                           suppressing = "county",
+                                           k = 5L)
+macr.puf[,"county"] <- totalPopulationResult$suppressed
+
+numSuppressed <- cbind(releasedResult$numSuppressed, felonyReferredResult$numSuppressed, notFelonyReferredResult$numSuppressed,
+                       felonyReleasedResult$numSuppressed, totalPopulationResult$numSuppressed)
+colnames(numSuppressed) <- c("k-rel #", "k-rel %", "k-fref #", "k-fref %", "k-!frf #", "k-!frf %",
+                             "k-frel #", "k-frel %", "k-tot #", "k-tot %")
+
+cat(rmdFormat(numSuppressed, digits = 2L), sep = "\n")
+rm(numSuppressed, releasedResult, felonyReferredResult, notFelonyReferredResult, felonyReleasedResult, totalPopulationResult)
+```
+
+After this step, the number of rows with a suppressed county variable is `r sum(is.na(macr.puf$county))` / `r nrow(macr.puf)`, or `r round(100 * sum(is.na(macr.puf$county)) / nrow(macr.puf), 2)`%.
+
+## Protecting Arrest Offense
+
+```{r 'arrest_offense', echo = FALSE, results = "asis"}
+subRows <- with(macr.puf, disposition %in% "complaint sought" & offense_level %in% "felony")
+felonyReferredResult <- enforceLDiversity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          forSensitiveValues = "offense_code",
+                                          suppressing = "county",
+                                          l = 5L)
+macr.puf[subRows, "county"] <- felonyReferredResult$suppressed
+
+subRows <- with(macr.puf, disposition %not_in% "complaint sought" | offense_level %not_in% "felony")
+notFelonyReferredResult <- enforceLDiversity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          forSensitiveValues = "offense_code",
+                                          suppressing = "county",
+                                          l = 5L)
+macr.puf[subRows, "county"] <- notFelonyReferredResult$suppressed
+
+subRows <- with(macr.puf, disposition %in% "released" & offense_level %in% "felony")
+felonyReleasedResult <- enforceLDiversity(macr.puf[subRows,],
+                                          across = "year",
+                                          inQuasiIdentifiers = c("gender", "race", "age"),
+                                          forSensitiveValues = "offense_code",
+                                          suppressing = "county",
+                                          l = 5L)
+macr.puf[subRows, "county"] <- felonyReleasedResult$suppressed
+
+totalPopulationResult <- enforceLDiversity(macr.puf,
+                                           across = "year",
+                                           inQuasiIdentifiers = c("gender", "race", "age"),
+                                           forSensitiveValues = "offense_code",
+                                           suppressing = "county",
+                                           l = 5L)
+macr.puf[,"county"] <- totalPopulationResult$suppressed
+
+numSuppressed <- cbind(felonyReferredResult$numSuppressed, notFelonyReferredResult$numSuppressed,
+                       felonyReleasedResult$numSuppressed, totalPopulationResult$numSuppressed)
+colnames(numSuppressed) <- c("l-fref #", "l-fref %", "l-!frf #", "l-!frf %",
+                             "l-frel #", "l-frel %", "l-tot #", "l-tot %")
+
+cat(rmdFormat(numSuppressed, digits = 2L), sep = "\n")
+rm(numSuppressed, felonyReferredResult, notFelonyReferredResult, felonyReleasedResult, totalPopulationResult)
+```
+
+After this step, the number of rows with a suppressed county variable is `r sum(is.na(macr.puf$county))` / `r nrow(macr.puf)`, or `r round(100 * sum(is.na(macr.puf$county)) / nrow(macr.puf), 2)`%.
+
+## Result
+
+```{r 'save_result', echo = FALSE}
+saveResult <- TRUE
+
+if (saveResult) {
+  dir.create(file.path("datasets", "macr", "puf"), recursive = TRUE)
+  
+  counties <- countyNameMap[,c("code.new", "name.new")]
+  colnames(counties) <- c("code", "name")
+  counties <- counties[!duplicated(counties),]
+  counties <- counties[order(counties$code),]
+  
+  offenseCodes <- bcsSummaryOffenseCodes
+  colnames(offenseCodes) <- c("code", "type")
+  
+  macr.puf$county <- with(macr.puf, as.integer(levels(county))[county])
+  macr.puf$offense_code <- with(macr.puf, as.integer(levels(offense_code))[offense_code])
+  
+  write.csv(counties, file = file.path("datasets", "macr", "puf", "counties.csv"), row.names = FALSE)
+  write.csv(offenseCodes, file = file.path("datasets", "macr", "puf", "offenseCodes.csv"), row.names = FALSE)
+  write.csv(macr.puf, file = file.path("datasets", "macr", "puf", "macr.csv"), row.names = FALSE)
+}
+```
+
+Total number of rows with a suppressed county variable: `r sum(is.na(macr.puf$county))` / `r nrow(macr.puf)` = `r sum(is.na(macr.puf$county)) / nrow(macr.puf)`.

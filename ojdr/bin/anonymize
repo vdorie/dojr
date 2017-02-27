@@ -1,0 +1,4 @@
+#!/bin/sh
+
+R --no-save -e "rmarkdown::render('datasets/${1}/anonymize.Rmd', output_format = rmarkdown::pdf_document(), knit_root_dir = getwd())"
+mv datasets/${1}/anonymize.pdf ${1}_anonymization.pdf

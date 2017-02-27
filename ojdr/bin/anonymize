@@ -14,10 +14,8 @@ if (length(find.package('knitr', quiet = TRUE)) == 0L) {
 EOM
   echo "$INSTALATION_CODE" | R --no-save --slave
   
-  R --no-save --slave -e "knitr::purl(file.path('datasets', '${1}', 'anonymize.Rmd'), 'clean.R'); source('clean.R'); unlink('clean.R')"
+  R --no-save --slave -e "knitr::purl(file.path('datasets', '${1}', 'anonymize.Rmd'), 'anonymize.R'); source('anonymize.R'); unlink('anonymize.R')" > ${1}_anonymization.txt
 else
-  echo "has latex; installing rmarkdown"
-  
    read -r -d '' INSTALATION_CODE << EOM
 if (length(find.package('rmarkdown', quiet = TRUE)) == 0L) {
   repos <- getOption('repos')

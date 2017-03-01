@@ -1,5 +1,6 @@
-"attack type","disclosure when","remedy"
-"match on quasi-identifiers for specific individual","quasi-identifiers are unique/rare","enforce $k$-anonymity for quasi-identifiers by suppressing demographics"
-"match on quasi-identifiers for specific group","sensitive values are homogeneous for quasi-identifiers","enforce $l$-diversity for sensitive values by suppressing demographics"
-"match on partial quasi-identifiers and offense code for unknown individual","quasi-identifiers are homogeneous for offense code","enforce $l$-diversity for quasi-identifiers; aggregate demographics"
-"match on quasi-identifiers for specific group","sensitive values are near homogeneous for quasi-identifiers and all of a similar severity","\color{red}{unknown}"
+match on,disclosure when
+quasi-identifiers for specific individual,quasi-identifier key is unique/rare
+quasi-identifiers for specific group,sensitive values are homogeneous for quasi-identifiers
+partial quasi-identifiers and partial sensitive values for unknown individual,quasi-identifiers are homogeneous for certain sensitive values
+complete quasi-identifiers and partial sensitive values for a known individual,sensitive values are homogeneous for combination of quasi-identifiers and known sensitive values
+quasi-identifiers for specific group,sensitive values are near homogeneous for quasi-identifiers and all of a similar severity

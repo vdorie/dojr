@@ -40,7 +40,7 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
   dbProperties <- if (.Platform$OS.type == "unix")
     "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C' TABLESPACE = pg_default CONNECTION LIMIT = -1"
   else
-    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF8' LC_CTYPE = 'en_US.UTF8' TABLESPACE = pg_default CONNECTION LIMIT = -1"
+    "OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252' TABLESPACE = pg_default CONNECTION LIMIT = -1"
   
   if (superuser) {
     ## if this fails, that likely means that the database does not exist
@@ -97,6 +97,7 @@ connectToDatabase <- function(drv, dbname, superuser = FALSE)
     }
   }
   
+  if (is(connectionResult, "error")) stop(connectionResult)
   connectionResult
 }
 
@@ -373,9 +374,11 @@ importIntoRawTable <- function(con, inputPath, fileName)
             stdin = inputFile,
             stdout = tempFile)
   } else {
-    system2("C:/cygwin/bin/run", args = "tr '\\000\\377' '  '",
+    Sys.setenv(LC_ALL = "C")
+    system2("tr", args = "'\\000\\377' '  '",
             stdin = inputFile,
             stdout = tempFile)
+	system2("chmod", c("644", basename(tempFile)))
   }
   lineLength <- nchar(readLines(tempFile, n = 1L))
   
@@ -428,13 +431,12 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
     
     currentEntry <- currentEntries[currentEntries$file_name == fileName,]
     
-    fileInfo <- file.info(file.path("input", fileName))
-  
+    fileInfo <- file.info(file.path(inputPath, fileName))
     if (fileInfo$mtime == currentEntry$timestamp && fileInfo$size == currentEntry$size) next
   
     ## only timestamps differ, check the hash
     if (fileInfo$size == currentEntry$size) {
-      hash <- tools::md5sum(file.path("input", inputFile))
+      hash <- tools::md5sum(file.path(inputPath, inputFile))
       if (hash == currentEntry$hash) {
         cat("updating timestamp for file '", fileName, "' in info table\n", sep = "")
         
@@ -692,9 +694,11 @@ tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFac
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
-  install.packages("PostgreSQL", repos, dependencies = TRUE)
+  if (is.null(repos)) repos <- getCRANMirrors()[1L,]
+  
+  install.packages("RPostgreSQL", repos = repos, dependencies = TRUE)
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  rm(repos)
 }
 
 drv <- dbDriver("PostgreSQL")
@@ -707,7 +711,6 @@ parseRawColumns(drv, tableDef)
 
 dbUnloadDriver(drv)
 
-
 if (FALSE) {
 
 ## connects to the database, creates tables and imports raw files
@@ -719,9 +722,11 @@ tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFac
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
-  if (is.null(repos)) repos <- getCRANmirrors()$URL[1L]
-  install.packages("PostgreSQL", repos, dependencies = TRUE)
+  if (is.null(repos) || is.na(repos["URL"])) repos <- getCRANmirrors()[1L,]
+  
+  install.packages("RPostgreSQL", repos = repos, dependencies = TRUE)
   if (require(RPostgreSQL, quietly = TRUE) == FALSE) stop("could not install RPostgreSQL package, do so manually")
+  rm(repos)
 }
 
 drv <- dbDriver("PostgreSQL")

@@ -35,14 +35,22 @@ for (i in seq.int(2L, nrow(tableDef))) {
 }
 }
 
-macr <- dbGetQuery(con, paste0("SELECT * FROM macr_typed"))
+cat("selecting dataset from database\n")
 
+macr <- dbGetQuery(con, paste0("SELECT db_id, record_id, bcs_jurisdiction, ncic_jurisdiction, ",
+                               "arrest_year, arrest_month, arrest_day, summary_offense_level, ",
+							   "offense_level, bcs_offense_code, bcs_summary_offense_code, ",
+							   "fbi_offense_code, age, race, gender, status_type, disposition ",
+							   "FROM macr_typed"))
+
+invisible(gc(FALSE))
 
 dbDisconnect(con)
 
 dbUnloadDriver(drv)
 
-macr[["blank"]] <- NULL
+cat("converting columns to compact types\n")
+#macr[["blank"]] <- NULL
 for (variableName in c("reference_number", "name", "birth_year", "birth_month", "birth_day"))
   macr[[variableName]] <- factor(rep_len(1L, nrow(macr)), labels = "pii")
 invisible(gc(FALSE))
@@ -54,6 +62,8 @@ for (variableName in c("record_id", "bcs_jurisdiction", "ncic_jurisdiction", "su
 invisible(gc(FALSE))
 
 source(file.path("..", "common", "src", "util.R"))
+
+cat("removing deleted records and re-mapping factors\n")
 
 macr <- subset(macr, !is.na(age) | !is.na(race) | !is.na(gender))
 
@@ -83,5 +93,7 @@ macr$race <- remapFactor(macr$race,
                               c("white", "white_w"), "Asian_Indian"),
                          c("American Indian", "black", "Chinese", "Filipino", "Hispanic", "Japanese", "other", "other Asian",
                            "Pacific Islander", "white", "Asian Indian"))
+						   
+cat("saving clean Rdata file\n")
 
 save(macr, file = file.path("datasets", "macr", "macr_clean.Rdata"))

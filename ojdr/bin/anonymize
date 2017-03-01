@@ -1,4 +1,33 @@
 #!/bin/sh
 
-R --no-save -e "rmarkdown::render('datasets/${1}/anonymize.Rmd', output_format = rmarkdown::pdf_document(), knit_root_dir = getwd())"
-mv datasets/${1}/anonymize.pdf ${1}_anonymization.pdf
+command -v pdflatex > /dev/null 2>&1
+NO_LATEX=$?
+
+if [ $NO_LATEX ]; then
+  read -r -d '' INSTALATION_CODE << EOM
+if (length(find.package('knitr', quiet = TRUE)) == 0L) {
+  repos <- getOption('repos')
+  if (is.null(repos) || is.na(repos["URL"])) repos <- getCRANmirrors()[1L,]
+  cat("installing knitr\n")
+  install.packages('knitr', repos = repos, dependencies = TRUE)
+}
+EOM
+  echo "$INSTALATION_CODE" | R --no-save --slave
+  
+  R --no-save --slave -e "knitr::purl(file.path('datasets', '${1}', 'anonymize.Rmd'), 'anonymize.R'); source('anonymize.R'); unlink('anonymize.R')" > ${1}_anonymization.txt
+else
+   read -r -d '' INSTALATION_CODE << EOM
+if (length(find.package('rmarkdown', quiet = TRUE)) == 0L) {
+  repos <- getOption('repos')
+  if (is.null(repos) || is.na(repos["URL"])) repos <- getCRANmirrors()[1L,]
+  cat("installing rmarkdown\n")
+  install.packages('rmarkdown', repos = repos, dependencies = TRUE)
+}
+EOM
+  echo "$INSTALATION_CODE" | R --no-save --slave
+  
+  R --no-save -e "rmarkdown::render(file.path('datasets', '${1}', 'anonymize.Rmd'), output_format = rmarkdown::pdf_document(), knit_root_dir = getwd())"
+  mv datasets/${1}/anonymize.pdf ${1}_anonymization.pdf
+fi
+
+

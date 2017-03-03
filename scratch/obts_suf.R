@@ -15,8 +15,6 @@ obts$birth_year <- NULL
 obts$birth_month <- NULL
 obts$birth_day <- NULL
 
-names(obts)[names(obts) == "db_id"] <- "db_id"
-
 arrestQualifiers <- lapply(as.character(obts$arrest_qualifier), function(qualifier) {
   qualifiers <- substring(qualifier, seq.int(1L, 13L, 2L), seq.int(2L, 14L, 2L))
   qualifiers[qualifiers != "  "]
@@ -70,7 +68,7 @@ levels(obts$pdr_id) <- c("false", "true", "unknown")
 names(obts)[names(obts) == "pdr_id"] <- "new_offender"
 
 #write.csv(obts, file = "obts.csv", row.names = FALSE)
-require(readstat13)
+require(readstata13)
 colnames(obts) <- strtrim(colnames(obts), 32L)
 save.dta13(obts, file = "obts.dta")
 write.csv(arrestQualifiers, file = "arrest_qualifiers.csv", row.names = FALSE)

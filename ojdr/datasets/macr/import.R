@@ -130,27 +130,27 @@ dropTable <- function(con, tableDef, tableNames)
   if ("macr" %in% tableNames) {
     if (dbExistsTable(con, "macr")) dbExecute(con, "DROP TABLE macr")
     
-    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET id_start = 0, id_end = 0")
+    if (dbExistsTable(con, "macr_info")) dbExecute(con, "UPDATE macr_info SET id_start = 0, id_end = 0")
   }
   if ("macr_raw" %in% tableNames) {
     if (dbExistsTable(con, "macr_raw")) dbExecute(con, "DROP TABLE macr_raw")
-    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0")
+    if (dbExistsTable(con, "macr_info")) dbExecute(con, "UPDATE macr_info SET raw_id_start = 0, raw_id_end = 0")
   }
     
-  if ("info" %in% tableNames && dbExistsTable(con, "info")) dbExecute(con, "DROP TABLE info")
+  if ("macr_info" %in% tableNames && dbExistsTable(con, "macr_info")) dbExecute(con, "DROP TABLE macr_info")
   
   invisible(NULL)
 }
 
 resetDatabase <- function(drv, tableDef)
 {
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "cjsc")
   
   dropTable(con, tableDef, "macr_typed")
   dropImportFunctions(con, tableDef)
   
   dropTable(con, tableDef, c("macr", "macr_raw"))
-  dbExecute(con, "DELETE FROM info")
+  dbExecute(con, "DELETE FROM macr_info")
   
   dbDisconnect(con)
   
@@ -160,11 +160,11 @@ resetDatabase <- function(drv, tableDef)
 
 createTablesIfNonexistent <- function(drv, tableDef, tableNames)
 {
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "cjsc")
   
-  if ("info" %in% tableNames && !dbExistsTable(con, "info")) {
+  if ("macr_info" %in% tableNames && !dbExistsTable(con, "macr_info")) {
     dbExecute(con,
-      "CREATE TABLE info (
+      "CREATE TABLE macr_info (
          file_name      varchar(64),
          size           bigint,
          timestamp      timestamp,
@@ -325,7 +325,7 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
   hash     <- tools::md5sum(file.path(inputPath, fileName))
   
   insertStatement <- paste0(
-    "INSERT INTO info VALUES
+    "INSERT INTO macr_info VALUES
       ('", paste(fileName, fileInfo$size, format(fileInfo$mtime, format = "%F %X %z"), hash,
                  0, 0, 0, 0, sep = "', '"), "')")
   dbExecute(con, insertStatement)
@@ -351,7 +351,7 @@ updateInInfoTableAndDeleteDataRows <- function(con, inputPath, fileName, current
   fileInfo <- file.info(file.path(inputPath, fileName))
   hash     <- tools:md5sum(file.path(inputPath, fileName))
   
-  updateStatement <- paste0("UPDATE info SET ",
+  updateStatement <- paste0("UPDATE macr_info SET ",
     "timestamp = '", format(fileInfo$mtime, format = "%F %X %z"), "', ",
     "hash = '", hash, "', ",
     "size = '", fileInfo$size, "', ",
@@ -404,7 +404,7 @@ importIntoRawTable <- function(con, inputPath, fileName)
   unlink(tempFile)
 
   updateStatement <- paste0(
-    "UPDATE info SET
+    "UPDATE macr_info SET
        raw_id_start = ", rawStartIndex, ",
        raw_id_end = ", rawEndIndex, "
        WHERE 
@@ -413,12 +413,12 @@ importIntoRawTable <- function(con, inputPath, fileName)
 }
 
 updateInfoTable <- function(drv, tableDef, inputPath) {
-  createTablesIfNonexistent(drv, tableDef, "info")
+  createTablesIfNonexistent(drv, tableDef, "macr_info")
   
   inputFiles <- list.files(inputPath)
   
-  con <- connectToDatabase(drv, "macr")
-  currentEntries <- dbGetQuery(con, "SELECT * FROM info")
+  con <- connectToDatabase(drv, "cjsc")
+  currentEntries <- dbGetQuery(con, "SELECT * FROM macr_info")
   
   for (fileName in inputFiles) {
     if (!(fileName %in% currentEntries$file_name)) {
@@ -439,7 +439,7 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
       if (hash == currentEntry$hash) {
         cat("updating timestamp for file '", fileName, "' in info table\n", sep = "")
         
-        dbExecute(con, paste0("UPDATE info SET timestamp = '", format(fileInfo$mtime, format = "%F %X %z"),
+        dbExecute(con, paste0("UPDATE macr_info SET timestamp = '", format(fileInfo$mtime, format = "%F %X %z"),
                             "' WHERE file_name = '", inputFile, "'"))
         next
       }
@@ -456,7 +456,7 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
       extraFileEnry <- extraFiles[i,]
       cat("deleting extra file '", extraFileEntry$file_name, "'\n", sep = "")
       deleteDataRowsForEntry(con, extraFileEntry)
-      dbExecute(con, paste0("DELETE FROM info WHERE file_name = '", extraFileEntry$file_name, "'"))
+      dbExecute(con, paste0("DELETE FROM macr_info WHERE file_name = '", extraFileEntry$file_name, "'"))
     }
   }
   
@@ -468,11 +468,11 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
 updateRawTables <- function(drv, tableDef, inputPath) {
   createTablesIfNonexistent(drv, tableDef, "macr_raw")
   
-  con <- connectToDatabase(drv, "macr")
-  currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE raw_id_start = 0")
+  con <- connectToDatabase(drv, "cjsc")
+  currentEntries <- dbGetQuery(con, "SELECT * FROM macr_info WHERE raw_id_start = 0")
   
   if (nrow(currentEntries) > 0L) {
-    con.su <- connectToDatabase(drv, "macr", TRUE)
+    con.su <- connectToDatabase(drv, "cjsc", TRUE)
     for (i in seq_len(nrow(currentEntries))) {
       currentEntry <- currentEntries[i,]
       
@@ -553,7 +553,7 @@ splitRawColumnsForEntry <- function(con, tableDef, entry) {
   
   endIndex <- startIndex + dbExecute(con, insertStatement)[[1L]] - 1L
   
-  dbExecute(con, paste0("UPDATE info SET id_start = ", startIndex, ", id_end = ", endIndex, " WHERE file_name = '", entry$file_name, "'"))
+  dbExecute(con, paste0("UPDATE macr_info SET id_start = ", startIndex, ", id_end = ", endIndex, " WHERE file_name = '", entry$file_name, "'"))
   
   invisible(NULL)
 }
@@ -562,8 +562,8 @@ splitRawColumnsForEntry <- function(con, tableDef, entry) {
 splitRawColumns <- function(drv, tableDef) {
   createTablesIfNonexistent(drv, tableDef, "macr")
   
-  con <- connectToDatabase(drv, "macr")
-  currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE id_start = 0")
+  con <- connectToDatabase(drv, "cjsc")
+  currentEntries <- dbGetQuery(con, "SELECT * FROM macr_info WHERE id_start = 0")
   
   if (nrow(currentEntries) > 0L) {
     for (i in seq_len(nrow(currentEntries))) {
@@ -586,8 +586,8 @@ splitRawColumns <- function(drv, tableDef) {
 parseRawColumns <- function(drv, tableDef) {
   createTablesIfNonexistent(drv, tableDef, "macr_typed")
   
-  con <- connectToDatabase(drv, "macr")
-  currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE id_start != 0")
+  con <- connectToDatabase(drv, "cjsc")
+  currentEntries <- dbGetQuery(con, "SELECT * FROM macr_info WHERE id_start != 0")
   
   definedFunctions <- FALSE
   
@@ -739,7 +739,7 @@ parseRawColumns(drv, tableDef)
 
 
 ## useful to delete the current typed table to recreate it
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "cjsc")
 
 dropImportFunctions(con, tableDef)
 dropTable(con, tableDef, "macr_typed")
@@ -748,7 +748,7 @@ dbDisconnect(con)
 
 
 ## validate import
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "cjsc")
 
 checkColumns(con, tableDef)
 
@@ -756,7 +756,7 @@ dbDisconnect(con)
 
 
 ## export to file
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "cjsc")
 
 macr <- dbGetQuery(con, "SELECT * FROM macr_typed")
 

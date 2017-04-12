@@ -39,9 +39,9 @@ cat("selecting dataset from database\n")
 
 macr <- dbGetQuery(con, paste0("SELECT db_id, record_id, bcs_jurisdiction, ncic_jurisdiction, ",
                                "arrest_year, arrest_month, arrest_day, summary_offense_level, ",
-							   "offense_level, bcs_offense_code, bcs_summary_offense_code, ",
-							   "fbi_offense_code, age, race, gender, status_type, disposition ",
-							   "FROM macr_typed"))
+                               "offense_level, bcs_offense_code, bcs_summary_offense_code, ",
+                               "fbi_offense_code, age, race, gender, status_type, disposition ",
+                               "FROM macr_typed"))
 
 invisible(gc(FALSE))
 

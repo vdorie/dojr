@@ -118,25 +118,29 @@ isEnumType <- function(x) grepl(";", x)
 ## used to reset some stuff for testing purposes
 dropTable <- function(con, tableDef, tableNames)
 {
-  if ("macr_typed" %in% tableNames) {
-    if (dbExistsTable(con, "macr_typed")) dbExecute(con, "DROP TABLE macr_typed")
+  if ("obts_typed" %in% tableNames) {
+    if (dbExistsTable(con, "obts_typed")) dbExecute(con, "DROP TABLE obts_typed")
     
     for (i in seq_len(nrow(tableDef))) {
       if (!isEnumType(tableDef$type[i])) next
-      typeName <- paste0("macr_", tableDef$full_name[i])
+      typeName <- paste0("obts_", tableDef$full_name[i])
       if (dbExistsType(con, typeName)) dbExecute(con, paste0("DROP TYPE ", typeName))
     }
   }
-  if ("macr" %in% tableNames) {
-    if (dbExistsTable(con, "macr")) dbExecute(con, "DROP TABLE macr")
+  if ("obts" %in% tableNames) {
+    if (dbExistsTable(con, "obts")) dbExecute(con, "DROP TABLE obts")
     
     if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET id_start = 0, id_end = 0")
   }
-  if ("macr_raw" %in% tableNames) {
-    if (dbExistsTable(con, "macr_raw")) dbExecute(con, "DROP TABLE macr_raw")
-    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0")
+  if ("obts_raw_1" %in% tableNames) {
+    if (dbExistsTable(con, "obts_raw_1")) dbExecute(con, "DROP TABLE obts_raw_1")
+    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0 WHERE format = 1")
   }
-    
+  if ("obts_raw_2" %in% tableNames) {
+    if (dbExistsTable(con, "obts_raw_2")) dbExecute(con, "DROP TABLE obts_raw_2")
+    if (dbExistsTable(con, "info")) dbExecute(con, "UPDATE info SET raw_id_start = 0, raw_id_end = 0 WHERE format = 2")
+  }
+  
   if ("info" %in% tableNames && dbExistsTable(con, "info")) dbExecute(con, "DROP TABLE info")
   
   invisible(NULL)
@@ -144,12 +148,12 @@ dropTable <- function(con, tableDef, tableNames)
 
 resetDatabase <- function(drv, tableDef)
 {
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   
-  dropTable(con, tableDef, "macr_typed")
+  dropTable(con, tableDef, "obts_typed")
   dropImportFunctions(con, tableDef)
   
-  dropTable(con, tableDef, c("macr", "macr_raw"))
+  dropTable(con, tableDef, c("obts", "obts_raw_1", "obts_raw_2"))
   dbExecute(con, "DELETE FROM info")
   
   dbDisconnect(con)
@@ -160,7 +164,7 @@ resetDatabase <- function(drv, tableDef)
 
 createTablesIfNonexistent <- function(drv, tableDef, tableNames)
 {
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   
   if ("info" %in% tableNames && !dbExistsTable(con, "info")) {
     dbExecute(con,
@@ -169,28 +173,36 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
          size           bigint,
          timestamp      timestamp,
          hash           varchar(32),
+         format         smallint,
          id_start       bigint,
          id_end         bigint,
          raw_id_start   bigint,
          raw_id_end     bigint
        )")
   }
-  if ("macr_raw" %in% tableNames && !dbExistsTable(con, "macr_raw")) {
+  if ("obts_raw_1" %in% tableNames && !dbExistsTable(con, "obts_raw_1")) {
     dbExecute(con,
-      "CREATE TABLE macr_raw (
+      "CREATE TABLE obts_raw_1 (
          id         bigserial,
-         record     character(84)
+         record     character(176)
        )")
   }
-  if ("macr" %in% tableNames && !dbExistsTable(con, "macr")) {
-    createString <- "CREATE TABLE macr (\n"
+  if ("obts_raw_2" %in% tableNames && !dbExistsTable(con, "obts_raw_2")) {
+    dbExecute(con,
+      "CREATE TABLE obts_raw_2 (
+         id         bigserial,
+         record     character(184)
+       )")
+  }
+  if ("obts" %in% tableNames && !dbExistsTable(con, "obts")) {
+    createString <- "CREATE TABLE obts (\n"
     nameLength <- 2L + max(nchar(tableDef$abbreviation))
     
     for (i in seq_len(nrow(tableDef))) {
       if (isSequenceType(tableDef$type[i])) 
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$abbreviation[i]), tableDef$type[i], " PRIMARY KEY")
       else
-        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$abbreviation[i]), "character(", tableDef$length[i], ")")
+        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$abbreviation[i]), "character(", tableDef$length_2[i], ")")
       
       createString <- paste0(createString, if (i != nrow(tableDef)) ",\n" else "\n")
     }
@@ -199,14 +211,14 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
     dbExecute(con, createString)
   }
     
-  if ("macr_typed" %in% tableNames && !dbExistsTable(con, "macr_typed")) {
+  if ("obts_typed" %in% tableNames && !dbExistsTable(con, "obts_typed")) {
     ## can probably move these typedefs into a schema to help with namespace stuff
     
     for (i in seq_len(nrow(tableDef))) {
       if (isEnumType(tableDef$type[i])) {
         enumSpec <- parseEnumType(tableDef$type[i])
         
-        name <- paste0("macr_", tableDef$full_name[i])
+        name <- paste0("obts_", tableDef$full_name[i])
         if (dbExistsType(con, name)) {
           warning("type '", name, "' already exists, dropping")
           dbExecute(con, paste0("DROP TYPE ", name))
@@ -216,17 +228,17 @@ createTablesIfNonexistent <- function(drv, tableDef, tableNames)
       }
     }
     
-    ## this is hacky, as it references the macr key to create a foreign constraint
-    createString <- "CREATE TABLE macr_typed (\n"
+    ## this is hacky, as it references the obts key to create a foreign constraint
+    createString <- "CREATE TABLE obts_typed (\n"
     nameLength <- 2L + max(nchar(tableDef$full_name))
     for (i in seq_len(nrow(tableDef))) {
       if (isSequenceType(tableDef$type[i])) {
         keyType <- sub("serial", "int", tableDef$type[i])
-        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), keyType, " REFERENCES macr(db_id)")
+        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), keyType, " REFERENCES obts(db_id)")
       } else if (!isEnumType(tableDef$type[i])) {
         createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), tableDef$type[i])
       } else {
-        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), "macr_", tableDef$full_name[i])
+        createString <- paste0(createString, sprintf("  %-*s", nameLength, tableDef$full_name[i]), "obts_", tableDef$full_name[i])
       }
       createString <- paste0(createString, if (i != nrow(tableDef)) ",\n" else "\n")
     }
@@ -270,14 +282,14 @@ defineImportFunctions <- function(con, tableDef) {
     enumName <- tableDef$full_name[i]
     
     fieldLength <- max(tableDef[i,colnames(tableDef)[grepl("length", colnames(tableDef))]])
-    createString <- paste0("CREATE OR REPLACE FUNCTION string_to_", enumName, "(character(", fieldLength, ")) RETURNS macr_", enumName, " AS $$\n",
+    createString <- paste0("CREATE OR REPLACE FUNCTION string_to_", enumName, "(character(", fieldLength, ")) RETURNS obts_", enumName, " AS $$\n",
       "  SELECT CASE\n")
     hasElse <- FALSE
     for (j in seq_along(enumSpec)) {
       if (names(enumSpec)[j] != "") {
-        createString <- paste0(createString, "    WHEN $1 = '", names(enumSpec)[j], "' THEN CAST('", enumSpec[j], "' AS macr_", enumName, ")\n")
+        createString <- paste0(createString, "    WHEN $1 = '", names(enumSpec)[j], "' THEN CAST('", enumSpec[j], "' AS obts_", enumName, ")\n")
       } else {
-        createString <- paste0(createString, "    ELSE CAST('", enumSpec[j], "' AS macr_", enumName, ")\n")
+        createString <- paste0(createString, "    ELSE CAST('", enumSpec[j], "' AS obts_", enumName, ")\n")
         hasElse <- TRUE
       }
     }
@@ -327,7 +339,7 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
   insertStatement <- paste0(
     "INSERT INTO info VALUES
       ('", paste(fileName, fileInfo$size, format(fileInfo$mtime, format = "%F %X %z"), hash,
-                 0, 0, 0, 0, sep = "', '"), "')")
+                 0, 0, 0, 0, 0, sep = "', '"), "')")
   dbExecute(con, insertStatement)
   
   invisible(NULL)
@@ -335,12 +347,13 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
 
 deleteDataRowsForEntry <- function(con, entry) {
   if (entry$id_start != 0L) {
-    dbExecute(con, paste0("DELETE FROM macr_typed WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
-    dbExecute(con, paste0("DELETE FROM macr WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+    dbExecute(con, paste0("DELETE FROM obts_typed WHERE id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+    dbExecute(con, paste0("DELETE FROM obts WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
   }
   
   if (entry$raw_id_start != 0L) {
-    dbExecute(con, paste0("DELETE FROM macr_raw WHERE id BETWEEN ", entry$raw_id_start, " AND ", entry$raw_id_end))
+    rawTableName <- paste0("obts_raw_", entry$format)
+    dbExecute(con, paste0("DELETE FROM ", rawTableName, " WHERE id BETWEEN ", entry$raw_id_start, " AND ", entry$raw_id_end))
   }
   invisible(NULL)
 }
@@ -355,7 +368,7 @@ updateInInfoTableAndDeleteDataRows <- function(con, inputPath, fileName, current
     "timestamp = '", format(fileInfo$mtime, format = "%F %X %z"), "', ",
     "hash = '", hash, "', ",
     "size = '", fileInfo$size, "', ",
-    "id_start = 0, id_end = 0, raw_id_start = 0, raw_id_end = 0 ",
+    "format = 0, id_start = 0, id_end = 0, raw_id_start = 0, raw_id_end = 0 ",
     "WHERE file_name = '", fileName, "'")
   dbExecute(con, updateStatement)
 }
@@ -381,13 +394,12 @@ importIntoRawTable <- function(con, inputPath, fileName)
   }
   lineLength <- nchar(readLines(tempFile, n = 1L))
   
-  #inputFormat <- switch(as.character(lineLength), "176" = 1L, "184" = 2L, NULL)
-  #if (is.null(inputFormat)) {
-  #  unlink(tempFile)
-  #  stop("unrecognized format for file: ", fileName)
-  #}
-  #rawTableName <- paste0("obts_raw_", inputFormat)
-  rawTableName <- "macr_raw"
+  inputFormat <- switch(as.character(lineLength), "176" = 1L, "184" = 2L, NULL)
+  if (is.null(inputFormat)) {
+    unlink(tempFile)
+    stop("unrecognized format for file: ", fileName)
+  }
+  rawTableName <- paste0("obts_raw_", inputFormat)
   
   ## There is definitely a more elegant way of doing this, but we first get
   ## the sequence var which increments it, set it back one, copy, and count
@@ -405,6 +417,7 @@ importIntoRawTable <- function(con, inputPath, fileName)
 
   updateStatement <- paste0(
     "UPDATE info SET
+       format = '", inputFormat, "',
        raw_id_start = ", rawStartIndex, ",
        raw_id_end = ", rawEndIndex, "
        WHERE 
@@ -417,7 +430,7 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
   
   inputFiles <- list.files(inputPath)
   
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   currentEntries <- dbGetQuery(con, "SELECT * FROM info")
   
   for (fileName in inputFiles) {
@@ -431,6 +444,7 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
     currentEntry <- currentEntries[currentEntries$file_name == fileName,]
     
     fileInfo <- file.info(file.path(inputPath, fileName))
+  
     if (fileInfo$mtime == currentEntry$timestamp && fileInfo$size == currentEntry$size) next
   
     ## only timestamps differ, check the hash
@@ -466,13 +480,13 @@ updateInfoTable <- function(drv, tableDef, inputPath) {
 }
 
 updateRawTables <- function(drv, tableDef, inputPath) {
-  createTablesIfNonexistent(drv, tableDef, "macr_raw")
+  createTablesIfNonexistent(drv, tableDef, c("obts_raw_1", "obts_raw_2"))
   
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE raw_id_start = 0")
   
   if (nrow(currentEntries) > 0L) {
-    con.su <- connectToDatabase(drv, "macr", TRUE)
+    con.su <- connectToDatabase(drv, "obts", TRUE)
     for (i in seq_len(nrow(currentEntries))) {
       currentEntry <- currentEntries[i,]
       
@@ -488,7 +502,7 @@ updateRawTables <- function(drv, tableDef, inputPath) {
 }
 
 parseRawColumnsForEntry <- function(con, tableDef, entry) {
-  insertStatement <- "INSERT INTO macr_typed ("
+  insertStatement <- "INSERT INTO obts_typed ("
   for (i in seq_len(nrow(tableDef))) {
     insertStatement <- paste0(insertStatement, tableDef$full_name[i])
     if (i != nrow(tableDef)) insertStatement <- paste0(insertStatement, ", ")
@@ -501,19 +515,20 @@ parseRawColumnsForEntry <- function(con, tableDef, entry) {
     insertStatement <- paste0(insertStatement, sprintf("%-*s", indentLength, ""))
     
     if (isIntegerType(tableDef$type[i])) {
-      insertStatement <- paste0(insertStatement, "string_to_int(macr.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
+      insertStatement <- paste0(insertStatement, "string_to_int(obts.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
     } else if (tableDef$type[i] == "date") {
-      insertStatement <- paste0(insertStatement, "string_to_date(macr.", tableDef$abbreviation[i], ", 'YYYYMMDD') AS ", tableDef$full_name[i])
+      insertStatement <- paste0(insertStatement, "string_to_date(obts.", tableDef$abbreviation[i], ", '",
+                                if (entry$format == 1L) "YYMMDD" else "YYYYMMDD", "') AS ", tableDef$full_name[i])
     } else if (isEnumType(tableDef$type[i])) {
-      insertStatement <- paste0(insertStatement, "string_to_", tableDef$full_name[i], "(macr.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
+      insertStatement <- paste0(insertStatement, "string_to_", tableDef$full_name[i], "(obts.", tableDef$abbreviation[i], ") AS ", tableDef$full_name[i])
     } else {
-      insertStatement <- paste0(insertStatement, "macr.", tableDef$abbreviation[i], " AS ", tableDef$full_name[i])
+      insertStatement <- paste0(insertStatement, "obts.", tableDef$abbreviation[i], " AS ", tableDef$full_name[i])
     }
    
     insertStatement <- paste0(insertStatement, if (i != nrow(tableDef)) ",\n" else "\n")
   }
  
-  insertStatement <- paste0(insertStatement, "  FROM macr WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end)
+  insertStatement <- paste0(insertStatement, "  FROM obts WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end)
   
   insertResult <- tryCatch(dbExecute(con, insertStatement), error = function(e) e)
   if (is(insertResult, "error")) browser()
@@ -522,12 +537,12 @@ parseRawColumnsForEntry <- function(con, tableDef, entry) {
 }
 
 splitRawColumnsForEntry <- function(con, tableDef, entry) {
-  startIndex <- dbGetQuery(con, "SELECT nextval('macr_DB_ID_seq')")[[1L]]
-  invisible(dbGetQuery(con, paste0("SELECT setval('macr_DB_ID_seq', ", startIndex, ", false)")))
+  startIndex <- dbGetQuery(con, "SELECT nextval('obts_DB_ID_seq')")[[1L]]
+  invisible(dbGetQuery(con, paste0("SELECT setval('obts_DB_ID_seq', ", startIndex, ", false)")))
     
-  rawTableName <- "macr_raw"
+  rawTableName <- paste0("obts_raw_", entry$format)
   
-  insertStatement <- "INSERT INTO macr ("
+  insertStatement <- "INSERT INTO obts ("
   for (i in seq_len(nrow(tableDef))) {
     if (isSequenceType(tableDef$type[i])) next
     insertStatement <- paste0(insertStatement, tableDef$abbreviation[i])
@@ -535,8 +550,8 @@ splitRawColumnsForEntry <- function(con, tableDef, entry) {
   }
   insertStatement <- paste0(insertStatement, ")\n")
   
-  starts  <- tableDef$start 
-  lengths <- tableDef$length
+  starts  <- if (entry$format == 1L) tableDef$start_1 else tableDef$start_2
+  lengths <- if (entry$format == 1L) tableDef$length_1 else tableDef$length_2
   
   indentLength <- 9L
   insertStatement <- paste0(insertStatement, "  SELECT\n")
@@ -560,9 +575,9 @@ splitRawColumnsForEntry <- function(con, tableDef, entry) {
 
 
 splitRawColumns <- function(drv, tableDef) {
-  createTablesIfNonexistent(drv, tableDef, "macr")
+  createTablesIfNonexistent(drv, tableDef, "obts")
   
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE id_start = 0")
   
   if (nrow(currentEntries) > 0L) {
@@ -584,9 +599,9 @@ splitRawColumns <- function(drv, tableDef) {
 }
 
 parseRawColumns <- function(drv, tableDef) {
-  createTablesIfNonexistent(drv, tableDef, "macr_typed")
+  createTablesIfNonexistent(drv, tableDef, "obts_typed")
   
-  con <- connectToDatabase(drv, "macr")
+  con <- connectToDatabase(drv, "obts")
   currentEntries <- dbGetQuery(con, "SELECT * FROM info WHERE id_start != 0")
   
   definedFunctions <- FALSE
@@ -595,7 +610,7 @@ parseRawColumns <- function(drv, tableDef) {
     for (i in seq_len(nrow(currentEntries))) {
       currentEntry <- currentEntries[i,]
       
-      alreadyParsed <- dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM macr_typed WHERE db_id = ", currentEntry$id_start, ")"))[[1L]]
+      alreadyParsed <- dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM obts_typed WHERE id = ", currentEntry$id_start, ")"))[[1L]]
       if (alreadyParsed) next
       
       if (!definedFunctions) {
@@ -658,8 +673,8 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
     if (isSequenceType(tableDef$type[i])) next
     if (isEnumType(tableDef$type[i])) {
       ## will fail if multiple categories weren't re-coded
-      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM macr"))[[1L]], useNA = "ifany")
-      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM macr_typed"))[[1L]], useNA = "ifany")
+      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany")
+      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany")
       
       enumSpec <- parseEnumType(tableDef$type[i])
       tableMismatch <- dfMismatch(old, new, enumSpec)
@@ -670,8 +685,8 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
       }
     } else if (isIntegerType(tableDef$type[i])) {
       ## this should only fail if there are more than one codes which fail to parse as an int
-      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM macr"))[[1L]], useNA = "ifany")
-      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM macr_typed"))[[1L]], useNA = "ifany")
+      old <- table(dbGetQuery(con, paste0("SELECT ", tableDef$abbreviation[i], " FROM obts"))[[1L]], useNA = "ifany")
+      new <- table(dbGetQuery(con, paste0("SELECT ", tableDef$full_name[i], " FROM obts_typed"))[[1L]], useNA = "ifany")
       
       if (length(old) != length(new) || any(sort(old) != sort(new))) {
         cat("mismatch in column ", tableDef$full_name[i], "(", tableDef$abbreviation[i], "):\n", sep = "")
@@ -679,7 +694,7 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
       }
     } else if (tableDef$type[i] == "date") {
       join <- dbGetQuery(con, paste0("SELECT id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
-                                     " FROM macr_typed JOIN macr ON macr_typed.id = macr.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
+                                     " FROM obts_typed JOIN obts ON obts_typed.id = obts.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
       join[[2L]] <- trimws(join[[2L]])
       tryResult <- tryCatch(badDays <- sapply(join[[2L]], function(x) if (nchar(x) == 6L) (substr(x, 5L, 6L) != "00") else (substr(x, 7L, 8L) != "00")), error = function(e) e)
       if (is(tryResult, "error")) browser()
@@ -689,7 +704,7 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
   }
 }
 
-tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFactor = FALSE)
+tableDef <- read.csv(file.path("datasets", "obts", "tableDef.csv"), stringsAsFactor = FALSE)
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
@@ -703,21 +718,22 @@ if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
 drv <- dbDriver("PostgreSQL")
 
 ## "input" is the folder with files ACRPTARB00.TXT, ...
-updateInfoTable(drv, tableDef, file.path("datasets", "macr", "raw"))
-updateRawTables(drv, tableDef, file.path("datasets", "macr", "raw"))
+updateInfoTable(drv, tableDef, file.path("datasets", "obts", "raw"))
+updateRawTables(drv, tableDef, file.path("datasets", "obts", "raw"))
 splitRawColumns(drv, tableDef)
 parseRawColumns(drv, tableDef)
 
 dbUnloadDriver(drv)
+
 
 if (FALSE) {
 
 ## connects to the database, creates tables and imports raw files
 ## change the path to point to where this file is placed
 setwd("~/Repositories/dojr/ojdr")
-source(file.path("datasets", "macr", "import.R"))
+source(file.path("datasets", "obts", "import.R"))
 
-tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"), stringsAsFactor = FALSE)
+tableDef <- read.csv(file.path("datasets", "obts", "tableDef.csv"), stringsAsFactor = FALSE)
 
 if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
   repos <- getOption("repos")
@@ -731,24 +747,24 @@ if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
 drv <- dbDriver("PostgreSQL")
 
 ## "input" is the folder with files ACRPTARB00.TXT, ...
-updateInfoTable(drv, tableDef, file.path("datasets", "macr", "raw"))
-updateRawTables(drv, tableDef, file.path("datasets", "macr", "raw"))
+updateInfoTable(drv, tableDef, file.path("datasets", "obts", "raw"))
+updateRawTables(drv, tableDef, file.path("datasets", "obts", "raw"))
 splitRawColumns(drv, tableDef)
 parseRawColumns(drv, tableDef)
 
 
 
 ## useful to delete the current typed table to recreate it
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "obts")
 
 dropImportFunctions(con, tableDef)
-dropTable(con, tableDef, "macr_typed")
+dropTable(con, tableDef, "obts_typed")
 
 dbDisconnect(con)
 
 
 ## validate import
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "obts")
 
 checkColumns(con, tableDef)
 
@@ -756,9 +772,9 @@ dbDisconnect(con)
 
 
 ## export to file
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "obts")
 
-macr <- dbGetQuery(con, "SELECT * FROM macr_typed")
+obts <- dbGetQuery(con, "SELECT * FROM obts_typed")
 
 dbDisconnect(con)
 

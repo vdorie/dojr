@@ -347,7 +347,7 @@ insertFileIntoInfoTable <- function(con, inputPath, fileName) {
 
 deleteDataRowsForEntry <- function(con, entry) {
   if (entry$id_start != 0L) {
-    dbExecute(con, paste0("DELETE FROM obts_typed WHERE id BETWEEN ", entry$id_start, " AND ", entry$id_end))
+    dbExecute(con, paste0("DELETE FROM obts_typed WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
     dbExecute(con, paste0("DELETE FROM obts WHERE db_id BETWEEN ", entry$id_start, " AND ", entry$id_end))
   }
   
@@ -610,7 +610,7 @@ parseRawColumns <- function(drv, tableDef) {
     for (i in seq_len(nrow(currentEntries))) {
       currentEntry <- currentEntries[i,]
       
-      alreadyParsed <- dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM obts_typed WHERE id = ", currentEntry$id_start, ")"))[[1L]]
+      alreadyParsed <- dbGetQuery(con, paste0("SELECT EXISTS(SELECT 1 FROM obts_typed WHERE db_id = ", currentEntry$id_start, ")"))[[1L]]
       if (alreadyParsed) next
       
       if (!definedFunctions) {
@@ -693,8 +693,8 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
         print(dfMismatch(old, new))
       }
     } else if (tableDef$type[i] == "date") {
-      join <- dbGetQuery(con, paste0("SELECT id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
-                                     " FROM obts_typed JOIN obts ON obts_typed.id = obts.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
+      join <- dbGetQuery(con, paste0("SELECT db_id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
+                                     " FROM obts_typed JOIN obts ON obts_typed.db_id = obts.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
       join[[2L]] <- trimws(join[[2L]])
       tryResult <- tryCatch(badDays <- sapply(join[[2L]], function(x) if (nchar(x) == 6L) (substr(x, 5L, 6L) != "00") else (substr(x, 7L, 8L) != "00")), error = function(e) e)
       if (is(tryResult, "error")) browser()

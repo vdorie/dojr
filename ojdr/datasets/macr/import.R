@@ -678,8 +678,8 @@ checkColumns <- function(con, tableDef, columnNames = NULL)
         print(dfMismatch(old, new))
       }
     } else if (tableDef$type[i] == "date") {
-      join <- dbGetQuery(con, paste0("SELECT id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
-                                     " FROM macr_typed JOIN macr ON macr_typed.id = macr.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
+      join <- dbGetQuery(con, paste0("SELECT db_id, ", tableDef$abbreviation[i], ", ", tableDef$full_name[i],
+                                     " FROM macr_typed JOIN macr ON macr_typed.db_id = macr.db_id WHERE ", tableDef$full_name[i], " IS NULL"))
       join[[2L]] <- trimws(join[[2L]])
       tryResult <- tryCatch(badDays <- sapply(join[[2L]], function(x) if (nchar(x) == 6L) (substr(x, 5L, 6L) != "00") else (substr(x, 7L, 8L) != "00")), error = function(e) e)
       if (is(tryResult, "error")) browser()

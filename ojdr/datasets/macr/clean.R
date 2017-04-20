@@ -17,7 +17,7 @@ if (require(RPostgreSQL, quietly = TRUE) == FALSE) {
 
 drv <- dbDriver("PostgreSQL")
 
-con <- connectToDatabase(drv, "macr")
+con <- connectToDatabase(drv, "cjsc")
 
 tableDef <- read.csv(file.path("datasets", "macr", "tableDef.csv"))
 isEnumType <- function(x) grepl(";", x)

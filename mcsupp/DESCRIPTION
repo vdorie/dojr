@@ -1,0 +1,11 @@
+Package: mcsupp
+Version: 1.0-0
+Date: 2017-04-27
+Title: Markov Chain Monte Carlo Local Suppression
+Authors@R: c(person("Vincent", "Dorie",    role = c("aut", "cre"), email = "vdorie@gmail.com"))
+Description: Locally suppresses categorical variable data frames using randomization.
+License: GPL (>= 2)
+NeedsCompilation: yes
+Biarch: yes
+URL: https://github.com/vdorie/dojr
+BugReports: https://github.com/vdorie/dojr/issues

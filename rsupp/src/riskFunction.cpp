@@ -30,7 +30,7 @@ namespace rsupp {
     return minK;
   }
 
-  DivRiskFunction::DivRiskFunction(const Data& data, SEXP x, SEXP riskFunction) {
+  DivRiskFunction::DivRiskFunction(const Data& data, SEXP riskFunction) {
     if (rc_getLength(riskFunction) != 2) Rf_error("length of riskMeasure for functions must be 2");
     
     SEXP function = VECTOR_ELT(riskFunction, 0);
@@ -40,7 +40,10 @@ namespace rsupp {
     if (!Rf_isEnvironment(environment)) Rf_error("second element of list for function riskMeasure must be an environment");
     
     SEXP freq = PROTECT(rc_newInteger(data.nLev[0]));
-    rc_setNames(freq, rc_getLevels(VECTOR_ELT(x, 0)));
+    SEXP freqNames = PROTECT(rc_newCharacter(data.nLev[0]));
+    for (size_t i = 0; i < data.nLev[0]; ++i)
+      SET_STRING_ELT(freqNames, i, Rf_mkChar(data.levelNames[0][i]));
+    rc_setNames(freq, freqNames);
     
     closure = PROTECT(Rf_lang2(function, freq));
     

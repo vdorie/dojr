@@ -31,7 +31,7 @@ namespace rsupp {
     std::size_t numFrequencies;
     
     // pulls names from x
-    DivRiskFunction(const Data& data, SEXP x, SEXP riskFunction);
+    DivRiskFunction(const Data& data, SEXP riskFunction);
     double operator()(const Data& data, const State& state, double* risk);
     ~DivRiskFunction();
     

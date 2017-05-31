@@ -4,6 +4,7 @@ calcRisk <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL)
   if (any(keyVars %not_in% colnames(x)))
     stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
   if (!is.null(div)) {
+    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
     if (div %in% keyVars) stop("div variable cannot be in keyVars")
     
     x.run <- x[,match(c(div, keyVars), names(x))]
@@ -23,12 +24,13 @@ rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
 
 getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5)
 {
-  risk.k <- as.double(risk.k[1L])
+  risk.k <- coerceOrError(risk.k[1L], "double")
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
   if (any(keyVars %not_in% colnames(x)))
     stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
   if (!is.null(div)) {
+    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
     if (div %in% keyVars) stop("div variable cannot be in keyVars")
     
     x.run <- x[,match(c(div, keyVars), names(x))]
@@ -53,17 +55,17 @@ localSuppression <-
   function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5,
            keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 {
-  par$risk.k  <- as.double(risk.k[1L])
-  par$alpha   <- as.double(par$alpha[1L])
-  par$gamma   <- as.double(par$gamma[1L])
-  par$rowSwap.prob   <- as.double(par$rowSwap.prob[1L])
-  par$colSwap.prob <- as.double(par$colSwap.prob[1L])
-  par$na.prob     <- as.double(par$na.prob[1L])
-  par$n.burn  <- as.integer(par$n.burn[1L])
-  par$n.samp  <- as.integer(par$n.samp[1L])
-  par$verbose <- as.integer(verbose[1L])
+  par$risk.k  <- coerceOrError(risk.k[1L], "double")
+  par$alpha   <- coerceOrError(par$alpha[1L], "double")
+  par$gamma   <- coerceOrError(par$gamma[1L], "double")
+  par$rowSwap.prob <- coerceOrError(par$rowSwap.prob[1L], "double")
+  par$colSwap.prob <- coerceOrError(par$colSwap.prob[1L], "double")
+  par$na.prob      <- coerceOrError(par$na.prob[1L], "double")
+  par$n.burn  <- coerceOrError(par$n.burn[1L], "integer")
+  par$n.samp  <- coerceOrError(par$n.samp[1L], "integer")
+  par$verbose <- coerceOrError(verbose[1L], "integer")
   
-  skip.rinit <- as.logical(skip.rinit[1L])
+  skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
   
   n.chain <- par$n.chain
   par$n.chain <- NULL
@@ -72,6 +74,7 @@ localSuppression <-
   if (any(keyVars %not_in% colnames(x)))
     stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
   if (!is.null(div)) {
+    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
     if (div %in% keyVars) stop("div variable cannot be in keyVars")
     
     x.run <- x[,match(c(div, keyVars), names(x))]
@@ -88,8 +91,8 @@ localSuppression <-
       keyVars.w <- temp
       rm(temp)
     }
-    if (is.null(names(keyVars.w))) par$theta <- as.double(keyVars.w)
-    else par$theta <- as.double(keyVars.w[match(colnames(x), names(keyVars.w), nomatch = 0L)])
+    if (is.null(names(keyVars.w))) par$theta <- coerceOrError(keyVars.w, "double")
+    else par$theta <- coerceOrError(keyVars.w[match(colnames(x), names(keyVars.w), nomatch = 0L)], "double")
   }
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))

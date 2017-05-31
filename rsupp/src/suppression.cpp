@@ -51,7 +51,7 @@ SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
   Data data(xExpr);
   RiskFunction* calculateRiskPtr = NULL;
   if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(data, xExpr, riskFunctionExpr);
+  else calculateRiskPtr = new DivRiskFunction(data, riskFunctionExpr);
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
   State state(data);
@@ -78,7 +78,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   Data origData(xExpr);
   RiskFunction* calculateRiskPtr = NULL;
   if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
+  else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
     
@@ -157,7 +157,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   Data origData(xExpr);
   RiskFunction* calculateRiskPtr = NULL;
   if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
+  else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
   MCMCParam param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);

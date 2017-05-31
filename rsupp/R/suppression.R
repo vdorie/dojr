@@ -15,17 +15,14 @@ rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
 
 getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5)
 {
-  par <- rsupp.par()
-  par$risk.k <- as.double(risk.k[1L])
-  par$verbose <- FALSE
-  par$skip.rinit <- FALSE
+  risk.k <- as.double(risk.k[1L])
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
   if (!is.null(div)) x <- x[,c(div, setdiff(keyVars, div))]
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
-  .Call(C_getAtRiskSubset, x, risk.f, par)
+  .Call(C_getAtRiskSubset, x, risk.f, risk.k)
 }
   
 
@@ -42,7 +39,8 @@ localSuppression <-
   par$n.burn  <- as.integer(par$n.burn[1L])
   par$n.samp  <- as.integer(par$n.samp[1L])
   par$verbose <- as.integer(verbose[1L])
-  par$skip.rinit <- as.logical(skip.rinit[1L])
+  
+  skip.rinit <- as.logical(skip.rinit[1L])
   
   n.chain <- par$n.chain
   par$n.chain <- NULL
@@ -73,7 +71,7 @@ localSuppression <-
   risk.min <- min(.Call(C_calcRisk, x, risk.f))
   if (risk.min >= risk.k) return(list(x = x, obj = NA_real_, n = NA_real_))
   
-  res <- .Call(C_localSuppression, x, risk.f, par)
+  res <- .Call(C_localSuppression, x, risk.f, par, skip.rinit)
 }
 
 ## alpha - controls how strongly concentrated the penalty term for k is around k itself

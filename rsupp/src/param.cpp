@@ -12,11 +12,34 @@
 namespace rsupp {
   bool* getSuppressValues(const Data& fullData, RiskFunction& calculateRisk);
   
-  Param::Param(const Data& data, RiskFunction* divRiskFunction, SEXP paramExpr) :
-    threshold(-1.0), alpha(-1.0), beta(-1.0), gamma(-1.0), theta(NULL), theta_inv(NULL),
+  Param::Param(const Data& data, RiskFunction* divRiskFunction, double _threshold, uint8_t _verbose) : 
+    threshold(_threshold), riskType(RTYPE_INVALID), suppressValues(NULL), verbose(_verbose)
+  {
+    if (divRiskFunction == NULL) {
+      riskType = rsupp::RTYPE_COUNT;
+    } else if (threshold >= 1.0) {
+      riskType = rsupp::RTYPE_DIVERSITY;
+    } else {
+      riskType = rsupp::RTYPE_PERCENT;
+      
+      suppressValues = getSuppressValues(data, *divRiskFunction);
+      if (suppressValues == NULL)
+        Rf_error("could not find values to suppress for threshold < 1.0");
+    }
+  }
+  
+  Param::~Param() {
+    if (suppressValues != NULL) {
+      delete [] suppressValues;
+      suppressValues = NULL;
+    }
+  }
+  
+  MCMCParam::MCMCParam(const Data& data, RiskFunction* divRiskFunction, SEXP paramExpr) :
+    Param(data, divRiskFunction, -1.0, 0), alpha(-1.0), beta(-1.0), gamma(-1.0),
+    theta(NULL), theta_inv(NULL),
     rowSwapProb(-1.0), colSwapProb(-1.0), naProb(-1.0),
-    nBurn(INVALID_EXTENT), nSamp(INVALID_EXTENT), verbose(0), skipRandomInit(false),
-    riskType(RTYPE_INVALID), suppressValues(NULL)
+    nBurn(INVALID_EXTENT), nSamp(INVALID_EXTENT)
   {
     if (!Rf_isVector(paramExpr)) Rf_error("params argument must be a named list");
     
@@ -88,11 +111,6 @@ namespace rsupp {
         if (INTEGER(param_i) < 0) Rf_error("verbose parameter must be a non-negative integer");
         
         verbose = static_cast<uint8_t>(INTEGER(param_i)[0]);
-      } else if (std::strcmp(param_name_i, "skip.rinit") == 0) {
-        if (!Rf_isLogical(param_i)) Rf_error("skip.rinit parameter must be logical type");
-        if (rc_getLength(param_i) != 1) Rf_error("skip.rinit parameter must be of length 1");
-        
-        skipRandomInit = static_cast<bool>(INTEGER(param_i)[0]);
       } else {
         Rf_error("unrecognized parameter '%s'", param_name_i);
       }
@@ -112,19 +130,7 @@ namespace rsupp {
     if (nSamp < nBurn) Rf_error("n.samp must be greater than or equal to n.burn");
     if (threshold > data.nRow) Rf_error("threshold is greater than the number of rows in the data");
     if (rowSwapProb + colSwapProb > 1.0) Rf_error("rowSwap + colSwap probabilities must be less than or equal to 1");
-    
-    if (divRiskFunction == NULL) {
-      riskType = rsupp::RTYPE_COUNT;
-    } else if (threshold >= 1.0) {
-      riskType = rsupp::RTYPE_DIVERSITY;
-    } else {
-      riskType = rsupp::RTYPE_PERCENT;
-      
-      suppressValues = getSuppressValues(data, *divRiskFunction);
-      if (suppressValues == NULL)
-        Rf_error("could not find values to suppress for threshold < 1.0");
-    }
-    
+        
     if (threshold >= 1.0) {
       beta = (alpha - 1.0) / threshold;
     } else {
@@ -155,7 +161,7 @@ namespace rsupp {
     for (size_t i = 0; i < data.nCol; ++i) this->theta_inv[i] /= thetaTotal;
   }
     
-  Param::~Param() {
+  MCMCParam::~MCMCParam() {
     if (theta != NULL) {
       delete [] theta;
       theta = NULL;
@@ -163,10 +169,6 @@ namespace rsupp {
     if (theta_inv != NULL) {
       delete [] theta_inv;
       theta_inv = NULL;
-    }
-    if (suppressValues != NULL) {
-      delete [] suppressValues;
-      suppressValues = NULL;
     }
   }
   

@@ -23,6 +23,7 @@
 using std::size_t;
 
 using rsupp::Data;
+using rsupp::MCMCParam;
 using rsupp::Param;
 using rsupp::State;
 using rsupp::RiskFunction;
@@ -30,8 +31,8 @@ using rsupp::KRiskFunction;
 using rsupp::DivRiskFunction;
 
 namespace {
-  void initializeStateWithRandomSuppressions(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
-  State* mcmcSuppression(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& state);
+  void initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state);
+  State* mcmcSuppression(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& state);
   void pruneNAs(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
   
   Data* subsetDataOnAtRiskAndSimilar(const Data& data, const Param& param, RiskFunction& calculateRisk,
@@ -40,7 +41,7 @@ namespace {
   
   void printObs(const Data& data, const unsigned char* x_i);
 
-  double getObjective(const Data& data, const Param& param, const unsigned char* xt, double minRisk);
+  double getObjective(const Data& data, const MCMCParam& param, const unsigned char* xt, double minRisk);
 }
 
 extern "C" {
@@ -68,15 +69,20 @@ SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
   return result;
 }
 
-SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
+SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
 {
+  if (!Rf_isReal(thresholdExpr)) Rf_error("threshold parameter must be real type");
+  if (rc_getLength(thresholdExpr) != 1) Rf_error("threshold parameter must be of length 1");
+  if (REAL(thresholdExpr)[0] <= 0.0) Rf_error("threshold parameter must be non-negative");
+  
   Data origData(xExpr);
   RiskFunction* calculateRiskPtr = NULL;
   if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
   else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
-  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+    
+  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, REAL(thresholdExpr)[0], 0);
     
   size_t* subsetIndices;
   size_t subsetLength;
@@ -137,15 +143,19 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
   return xNew;
 }
 
-SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
+SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
 {
+  if (Rf_isLogical(skipRandomInitExpr)) Rf_error("skipRandomInit parameter must be logical type");
+  if (rc_getLength(skipRandomInitExpr) != 1) Rf_error("skipRandomInit parameter must be of length 1");
+  bool skipRandomInit = LOGICAL(skipRandomInitExpr)[0];
+  
   Data origData(xExpr);
   RiskFunction* calculateRiskPtr = NULL;
   if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
   else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
-  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+  MCMCParam param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
   
   if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
     Rprintf("created percent risk function, supresssing values:\n");
@@ -164,7 +174,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
   
   GetRNGstate();
   
-  if (!param.skipRandomInit) {
+  if (!skipRandomInit) {
     initializeStateWithRandomSuppressions(subsetData, param, calculateRisk, subsetState);
   } else {
     subsetState.minRisk = calculateRisk(subsetData, subsetState, NULL);
@@ -347,14 +357,14 @@ namespace {
   }
   
   // fills in probs_t as nCol x nRow
-  void getAtRiskProbs(const Data& data, const Param& param, const State& state,
+  void getAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,
                       const bool* originallyAtRisk, const double* risk, double* probs_t);
-  // fills in prbs as nRow
-  bool getNotAtRiskProbs(const Data& data, const Param& param, const State& state,
+  // fills in probs as nRow
+  bool getNotAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,
                          const bool* originallyAtRisk, size_t row_atRisk, size_t col_atRisk,
                          double* probs);
   
-  void initializeStateWithRandomSuppressions(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state)
+  void initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state)
   {
     state.calculateFreqTable(data);
     
@@ -454,7 +464,7 @@ namespace {
   
   // Because replacing a value with an NA can considerably lower the risk associated with an
   // obs, we only allow the selection of a row with NAs in it if it was originally at risk
-  void getAtRiskProbs(const Data& data, const Param& param, const State& state,
+  void getAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,
                       const bool* originallyAtRisk, const double* risk, double* probs_t) {
     size_t dataStartCol = (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
     size_t numProbCols = data.nCol - dataStartCol;
@@ -490,7 +500,7 @@ namespace {
     if (total > 0.0) for (size_t i = 0; i < numProbs; ++i) probs_t[i] /= total;
   }
   
-  bool getNotAtRiskProbs(const Data& data, const Param& param, const State& state,
+  bool getNotAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,
                          const bool* originallyAtRisk, size_t row_atRisk, size_t col_atRisk,
                          double* probs)
   {
@@ -644,11 +654,11 @@ namespace {
     double* rowProbs;
   };
   
-  double rowSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
-  double colSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
-  double naRevStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  double rowSwapStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  double colSwapStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  double naRevStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
   
-  State* mcmcSuppression(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& initState)
+  State* mcmcSuppression(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& initState)
   {
     State* result = new State(data);
     
@@ -733,16 +743,16 @@ namespace {
   }
   
   // puts positive probability on every NA row/col that isn't NA in original data
-  bool getCurrentNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
+  bool getCurrentNAProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch);
   // puts positive probability on every non-NA row/col that isn't NA in original data
-  bool getCurrentNonNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
+  bool getCurrentNonNAProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch);
   // puts positive probability on every row/col that isn't NA in original data
   // bool getRandomProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
   
-  bool getRowSwapProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol);
+  bool getRowSwapProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol);
   
   // among rows/cols with NAs, pick one and then shuffle that NA to another valid row
-  double rowSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  double rowSwapStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
   {
     if (param.verbose > 1) Rprintf("rs ");
     
@@ -785,7 +795,7 @@ namespace {
   }
   
   // among rows/cols with NAs, pick one and then shuffle that NA to another valid col
-  double colSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  double colSwapStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
   {
     if (param.verbose > 1) Rprintf("cs ");
     
@@ -840,7 +850,7 @@ namespace {
     return ratio;
   }
   
-  double naRevStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  double naRevStep(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
   {
     double ratio;
     if (unif_rand() < param.naProb) {
@@ -914,7 +924,7 @@ namespace {
     return ratio;
   }
   
-  bool getRowSwapProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol)
+  bool getRowSwapProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol)
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
@@ -932,7 +942,7 @@ namespace {
     return true;
   } 
   
-  bool getCurrentNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch)
+  bool getCurrentNAProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch)
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
@@ -954,7 +964,7 @@ namespace {
     return true;
   }
   
-  bool getCurrentNonNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch)
+  bool getCurrentNonNAProbs(const Data& data, const MCMCParam& param, const State& state, MCMCScratch& scratch)
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
@@ -1016,7 +1026,7 @@ namespace {
   // 2 * (1 - gamma) * -log(mean(naTerm)) + log(kTerm)
   // mean(naTerm) is weighted average of number of NAs in data
   // riskTerm is a gamma density
-  double getObjective(const Data& data, const Param& param, const unsigned char* xt, double minRisk)
+  double getObjective(const Data& data, const MCMCParam& param, const unsigned char* xt, double minRisk)
   {
     double naTerm = 0.0;
     
@@ -1059,7 +1069,7 @@ extern "C" {
 #define DEF_FUNC(_N_, _F_, _A_) { _N_, reinterpret_cast<DL_FUNC>(&_F_), _A_ }
   
   static R_CallMethodDef R_callMethods[] = {
-    DEF_FUNC("localSuppression", localSuppression, 3),
+    DEF_FUNC("localSuppression", localSuppression, 4),
     DEF_FUNC("calcRisk", calcRisk, 2),
     DEF_FUNC("getAtRiskSubset", getAtRiskSubset, 3),
     { NULL, NULL, 0 }

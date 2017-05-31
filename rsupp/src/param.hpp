@@ -21,7 +21,15 @@ namespace rsupp {
   
   struct Param {
     double threshold;
+    risk_t riskType;
+    bool* suppressValues;
+    uint8_t verbose;
     
+    Param(const Data& data, RiskFunction* divRiskFunction, double threshold, uint8_t verbose);
+    virtual ~Param();
+  };
+  
+  struct MCMCParam : Param {
     double alpha; // shape of gamma term on risk
     double beta;  // rate of gamma term on risk
     double gamma; // weight of gamma term on risk, 1 - gamma is weight on NA loss term
@@ -37,14 +45,8 @@ namespace rsupp {
     std::size_t nBurn;
     std::size_t nSamp;
     
-    uint8_t verbose;
-    bool skipRandomInit;
-    
-    risk_t riskType;
-    bool* suppressValues;
-    
-    Param(const Data& data, RiskFunction* divRiskFunction, SEXP param);
-    ~Param();
+    MCMCParam(const Data& data, RiskFunction* divRiskFunction, SEXP param);
+    ~MCMCParam();
   };
 }
 

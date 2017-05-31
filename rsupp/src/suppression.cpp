@@ -91,13 +91,13 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   
   
   SEXP xNew = PROTECT(rc_newList(subsetData.nCol + 1));
-  for (size_t col = 0; col < origData.nCol; ++col) {
+  for (size_t col = 0; col < subsetData.nCol; ++col) {
     SEXP x_j_old = VECTOR_ELT(xExpr, col);
     SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(subsetData.nRow));
     
     int* x_j = INTEGER(x_j_new);
     
-    for (size_t row = 0; row < origData.nRow; ++row)
+    for (size_t row = 0; row < subsetData.nRow; ++row)
       x_j[row] = subsetData.xt[col + row * subsetData.nCol] == NA_LEVEL ? R_NaInt : (subsetData.xt[col + row * subsetData.nCol] + 1);
     
     Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
@@ -108,14 +108,19 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   // calculate risk for original data
   State state(origData);
   state.calculateFreqTable(origData);
-  calculateRisk(origData, state, REAL(VECTOR_ELT(xNew, subsetData.nCol)));
+  double* origRisk = new double[origData.nRow];
+  calculateRisk(origData, state, origRisk);
+  double* risk = REAL(VECTOR_ELT(xNew, subsetData.nCol));
+  for (size_t row = 0; row < subsetLength; ++row)
+    risk[row] = origRisk[subsetIndices[row]];
+  delete [] origRisk;
   
   // set attributes
   Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
   
   // rownames requires turning 1:nRow into characters
   SEXP rowNames = PROTECT(rc_newCharacter(subsetData.nRow));
-  int numDigits = 0;
+  size_t numDigits = 0;
     for (size_t temp = subsetData.nRow + 1; temp > 0; temp /= 10) ++numDigits;
   char* rowName = new char[numDigits + 1];
   for (size_t row = 0; row < subsetData.nRow; ++row) {
@@ -145,7 +150,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
 
 SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
 {
-  if (Rf_isLogical(skipRandomInitExpr)) Rf_error("skipRandomInit parameter must be logical type");
+  if (!Rf_isLogical(skipRandomInitExpr)) Rf_error("skipRandomInit parameter must be logical type");
   if (rc_getLength(skipRandomInitExpr) != 1) Rf_error("skipRandomInit parameter must be of length 1");
   bool skipRandomInit = LOGICAL(skipRandomInitExpr)[0];
   

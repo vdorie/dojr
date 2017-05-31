@@ -1,11 +1,19 @@
 calcRisk <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL)
 {
   if (!is.data.frame(x)) x <- as.data.frame(x)
-  if (!is.null(div)) x <- x[,c(div, setdiff(keyVars, div))]
+  if (any(keyVars %not_in% colnames(x)))
+    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
+  if (!is.null(div)) {
+    if (div %in% keyVars) stop("div variable cannot be in keyVars")
+    
+    x.run <- x[,match(c(div, keyVars), names(x))]
+  } else {
+    x.run <- x[,keyVars]
+  }
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
-  .Call(C_calcRisk, x, risk.f)
+  .Call(C_calcRisk, x.run, risk.f)
 }
 
 rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
@@ -18,11 +26,26 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL,
   risk.k <- as.double(risk.k[1L])
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
-  if (!is.null(div)) x <- x[,c(div, setdiff(keyVars, div))]
+  if (any(keyVars %not_in% colnames(x)))
+    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
+  if (!is.null(div)) {
+    if (div %in% keyVars) stop("div variable cannot be in keyVars")
+    
+    x.run <- x[,match(c(div, keyVars), names(x))]
+  } else {
+    x.run <- x[,keyVars]
+  }
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
-  .Call(C_getAtRiskSubset, x, risk.f, risk.k)
+  res <- .Call(C_getAtRiskSubset, x.run, risk.f, risk.k)
+  
+  if (any(colnames(x) %not_in% colnames(x.run))) {
+    extraCols <- colnames(x)[colnames(x) %not_in% colnames(x.run)]
+    res[,extraCols] <- x[,extraCols]
+    res <- res[,c(colnames(x), "orig.risk")]
+  }
+  res
 }
   
 
@@ -45,12 +68,15 @@ localSuppression <-
   n.chain <- par$n.chain
   par$n.chain <- NULL
   
-  x <- as.data.frame(x)
+  if (!is.data.frame(x)) x <- as.data.frame(x)
+  if (any(keyVars %not_in% colnames(x)))
+    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
   if (!is.null(div)) {
     if (div %in% keyVars) stop("div variable cannot be in keyVars")
     
-    varNames <- c(div, keyVars)
-    x <- x[,match(varNames, names(x))]
+    x.run <- x[,match(c(div, keyVars), names(x))]
+  } else {
+    x.run <- x[,keyVars]
   }
   
   if (is.null(keyVars.w)) {
@@ -68,10 +94,16 @@ localSuppression <-
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
  
-  risk.min <- min(.Call(C_calcRisk, x, risk.f))
+  risk.min <- min(.Call(C_calcRisk, x.run, risk.f))
   if (risk.min >= risk.k) return(list(x = x, obj = NA_real_, n = NA_real_))
   
-  res <- .Call(C_localSuppression, x, risk.f, par, skip.rinit)
+  res <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
+  if (any(colnames(x) %not_in% colnames(x.run))) {
+    extraCols <- colnames(x)[colnames(x) %not_in% colnames(x.run)]
+    res$x[,extraCols] <- x[,extraCols]
+    res$x <- res$x[,c(colnames(x), "risk")]
+  }
+  res
 }
 
 ## alpha - controls how strongly concentrated the penalty term for k is around k itself

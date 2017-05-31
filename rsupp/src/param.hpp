@@ -1,5 +1,5 @@
-#ifndef MCSUPP_PARAM_HPP
-#define MCSUPP_PARAM_HPP
+#ifndef RSUPP_PARAM_HPP
+#define RSUPP_PARAM_HPP
 
 #include <cstddef> // size_t
 #include <stdint.h> // uint8_t; not C++ until C++11
@@ -8,7 +8,7 @@
 #include <Rinternals.h>  // SEXP
 #undef R_NO_REMAP
 
-namespace mcsupp {
+namespace rsupp {
   struct Data;
   struct RiskFunction;
   

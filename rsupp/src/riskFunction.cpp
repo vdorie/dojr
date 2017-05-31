@@ -12,7 +12,7 @@
 
 using std::size_t;
 
-namespace mcsupp {
+namespace rsupp {
   double KRiskFunction::operator()(const Data& data, const State& state, double* risk) {
     double minK = static_cast<double>(data.nRow);
     

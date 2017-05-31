@@ -1,5 +1,5 @@
-#ifndef MCSUPP_RISK_FUNCTION_HPP
-#define MCSUPP_RISK_FUNCTION_HPP
+#ifndef RSUPP_RISK_FUNCTION_HPP
+#define RSUPP_RISK_FUNCTION_HPP
 
 #include <cstddef> // size_t
 
@@ -7,7 +7,7 @@
 #include <Rinternals.h>  // SEXP
 #undef R_NO_REMAP
 
-namespace mcsupp {
+namespace rsupp {
   struct Data;
   struct State;
   

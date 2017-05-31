@@ -8,7 +8,7 @@
 
 using std::size_t;
 
-namespace mcsupp {
+namespace rsupp {
   Data::Data(SEXP x) :
     xt(NULL), nRow(INVALID_EXTENT), nCol(INVALID_EXTENT), nLev(NULL), tableSize(INVALID_EXTENT), colNames(NULL), levelNames(NULL)
   {

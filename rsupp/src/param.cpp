@@ -9,7 +9,7 @@
 #include "riskFunction.hpp"
 #include "state.hpp"
 
-namespace mcsupp {
+namespace rsupp {
   bool* getSuppressValues(const Data& fullData, RiskFunction& calculateRisk);
   
   Param::Param(const Data& data, RiskFunction* divRiskFunction, SEXP paramExpr) :
@@ -114,11 +114,11 @@ namespace mcsupp {
     if (rowSwapProb + colSwapProb > 1.0) Rf_error("rowSwap + colSwap probabilities must be less than or equal to 1");
     
     if (divRiskFunction == NULL) {
-      riskType = mcsupp::RTYPE_COUNT;
+      riskType = rsupp::RTYPE_COUNT;
     } else if (threshold >= 1.0) {
-      riskType = mcsupp::RTYPE_DIVERSITY;
+      riskType = rsupp::RTYPE_DIVERSITY;
     } else {
-      riskType = mcsupp::RTYPE_PERCENT;
+      riskType = rsupp::RTYPE_PERCENT;
       
       suppressValues = getSuppressValues(data, *divRiskFunction);
       if (suppressValues == NULL)

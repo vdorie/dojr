@@ -8,14 +8,14 @@ calcRisk <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL)
   .Call(C_calcRisk, x, risk.f)
 }
 
-mcsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
-                       n.chain = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
+rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
+                      n.chain = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
   namedList(alpha, gamma, n.burn, n.samp, n.chain, rowSwap.prob, colSwap.prob, na.prob)
 
 
 getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5)
 {
-  par <- mcsupp.par()
+  par <- rsupp.par()
   par$risk.k <- as.double(risk.k[1L])
   par$verbose <- FALSE
   par$skip.rinit <- FALSE
@@ -31,7 +31,7 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL,
 
 localSuppression <-
   function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5,
-           keyVars.w = NULL, par = mcsupp.par(), verbose = FALSE, skip.rinit = FALSE)
+           keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 {
   par$risk.k  <- as.double(risk.k[1L])
   par$alpha   <- as.double(par$alpha[1L])

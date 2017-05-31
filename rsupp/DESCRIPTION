@@ -1,7 +1,7 @@
-Package: mcsupp
+Package: rsupp
 Version: 1.0-0
 Date: 2017-04-27
-Title: Markov Chain Monte Carlo Local Suppression
+Title: Random Local Suppression
 Authors@R: c(person("Vincent", "Dorie",    role = c("aut", "cre"), email = "vdorie@gmail.com"))
 Suggests:
   testthat

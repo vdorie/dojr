@@ -1,9 +1,9 @@
-#ifndef MCSUPP_STATE_HPP
-#define MCSUPP_STATE_HPP
+#ifndef RSUPP_STATE_HPP
+#define RSUPP_STATE_HPP
 
 #include <cstddef> // size_t
 
-namespace mcsupp {
+namespace rsupp {
   struct Data;
   struct DivRiskFunction;
   struct Param;

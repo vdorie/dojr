@@ -1,5 +1,5 @@
-#ifndef MCSUPP_DATA_HPP
-#define MCSUPP_DATA_HPP
+#ifndef RSUPP_DATA_HPP
+#define RSUPP_DATA_HPP
 
 #include <cstddef> // size_t
 
@@ -7,7 +7,7 @@
 #include <Rinternals.h>  // SEXP
 #undef R_NO_REMAP
 
-namespace mcsupp {
+namespace rsupp {
   struct Data {
     const unsigned char* xt;
     std::size_t nRow;

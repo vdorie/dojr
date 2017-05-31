@@ -16,7 +16,7 @@
 
 using std::size_t;
 
-namespace mcsupp {
+namespace rsupp {
   State::State(const Data& data) :
     xt(new unsigned char[data.nRow * data.nCol]),
     naCount(new size_t[data.tableSize]),

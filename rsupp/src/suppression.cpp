@@ -22,12 +22,12 @@
 
 using std::size_t;
 
-using mcsupp::Data;
-using mcsupp::Param;
-using mcsupp::State;
-using mcsupp::RiskFunction;
-using mcsupp::KRiskFunction;
-using mcsupp::DivRiskFunction;
+using rsupp::Data;
+using rsupp::Param;
+using rsupp::State;
+using rsupp::RiskFunction;
+using rsupp::KRiskFunction;
+using rsupp::DivRiskFunction;
 
 namespace {
   void initializeStateWithRandomSuppressions(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
@@ -275,7 +275,7 @@ namespace {
     }
    
     
-    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
     
     size_t*& subsetIndices(*subsetIndicesPtr);
     size_t& subsetLength(*subsetLengthPtr);
@@ -368,7 +368,7 @@ namespace {
       return;
     }
     
-    size_t numProbs = (data.nCol - (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0)) * data.nRow;
+    size_t numProbs = (data.nCol - (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0)) * data.nRow;
     double* probs_t = new double[numProbs];
     
     bool* originallyAtRisk = new bool[data.nRow];
@@ -385,7 +385,7 @@ namespace {
         Rprintf("\n");
     }
     
-    size_t numProbCols = (data.nCol - (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0));
+    size_t numProbCols = (data.nCol - (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0));
     do {
       ++iter;
       getAtRiskProbs(data, param, state, originallyAtRisk, risk, probs_t);
@@ -395,7 +395,7 @@ namespace {
       size_t row_atRisk = index / numProbCols;
       size_t col_atRisk = index % numProbCols;
       
-      size_t dataCol_atRisk = col_atRisk + (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0);
+      size_t dataCol_atRisk = col_atRisk + (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
       
       if (param.verbose > 1) {
         Rprintf("  r: %lu, c: %lu ", row_atRisk + 1, dataCol_atRisk + 1);
@@ -456,7 +456,7 @@ namespace {
   // obs, we only allow the selection of a row with NAs in it if it was originally at risk
   void getAtRiskProbs(const Data& data, const Param& param, const State& state,
                       const bool* originallyAtRisk, const double* risk, double* probs_t) {
-    size_t dataStartCol = (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0);
+    size_t dataStartCol = (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
     size_t numProbCols = data.nCol - dataStartCol;
     size_t numProbs = numProbCols * data.nRow;
     
@@ -497,7 +497,7 @@ namespace {
     // of those rows not at risk and matching the at-risk row in all but the one column, randomly pick one if one exists
     double total = 0.0;
     const unsigned char* xt_atRisk = data.xt + row_atRisk * data.nCol;
-    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
     size_t dataCol_atRisk = col_atRisk + dataStartCol;
     
     // first try and match those with no-NAs present
@@ -662,7 +662,7 @@ namespace {
     
     MCMCScratch scratch;
     
-    scratch.dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    scratch.dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
     scratch.numProbCols  = data.nCol - scratch.dataStartCol;
     scratch.numProbs     = scratch.numProbCols * data.nRow;
     scratch.cellProbs_t  = new double[scratch.numProbs];
@@ -981,7 +981,7 @@ namespace {
     State temp(data);
     temp.copyFrom(data, state);
     
-    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
     size_t numIndexCols = data.nCol - dataStartCol;
     size_t numIndices = numIndexCols * data.nRow;
     
@@ -1067,7 +1067,7 @@ extern "C" {
   
 #undef DEF_FUNC
   
-  void R_init_mcsupp(DllInfo* info)
+  void R_init_rsupp(DllInfo* info)
   {
     R_registerRoutines(info, NULL, R_callMethods, NULL, NULL);
     R_useDynamicSymbols(info, static_cast<Rboolean>(FALSE));

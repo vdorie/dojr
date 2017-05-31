@@ -1,3 +1,0 @@
-useDynLib(mcsupp, .registration = TRUE, .fixes = "C_")
-
-export(localSuppression, mcsupp.par, calcRisk, getAtRiskSubset)

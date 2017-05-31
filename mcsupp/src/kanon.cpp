@@ -1,272 +1,242 @@
 #include <climits> // UCHAR_MAX
 #include <cmath>   // log
+#include <cstring> // strcmp
 #include <cstdint> // uint64
 #include <cstddef> // size_t
-#include <cstring>
 
 #include "rc.h"
+#include "random.h"
 
 #define R_NO_REMAP
+#include <Rinternals.h>  // SEXP
 #include <Rmath.h>       // Rf_rexp
 #include <R_ext/Print.h> // Rprintf
-#include <R_ext/Random.h> // unif_rand
+#include <R_ext/Random.h> // GetRNGState/PutRNGState/unif_rand
 #undef R_NO_REMAP
+
+#include "data.hpp"
+#include "definitions.hpp"
+#include "param.hpp"
+#include "riskFunction.hpp"
+#include "state.hpp"
 
 using std::size_t;
 
-#define NA_LEVEL (UCHAR_MAX - 1)
+using mcsupp::Data;
+using mcsupp::Param;
+using mcsupp::State;
+using mcsupp::RiskFunction;
+using mcsupp::KRiskFunction;
+using mcsupp::DivRiskFunction;
+
+namespace {
+  void initializeStateWithRandomSuppressions(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
+  State* mcmcSuppression(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& state);
+  void pruneNAs(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
+  
+  Data* subsetDataOnAtRiskAndSimilar(const Data& data, const Param& param, RiskFunction& calculateRisk,
+                                     size_t** subsetIndices, size_t* subsetLength);
+  State* mergeSubset(const Data& origData, const Data& subsetData, const State& subsetState, size_t* subsetIndices, size_t subsetLength);
+  
+  void printObs(const Data& data, const unsigned char* x_i);
+
+  double getObjective(const Data& data, const Param& param, const unsigned char* xt, double minRisk);
+}
 
 extern "C" {
 
-void printObs(const unsigned char* x_i, size_t nCol);
-
-struct Data {
-  const unsigned char* xt;
-  size_t nRow;
-  size_t nCol;
-  const size_t* nLev;
-};
-
-struct Param {
-  size_t k;
-  
-  double alpha; // shape of gamma term on k
-  double beta;  // rate of gamma term on k
-  double gamma; // weight of gamma term on k, 1 - gamma is weight on NA loss term
-  
-  double* theta; // weights for each NA component
-  
-  size_t nBurn;
-  size_t nSamp;
-  bool verbose;
-};
-
-struct State {
-  unsigned char* xt;
-  size_t* kTable;
-  size_t minK;
-  double objective;
-};
-
-void printState(const Data& data, const Param& param, const State& state);
-
-State ksupp(const Data& data, const Param& param);
-void pruneResult(const Data& data, const Param& param, State& state);
-void calculateKTable(const Data& data, size_t* kTable);
-size_t calculateK(const Data& data, const size_t* kTable, size_t* currK); // returns min K
-
-void decrementKTable(const unsigned char* x_i, size_t nCol, const size_t* nLev, size_t currCol, size_t offset, size_t stride, size_t* kTable);
-void incrementKTable(const unsigned char* x_i, size_t nCol, const size_t* nLev, size_t currCol, size_t offset, size_t stride, size_t* kTable);
-
-double getObjective(const Data& data, const Param& param, const unsigned char* xt, size_t minK);
-
-uint64_t simulateUnsignedIntegerUniformInRange(uint64_t min_inclusive, uint64_t max_exclusive)
+SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
 {
-  uint64_t actualMin, actualMax;
-  if (min_inclusive < max_exclusive) {
-    actualMin = min_inclusive;
-    actualMax = max_exclusive;
-  } else {
-    actualMin = max_exclusive;
-    actualMax = min_inclusive;
-  }
+  Data data(xExpr);
+  RiskFunction* calculateRiskPtr = NULL;
+  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+  else calculateRiskPtr = new DivRiskFunction(data, xExpr, riskFunctionExpr);
+  RiskFunction& calculateRisk(*calculateRiskPtr);
   
-  double range = (double) (actualMax - actualMin);
+  State state(data);
   
-  double u = unif_rand();
+  state.calculateFreqTable(data);
   
-  return actualMin + (uint64_t) (u * range);
-}
-
-SEXP calcK(SEXP xExpr)
-{
-  SEXP classExpr = rc_getClass(xExpr);
-  if (std::strcmp(CHAR(STRING_ELT(classExpr, 0)), "data.frame") != 0) Rf_error("x argument to anonymize must be of 'data.frame' class");
+  SEXP result = PROTECT(rc_newReal(data.nRow));
   
-  size_t nCol = rc_getLength(xExpr);
-  if (nCol == 0) Rf_error("x argument to anonymize cannot be an empty data frame");
+  calculateRisk(data, state, REAL(result));
   
-  size_t nRow = rc_getLength(VECTOR_ELT(xExpr, 0));
-  if (nCol == 0) Rf_error("x argument to anonymize cannot be an empty data frame");
-  
-  size_t* nLev = new size_t[nCol];
-  unsigned char* xt = new unsigned char[nCol * nRow];
-  
-  for (size_t col = 0; col < nCol; ++col) {
-    SEXP x_jExpr = VECTOR_ELT(xExpr, col);
-    if (!Rf_isFactor(x_jExpr)) Rf_error("column %lu of x not of factor type", col + 1);
-    
-    nLev[col] = rc_getLength(rc_getLevels(x_jExpr));
-    
-    if (nLev[col] > UCHAR_MAX - 1) Rf_error("column %lu of x has more levels than maximum (%lu > %hu)", nLev[col], UCHAR_MAX - 1);
-    
-    int* x_j = INTEGER(x_jExpr);
-    
-    for (size_t row = 0; row < nRow; ++row)
-      xt[col + row * nCol] = x_j[row] == R_NaInt ? NA_LEVEL : x_j[row] - 1;
-  }
-  
-  Data data = { xt, nRow, nCol, nLev };
-  
-  
-  size_t tableSize = data.nLev[0];
-  for (size_t col = 1; col < data.nCol; ++ col) tableSize *= data.nLev[col];
-  
-  size_t* kTable = new size_t[tableSize];
-  size_t* kVec = new size_t[data.nRow];
-  
-  for (size_t i = 0; i < tableSize; ++i) kTable[i] = 0;
-  
-  calculateKTable(data, kTable);
-  (void) calculateK(data, kTable, kVec);
-  
-  SEXP result = PROTECT(rc_newInteger(nRow));
-  int* result_int = INTEGER(result);
-  
-  for (size_t row = 0; row < nRow; ++row) result_int[row] = static_cast<int>(kVec[row]);
-  
-  delete [] kVec;
-  delete [] kTable;
-  
-  delete [] xt;
-  delete [] nLev;
+  delete calculateRiskPtr;
   
   UNPROTECT(1);
   
   return result;
 }
 
-SEXP anonymize(SEXP xExpr, SEXP kExpr, SEXP alphaExpr, SEXP gammaExpr, SEXP thetaExpr, SEXP nBurnExpr, SEXP nSampExpr, SEXP verboseExpr)
+SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
 {
-  SEXP classExpr = rc_getClass(xExpr);
-  if (std::strcmp(CHAR(STRING_ELT(classExpr, 0)), "data.frame") != 0) Rf_error("x argument to anonymize must be of 'data.frame' class");
+  Data origData(xExpr);
+  RiskFunction* calculateRiskPtr = NULL;
+  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+  else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
+  RiskFunction& calculateRisk(*calculateRiskPtr);
   
-  size_t nCol = rc_getLength(xExpr);
-  if (nCol == 0) Rf_error("x argument to anonymize cannot be an empty data frame");
-  
-  size_t nRow = rc_getLength(VECTOR_ELT(xExpr, 0));
-  if (nCol == 0) Rf_error("x argument to anonymize cannot be an empty data frame");
-  
-  if (!Rf_isInteger(kExpr)) Rf_error("k argument to anonymize must be integer type");
-  if (rc_getLength(kExpr) != 1) Rf_error("k argument to anonymize must be of length 1");
-  if (INTEGER(kExpr)[0] < 1) Rf_error("k must be a positive integer");
-  
-  if (!Rf_isReal(alphaExpr)) Rf_error("alpha argument to anonymize must be double type");
-  if (rc_getLength(alphaExpr) != 1) Rf_error("alpha argument to anonymize must be of length 1");
-  if (REAL(alphaExpr)[0] <= 1.0) Rf_error("alpha must be a greater than 1");
-  
-  if (!Rf_isReal(gammaExpr)) Rf_error("gamma argument to anonymize must be double type");
-  if (rc_getLength(gammaExpr) != 1) Rf_error("gamma argument to anonymize must be of length 1");
-  if (REAL(gammaExpr)[0] < 0.0 || REAL(gammaExpr)[0] > 1.0) Rf_error("gamma must be in [0,1]");
-  
-  if (!Rf_isReal(thetaExpr)) Rf_error("theta argument to anonymize must be double type");
-  if (rc_getLength(thetaExpr) != nCol) Rf_error("theta argument to anonymize must be of length equal to number of columns in x");
-  for (size_t i = 0; i < nCol; ++i) if (REAL(thetaExpr)[i] < 0.0) Rf_error("theta must be positive");
-  
-  if (!Rf_isInteger(nBurnExpr)) Rf_error("nBurn argument to anonymize must be integer type");
-  if (rc_getLength(nBurnExpr) != 1) Rf_error("nBurn argument to anonymize must be of length 1");
-  if (INTEGER(nBurnExpr)[0] < 0) Rf_error("nBurn must be a non-negative integer");
-  
-  if (!Rf_isInteger(nSampExpr)) Rf_error("nSamp argument to anonymize must be integer type");
-  if (rc_getLength(nSampExpr) != 1) Rf_error("nSamp argument to anonymize must be of length 1");
-  if (INTEGER(nSampExpr)[0] < 1) Rf_error("nSamp must be a positive integer");
-  
-  if (INTEGER(nSampExpr)[0] <= INTEGER(nBurnExpr)[0]) Rf_error("nSamp must be strictly greater than nBurn");
-  
-  if (!Rf_isLogical(verboseExpr)) Rf_error("verbose argument to anonymize must be logical type");
-  if (rc_getLength(verboseExpr) != 1) Rf_error("verboseExpr argument to anonymize must be of length 1");
-  
-  Param param = {
-    static_cast<size_t>(INTEGER(kExpr)[0]),
-    REAL(alphaExpr)[0],
-    (REAL(alphaExpr)[0] - 1.0) / static_cast<double>(INTEGER(kExpr)[0]),
-    REAL(gammaExpr)[0],
-    REAL(thetaExpr),
-    static_cast<size_t>(INTEGER(nBurnExpr)[0]),
-    static_cast<size_t>(INTEGER(nSampExpr)[0]),
-    static_cast<bool>(INTEGER(verboseExpr)[0])
-  };
-  
-  double thetaTotal = 0.0;
-  for (size_t i = 0; i < nCol; ++i) thetaTotal += param.theta[i];
-  for (size_t i = 0; i < nCol; ++i) param.theta[i] *= static_cast<double>(nCol) / thetaTotal;
-  
-  size_t* nLev = new size_t[nCol];
-  unsigned char* xt = new unsigned char[nCol * nRow];
-  
-  for (size_t col = 0; col < nCol; ++col) {
-    SEXP x_jExpr = VECTOR_ELT(xExpr, col);
-    if (!Rf_isFactor(x_jExpr)) Rf_error("column %lu of x not of factor type", col + 1);
+  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
     
-    nLev[col] = rc_getLength(rc_getLevels(x_jExpr));
-    
-    if (nLev[col] > UCHAR_MAX - 1) Rf_error("column %lu of x has more levels than maximum (%lu > %hu)", nLev[col], UCHAR_MAX - 1);
-    
-    int* x_j = INTEGER(x_jExpr);
-    
-    for (size_t row = 0; row < nRow; ++row)
-      xt[col + row * nCol] = x_j[row] == R_NaInt ? NA_LEVEL : x_j[row] - 1;
-  }
+  size_t* subsetIndices;
+  size_t subsetLength;
+  Data* subsetDataPtr = subsetDataOnAtRiskAndSimilar(origData, param, calculateRisk, &subsetIndices, &subsetLength);
+  Data& subsetData(*subsetDataPtr);
   
-  Data data = { xt, nRow, nCol, nLev };
-    
-  // Rprintf("nLev: %lu", nLev[0]);
-  // for (size_t i = 1; i < nCol; ++i) Rprintf(", %lu", nLev[i]);
-  // Rprintf("\n");
   
-  GetRNGstate();
-  
-  State best = ksupp(data, param);
-  
-  PutRNGstate();
-  
-  // see if there are any NAs that we can safely restore without increasing k
-  // greedy algorithm style
-  pruneResult(data, param, best);
-  
-  // package up results into a list
-  SEXP result = PROTECT(rc_newList(3));
-  SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(nCol + 1));
-  for (size_t col = 0; col < nCol; ++col) {
+  SEXP xNew = PROTECT(rc_newList(subsetData.nCol + 1));
+  for (size_t col = 0; col < origData.nCol; ++col) {
     SEXP x_j_old = VECTOR_ELT(xExpr, col);
-    SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(nRow));
+    SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(subsetData.nRow));
     
     int* x_j = INTEGER(x_j_new);
     
-    for (size_t row = 0; row < nRow; ++row)
-      x_j[row] = best.xt[col + row * data.nCol] == NA_LEVEL ? R_NaInt : best.xt[col + row * data.nCol] + 1;
+    for (size_t row = 0; row < origData.nRow; ++row)
+      x_j[row] = subsetData.xt[col + row * subsetData.nCol] == NA_LEVEL ? R_NaInt : (subsetData.xt[col + row * subsetData.nCol] + 1);
     
     Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
     Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
   }
-  SET_VECTOR_ELT(xNew, nCol, rc_newInteger(nRow));
+  SET_VECTOR_ELT(xNew, subsetData.nCol, rc_newReal(subsetData.nRow));
   
-  size_t* temp = new size_t[nRow];
-  calculateK(data,  best.kTable, temp);
-  int* k_int = INTEGER(VECTOR_ELT(xNew, nCol));
-  for (size_t row = 0; row < nRow; ++row)
-    k_int[row] = static_cast<int>(temp[row]);
-  delete [] temp;
+  // calculate risk for original data
+  State state(origData);
+  state.calculateFreqTable(origData);
+  calculateRisk(origData, state, REAL(VECTOR_ELT(xNew, subsetData.nCol)));
   
+  // set attributes
   Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
-  Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));
-  rc_setNames(xNew, PROTECT(rc_newCharacter(nCol + 1)));
+  
+  // rownames requires turning 1:nRow into characters
+  SEXP rowNames = PROTECT(rc_newCharacter(subsetData.nRow));
+  int numDigits = 0;
+    for (size_t temp = subsetData.nRow + 1; temp > 0; temp /= 10) ++numDigits;
+  char* rowName = new char[numDigits + 1];
+  for (size_t row = 0; row < subsetData.nRow; ++row) {
+    std::sprintf(rowName, "%lu", row + 1);
+    SET_STRING_ELT(rowNames, row, Rf_mkChar(rowName));
+  }
+  delete [] rowName;
+    
+  Rf_setAttrib(xNew, R_RowNamesSymbol, rowNames);
+  rc_setNames(xNew, PROTECT(rc_newCharacter(subsetData.nCol + 1)));
   
   SEXP names_old = rc_getNames(xExpr);
   SEXP names_new = rc_getNames(xNew);
-  for (size_t col = 0; col < nCol; ++col)
+  for (size_t col = 0; col < origData.nCol; ++col)
     SET_STRING_ELT(names_new, col, STRING_ELT(names_old, col));
-  SET_STRING_ELT(names_new, nCol, Rf_mkChar("k"));
+  SET_STRING_ELT(names_new, origData.nCol, Rf_mkChar("orig.risk"));
+  
+  delete subsetDataPtr;
+  delete [] subsetIndices;
+  
+  delete calculateRiskPtr;
+ 
+  UNPROTECT(3);
+  
+  return xNew;
+}
+
+SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr)
+{
+  Data origData(xExpr);
+  RiskFunction* calculateRiskPtr = NULL;
+  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+  else calculateRiskPtr = new DivRiskFunction(origData, xExpr, riskFunctionExpr);
+  RiskFunction& calculateRisk(*calculateRiskPtr);
+  
+  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+  
+  if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
+    Rprintf("created percent risk function, supresssing values:\n");
+    SEXP levelsExpr = rc_getLevels(VECTOR_ELT(xExpr, 0));
+    for (size_t i = 0; i < origData.nLev[0]; ++i)
+      if (param.suppressValues[i])
+        Rprintf("  %s\n", CHAR(STRING_ELT(levelsExpr, i)));
+  }
+  
+  size_t* subsetIndices;
+  size_t subsetLength;
+  Data* subsetDataPtr = subsetDataOnAtRiskAndSimilar(origData, param, calculateRisk, &subsetIndices, &subsetLength);
+  Data& subsetData(*subsetDataPtr);
+   
+  State subsetState(subsetData);
+  
+  GetRNGstate();
+  
+  if (!param.skipRandomInit) {
+    initializeStateWithRandomSuppressions(subsetData, param, calculateRisk, subsetState);
+  } else {
+    subsetState.minRisk = calculateRisk(subsetData, subsetState, NULL);
+    subsetState.objective = getObjective(subsetData, param, subsetState.xt, subsetState.minRisk);
+  }
+  
+  if (param.nSamp > 0) {
+    State* randomState = mcmcSuppression(subsetData, param, calculateRisk, subsetState);
+    
+    // see if there are any NAs that we can safely restore without increasing k
+    // greedy algorithm style
+    pruneNAs(subsetData, param, calculateRisk, subsetState);
+    if (randomState != NULL) {
+      pruneNAs(subsetData, param, calculateRisk, *randomState);
+      if (randomState->objective > subsetState.objective) subsetState.copyFrom(subsetData, *randomState);
+      delete randomState;
+    }
+  } else {
+    pruneNAs(subsetData, param, calculateRisk, subsetState);
+  }
+  
+  PutRNGstate();
+  
+  State* fullState = mergeSubset(origData, subsetData, subsetState, subsetIndices, subsetLength);
+  
+  // package up results into a list
+  SEXP result = PROTECT(rc_newList(3));
+  SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(origData.nCol + 1));
+  for (size_t col = 0; col < origData.nCol; ++col) {
+    SEXP x_j_old = VECTOR_ELT(xExpr, col);
+    SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(origData.nRow));
+    
+    int* x_j = INTEGER(x_j_new);
+    
+    for (size_t row = 0; row < origData.nRow; ++row)
+      x_j[row] = fullState->xt[col + row * origData.nCol] == NA_LEVEL ? R_NaInt : (fullState->xt[col + row * origData.nCol] + 1);
+    
+    Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
+    Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
+  }
+  SET_VECTOR_ELT(xNew, origData.nCol, rc_newReal(origData.nRow));
+  
+  calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
+  
+  delete fullState;
+  
+  Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
+  Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));
+  rc_setNames(xNew, PROTECT(rc_newCharacter(origData.nCol + 1)));
+  
+  SEXP names_old = rc_getNames(xExpr);
+  SEXP names_new = rc_getNames(xNew);
+  for (size_t col = 0; col < origData.nCol; ++col)
+    SET_STRING_ELT(names_new, col, STRING_ELT(names_old, col));
+  SET_STRING_ELT(names_new, origData.nCol, Rf_mkChar("risk"));
   
   // store numeric results
-  SET_VECTOR_ELT(result, 1, Rf_ScalarReal(best.objective));
+  SET_VECTOR_ELT(result, 1, Rf_ScalarReal(subsetState.objective));
   double naTerm = 0.0;
-  for (size_t row = 0; row < data.nRow; ++row) {
-    for (size_t col = 0; col < data.nCol; ++col) if (best.xt[col + row * data.nCol] == NA_LEVEL) naTerm += param.theta[col]; 
+  for (size_t row = 0; row < subsetData.nRow; ++row) {
+    for (size_t col = 0; col < subsetData.nCol; ++col) {
+      if (subsetState.xt[col + row * subsetData.nCol] == NA_LEVEL && subsetData.xt[col + row * subsetData.nCol] != NA_LEVEL)
+        naTerm += param.theta[col]; 
+    }
   }
-  naTerm /= static_cast<double>(data.nRow);
+  naTerm /= static_cast<double>(subsetData.nRow);
   SET_VECTOR_ELT(result, 2, Rf_ScalarReal(naTerm));
   
+  delete subsetDataPtr;
+  delete [] subsetIndices;
+  
+  delete calculateRiskPtr;
   
   rc_setNames(result, PROTECT(rc_newCharacter(2)));
   SEXP namesExpr = rc_getNames(result);
@@ -274,341 +244,833 @@ SEXP anonymize(SEXP xExpr, SEXP kExpr, SEXP alphaExpr, SEXP gammaExpr, SEXP thet
   SET_STRING_ELT(namesExpr, 1, Rf_mkChar("obj"));
   SET_STRING_ELT(namesExpr, 2, Rf_mkChar("n"));
     
-  delete [] best.kTable;
-  delete [] best.xt;
-  
-  delete [] xt;
-  delete [] nLev;
-  
   UNPROTECT(3);
   
   return result;
 }
 
-State ksupp(const Data& data, const Param& param)
-{
-  size_t tableSize = data.nLev[0];
-  for (size_t col = 1; col < data.nCol; ++ col) tableSize *= data.nLev[col];
-  // Rprintf("allocating table of size: %lu\n", tableSize);
-  
-  State curr = { /* xt        = */ new unsigned char[data.nRow * data.nCol], 
-                 /* kTable    = */ new size_t[tableSize],
-                 /* minK      = */ static_cast<size_t>(-1),
-                 /* objective = */ -HUGE_VAL };
-  
-  // draw from "prior"
-  std::memcpy(curr.xt, data.xt, data.nRow * data.nCol * sizeof(unsigned char));
-  for (size_t i = 0; i < tableSize; ++i) curr.kTable[i] = 0;
-  
-  // only needed here to print stuff during draws from prior
-  // size_t* kVec = new size_t[data.nRow];
-  /* calculateKTable(data, curr.kTable);
-  curr.minK = calculateK(data, curr.kTable, kVec);
-  curr.objective = getObjective(data, param, curr.xt, curr.minK);  */
-  
-  /* for (size_t i = 0; i < 5; ++i) {
-    Rprintf("%lu: ", i);
-    printObs(data.xt + i * data.nCol, data.nCol);
-    Rprintf(", k: %lu\n", kVec[i]);
-  } */
-  
-  for (size_t i = 0; i < param.nBurn / 4; ++i) {
-    size_t row = static_cast<size_t>(simulateUnsignedIntegerUniformInRange(0, static_cast<uint64_t>(data.nRow)));
-    size_t col = static_cast<size_t>(simulateUnsignedIntegerUniformInRange(0, static_cast<uint64_t>(data.nCol)));
-    
-    /* Rprintf("prior iter %lu, state: ", i + 1);
-    printState(data, param, curr);
-    Rprintf("\n"); */
-    
-    if (curr.xt[col + row * data.nCol] == NA_LEVEL) {
-      if (data.xt[col + row * data.nCol] == NA_LEVEL) continue; // proposed and current state are identical, burn an obs
-      
-      curr.xt[col + row * data.nCol] = data.xt[col + row * data.nCol];
-    } else {
-      curr.xt[col + row * data.nCol] = NA_LEVEL;
-    }
-    
-    /* calculateKTable(data, curr.kTable);
-    curr.minK = calculateK(data, curr.kTable, kVec);
-    curr.objective = getObjective(data, param, curr.xt, curr.minK); */
+}
+
+namespace {
+  inline bool getRowAtRisk(const Data& data, const Param& param, size_t row, double risk) {
+    return risk < param.threshold &&
+      (param.suppressValues == NULL ? true :
+        data.xt[row * data.nCol] != NA_LEVEL &&
+        param.suppressValues[data.xt[row * data.nCol]] == false);
   }
   
-  calculateKTable(data, curr.kTable);
-  curr.minK = calculateK(data, curr.kTable, NULL);
-  curr.objective = getObjective(data, param, curr.xt, curr.minK);
-  
-  
-  State prop = { new unsigned char[data.nRow * data.nCol], new size_t[tableSize],
-                 static_cast<size_t>(-1), -HUGE_VAL };
-  State best = { new unsigned char[data.nRow * data.nCol], new size_t[tableSize],
-                 static_cast<size_t>(-1), -HUGE_VAL };
-  
-  std::memcpy(best.xt, data.xt, data.nRow * data.nCol * sizeof(unsigned char));
-  
-  for (size_t i = 0; i < param.nSamp; ++i) {
-    std::memcpy(prop.xt, const_cast<const unsigned char*>(curr.xt), data.nRow * data.nCol * sizeof(unsigned char));
-    std::memcpy(prop.kTable, const_cast<const size_t*>(curr.kTable), tableSize * sizeof(size_t));
+  Data* subsetDataOnAtRiskAndSimilar(const Data& data, const Param& param, RiskFunction& calculateRisk,
+                                     size_t** subsetIndicesPtr, size_t* subsetLengthPtr)
+  {
+    State state(data);
     
-    size_t row = static_cast<size_t>(simulateUnsignedIntegerUniformInRange(0, static_cast<uint64_t>(data.nRow)));
-    size_t col = static_cast<size_t>(simulateUnsignedIntegerUniformInRange(0, static_cast<uint64_t>(data.nCol)));
+    state.calculateFreqTable(data);
     
-    if (curr.xt[col + row * data.nCol] == NA_LEVEL) {
-      if (data.xt[col + row * data.nCol] == NA_LEVEL) continue; // proposed and current state are identical, burn an obs
+    double* risk = new double[data.nRow];
+    calculateRisk(data, state, risk);
+    
+    bool* rowAtRisk = new bool[data.nRow];
+    for (size_t row = 0; row < data.nRow; ++row) {
+      rowAtRisk[row] = getRowAtRisk(data, param, row, risk[row]);
+    }
+   
+    
+    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    
+    size_t*& subsetIndices(*subsetIndicesPtr);
+    size_t& subsetLength(*subsetLengthPtr);
+    
+    // we keep:
+    //   those at risk
+    //   those matching keys with those at risk (matters for % only)
+    //   those similar to those at risk (who can be suppressed)
+    subsetLength = 0;
+    bool* keepRow = new bool[data.nRow];
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (risk[row] < param.threshold) { // same as at risk, unless cannot be suppressValues != NULL
+        keepRow[row] = true;
+        ++subsetLength;
+        continue;
+      }
       
-      prop.xt[col + row * data.nCol] = data.xt[col + row * data.nCol];
-    } else {
-      prop.xt[col + row * data.nCol] = NA_LEVEL;
+      if (param.suppressValues != NULL &&
+          data.xt[row * data.nCol] != NA_LEVEL &&
+          param.suppressValues[data.xt[row * data.nCol]] == false)
+      {
+        keepRow[row] = false;
+        continue;
+      }
+      
+      keepRow[row] = false;
+      // if it shares any column with any row at risk, keep it
+      for (size_t atRiskRow = 0; atRiskRow < data.nRow && !keepRow[row]; ++atRiskRow) {
+        if (atRiskRow == row || !rowAtRisk[atRiskRow]) continue;
+        
+        for (size_t col = dataStartCol; col < data.nCol; ++col) {
+          if (data.xt[col + row * data.nCol] == data.xt[col + atRiskRow * data.nCol]) {
+            keepRow[row] = true;
+            ++subsetLength;
+            break;
+          }
+        }
+      }
     }
     
-    decrementKTable(curr.xt + row * data.nCol, data.nCol, data.nLev, 0, 0, 1, prop.kTable);
-    incrementKTable(prop.xt + row * data.nCol, data.nCol, data.nLev, 0, 0, 1, prop.kTable);
+    delete [] risk;
+    delete [] rowAtRisk;
     
-    // can do some minor optimization here, reusing parts of the objective function that are unchanged
-    prop.minK = calculateK(data, prop.kTable, NULL);
-    prop.objective = getObjective(data, param, prop.xt, prop.minK);
+    subsetIndices = new size_t[subsetLength];
+    size_t subsetRow = 0;
+    for (size_t row = 0; row < data.nRow; ++row)
+      if (keepRow[row]) subsetIndices[subsetRow++] = row;
+    
+    delete [] keepRow;
+    
+    return new Data(data, subsetIndices, subsetLength);
+  }
+  
+  State* mergeSubset(const Data& origData, const Data& subsetData, const State& subsetState, size_t* subsetIndices, size_t subsetLength)
+  {
+    State* result = new State(origData);
+    
+    size_t subsetRow = 0;
+    for (size_t row = 0; row < origData.nRow; ++row) {
+      if (subsetRow < subsetLength && subsetIndices[subsetRow] == row) {
+        std::memcpy(result->xt + row * origData.nCol, subsetData.xt + subsetRow * origData.nCol, origData.nCol * sizeof(unsigned char));
+        ++subsetRow;
+      } else {
+        std::memcpy(result->xt + row * origData.nCol, origData.xt + row * origData.nCol, origData.nCol * sizeof(unsigned char));
+      }
+    }
+    
+    return result;
+  }
+  
+  // fills in probs_t as nCol x nRow
+  void getAtRiskProbs(const Data& data, const Param& param, const State& state,
+                      const bool* originallyAtRisk, const double* risk, double* probs_t);
+  // fills in prbs as nRow
+  bool getNotAtRiskProbs(const Data& data, const Param& param, const State& state,
+                         const bool* originallyAtRisk, size_t row_atRisk, size_t col_atRisk,
+                         double* probs);
+  
+  void initializeStateWithRandomSuppressions(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state)
+  {
+    state.calculateFreqTable(data);
+    
+    double* risk = new double[data.nRow];
+    
+    state.minRisk = calculateRisk(data, state, risk);
+    
+    if (state.minRisk >= param.threshold) {
+      state.objective = getObjective(data, param, state.xt, state.minRisk);
+      delete [] risk;
+      return;
+    }
+    
+    size_t numProbs = (data.nCol - (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0)) * data.nRow;
+    double* probs_t = new double[numProbs];
+    
+    bool* originallyAtRisk = new bool[data.nRow];
+    
+    for (size_t row = 0; row < data.nRow; ++row)
+      originallyAtRisk[row] = getRowAtRisk(data, param, row, risk[row]);
+    
+    size_t numSuppressions = 0;
+    size_t numFailures = 0;
+    size_t iter = 0;
+    if (param.verbose > 0) {
+      Rprintf("random initialization:\n  min risk at start: %lu", state.minRisk);
+      if (param.verbose > 1)
+        Rprintf("\n");
+    }
+    
+    size_t numProbCols = (data.nCol - (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0));
+    do {
+      ++iter;
+      getAtRiskProbs(data, param, state, originallyAtRisk, risk, probs_t);
+      
+      // randomly pick a row at risk and a column from that row
+      size_t index = rng_drawFromDiscreteDistribution(probs_t, numProbs);
+      size_t row_atRisk = index / numProbCols;
+      size_t col_atRisk = index % numProbCols;
+      
+      size_t dataCol_atRisk = col_atRisk + (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0);
+      
+      if (param.verbose > 1) {
+        Rprintf("  r: %lu, c: %lu ", row_atRisk + 1, dataCol_atRisk + 1);
+        printObs(data, state.xt + row_atRisk * data.nCol);
+        Rprintf(" [%.2f]", risk[row_atRisk]);
+      }
+      
+      // randomly pick a row that matches on all but that column to NA out
+      bool matchPossible = getNotAtRiskProbs(data, param, state, originallyAtRisk, row_atRisk, col_atRisk, probs_t);
+      
+      if (!matchPossible) {
+        ++numFailures;
+        if (param.verbose > 1) Rprintf(" - no match\n");
+        continue;
+      }
+      
+      size_t row_toNa = rng_drawFromDiscreteDistribution(probs_t, data.nRow);
+      
+      if (param.verbose > 1) {
+        Rprintf(" - r: %lu ", row_toNa + 1);
+        printObs(data, state.xt + row_toNa * data.nCol);
+        Rprintf("\n");
+      }
+      
+      // na both out
+      state.decrementFreqTable(data, state.xt + row_atRisk * data.nCol, 0, 0, 1, false);
+      state.decrementFreqTable(data, state.xt + row_toNa   * data.nCol, 0, 0, 1, false);
+      
+      state.xt[dataCol_atRisk + row_atRisk * data.nCol] = NA_LEVEL;
+      state.xt[dataCol_atRisk + row_toNa   * data.nCol] = NA_LEVEL;
+      
+      state.incrementFreqTable(data, state.xt + row_atRisk * data.nCol, 0, 0, 1, false);
+      state.incrementFreqTable(data, state.xt + row_toNa   * data.nCol, 0, 0, 1, false);
+      
+      state.minRisk = calculateRisk(data, state, risk);
+      
+      ++numSuppressions;
+    } while (state.minRisk < param.threshold && iter <= 500);
+    
+    if (param.verbose > 0) {
+      if (param.verbose == 1) Rprintf(", "); else Rprintf("  min risk ");
+      Rprintf("at end: %lu\n", state.minRisk);
+      Rprintf("  iters: %lu, suppressions: %lu, failures: %lu\n", iter, numSuppressions, numFailures);
+    }
+    
+    state.objective = getObjective(data, param, state.xt, state.minRisk);
+    
+    delete [] originallyAtRisk;
+    delete [] probs_t;
+    delete [] risk;
+  }
+  
+  // Rows at risk are those with risk below the threshold and at least one column that is not
+  // NA in the original data - this allows us to select a column that has already been NA'd out
+  // once and find a new observation to pair with it.
+  
+  // Because replacing a value with an NA can considerably lower the risk associated with an
+  // obs, we only allow the selection of a row with NAs in it if it was originally at risk
+  void getAtRiskProbs(const Data& data, const Param& param, const State& state,
+                      const bool* originallyAtRisk, const double* risk, double* probs_t) {
+    size_t dataStartCol = (param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0);
+    size_t numProbCols = data.nCol - dataStartCol;
+    size_t numProbs = numProbCols * data.nRow;
+    
+    double total = 0.0;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (getRowAtRisk(data, param, row, risk[row]) == false) {
+        for (size_t col = 0; col < numProbCols; ++col)
+          probs_t[col + row * numProbCols] = 0.0;
+        continue;
+      }
+      
+      bool rowCurrentlyHasNAs = false;
+      if (!originallyAtRisk[row]) {
+        for (size_t col = 0; col < numProbCols; ++col) {
+          if (state.xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) {
+            rowCurrentlyHasNAs = true;
+            break;
+          }
+        }
+      }
+      
+      for (size_t col = 0; col < numProbCols; ++col) {
+        if (rowCurrentlyHasNAs || data.xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) {
+          probs_t[col + row * numProbCols] = 0.0;
+        } else {
+          probs_t[col + row * numProbCols] = param.theta_inv[col];
+          total += probs_t[col + row * numProbCols];
+        }
+      }
+    }
+    if (total > 0.0) for (size_t i = 0; i < numProbs; ++i) probs_t[i] /= total;
+  }
+  
+  bool getNotAtRiskProbs(const Data& data, const Param& param, const State& state,
+                         const bool* originallyAtRisk, size_t row_atRisk, size_t col_atRisk,
+                         double* probs)
+  {
+    // of those rows not at risk and matching the at-risk row in all but the one column, randomly pick one if one exists
+    double total = 0.0;
+    const unsigned char* xt_atRisk = data.xt + row_atRisk * data.nCol;
+    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    size_t dataCol_atRisk = col_atRisk + dataStartCol;
+    
+    // first try and match those with no-NAs present
+    for (size_t row = 0; row < data.nRow; ++row) {
+      // if originally at risk, exclude for now
+      if (originallyAtRisk[row]) {
+        probs[row] = 0.0;
+        continue;
+      }
+      
+      // check that row matches row at risk in all but selected one
+      const unsigned char* xt_i = state.xt + row * data.nCol;
+      bool rowMatches = true;
+      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+        if (col == dataCol_atRisk) continue;
+        if (xt_atRisk[col] != xt_i[col]) {
+          rowMatches = false;
+          break;
+        }
+      }
+      // check (if applicable) that row can be suppressed
+      if (rowMatches && param.suppressValues != NULL)
+       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+      
+      if (!rowMatches) {
+        probs[row] = 0.0;
+      } else {
+        probs[row] = 1.0;
+        total += 1.0;
+      }
+    }
+        
+    if (total != 0.0) {
+      for (size_t row = 0; row < data.nRow; ++row) probs[row] /= total;
+      return true;
+    }
+    
+    // try again but match rows potentially with NAs
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (originallyAtRisk[row]) continue;
+      
+      const unsigned char* xt_i = state.xt + row * data.nCol;
+      bool rowMatches = true, rowIsAllNA = true;
+      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+        if (col == dataCol_atRisk) continue;
+        if (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL) {
+          rowMatches = false;
+          break;
+        }
+        rowIsAllNA &= xt_i[col] == NA_LEVEL;
+      }
+      rowMatches &= !rowIsAllNA;
+      
+      if (rowMatches && param.suppressValues != NULL)
+       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+      
+      if (!rowMatches) {
+        probs[row] = 0.0;
+      } else {
+        probs[row] = 1.0;
+        total += 1.0;
+      }
+    }
+        
+    if (total != 0.0) {
+      for (size_t row = 0; row < data.nRow; ++row) probs[row] /= total;
+      return true;
+    }
+    
+    // no row matches all but the one column we selected and is also not at risk
+    // we might still gain by NAing out another at risk row so long as it is not identical to the
+    // one selected
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (!originallyAtRisk[row] || row == row_atRisk) continue;
+      
+      const unsigned char* xt_i = state.xt + row * data.nCol;
+      bool rowMatches = true;
+      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+        // bad if match in selected col or differ in other cols
+        if ((col == dataCol_atRisk && xt_atRisk[col] == xt_i[col]) ||
+            (xt_atRisk[col] != xt_i[col]))
+        {
+          rowMatches = false;
+          break;
+        }
+      }
+      
+      // check (if applicable) that row can be suppressed
+      if (rowMatches && param.suppressValues != NULL)
+       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+      
+      // total was 0, just need to handle case when they now match
+      if (rowMatches) {
+        probs[row] = 1.0;
+        total += 1.0;
+      }
+    }
+    
+    if (total != 0.0) {
+      for (size_t row = 0; row < data.nRow; ++row) probs[row] /= total;
+      return true;
+    }
+        
+    // try again but allow for matches with NA
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (!originallyAtRisk[row] || row == row_atRisk) continue;
+      
+      const unsigned char* xt_i = state.xt + row * data.nCol;
+      bool rowMatches = true, rowIsAllNA = true;
+      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+        // bad if match in selected col or differ in other cols
+        if ((col == dataCol_atRisk && xt_atRisk[col] == xt_i[col]) ||
+            (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL))
+        {
+          rowMatches = false;
+          break;
+        }
+        rowIsAllNA &= xt_i[col] == NA_LEVEL;
+      }
+      rowMatches &= !rowIsAllNA;
+      
+      // check (if applicable) that row can be suppressed
+      if (rowMatches && param.suppressValues != NULL)
+       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+      
+      // total was 0, just need to handle case when they now match
+      if (rowMatches) {
+        probs[row] = 1.0;
+        total += 1.0;
+      }
+    }
+    
+    if (total == 0.0) return false;
+    
+    for (size_t row = 0; row < data.nRow; ++row) probs[row] /= total;
+    return true;
+  }
+  
+  struct MCMCScratch {
+    size_t dataStartCol;
+    size_t numProbCols;
+    size_t numProbs;
+    double* cellProbs_t;
+    double* rowProbs;
+  };
+  
+  double rowSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  double colSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  double naRevStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop);
+  
+  State* mcmcSuppression(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& initState)
+  {
+    State* result = new State(data);
+    
+    State curr(data);
+    State prop(data);
+    
+    curr.copyFrom(data, initState);
+    
+    curr.minRisk = calculateRisk(data, curr, NULL);
+    curr.objective = getObjective(data, param, curr.xt, curr.minRisk);
+    
+    MCMCScratch scratch;
+    
+    scratch.dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    scratch.numProbCols  = data.nCol - scratch.dataStartCol;
+    scratch.numProbs     = scratch.numProbCols * data.nRow;
+    scratch.cellProbs_t  = new double[scratch.numProbs];
+    scratch.rowProbs     = new double[data.nRow];
+    
+    double r, ratio;
+   
+    if (param.verbose > 0) Rprintf("mcmc:\n  min risk at start: %lu\n", curr.minRisk);
+    
+    int numDigits = 0;
+    for (size_t temp = param.nSamp; temp > 0; temp /= 10) ++numDigits;
+    
+    for (size_t i = 0; i < param.nSamp; ++i) {
+      if (param.verbose > 1) Rprintf("  %-*lu: ", numDigits, i + 1);
+      
+      prop.copyFrom(data, curr);
+      
+      r = unif_rand();
+      
+      if (r <= param.rowSwapProb) {
+        ratio = rowSwapStep(data, param, calculateRisk, curr, scratch, prop);
+      } else if (r <= param.rowSwapProb + param.colSwapProb) {
+        ratio = colSwapStep(data, param, calculateRisk, curr, scratch, prop);
+      } else {
+        ratio = naRevStep(data, param, calculateRisk, curr, scratch, prop);
+      }
+                  
+      if (-Rf_rexp(1.0) < ratio) {
+        if (param.verbose > 1) Rprintf(" - accepted, min risk: %lu\n", prop.minRisk);
+        curr.copyFrom(data, prop);
+        
+        if ((i >= param.nBurn && curr.objective > result->objective && curr.minRisk >= param.threshold)) {
+          if (param.verbose > 0) {
+            if (param.verbose == 1)
+              Rprintf("  %-*lu: ", numDigits, i + 1);
+            else
+              Rprintf("  %*s: ", numDigits, "");
+            Rprintf("updating state from ");
+            result->print(data, param);
+            Rprintf(" to ");
+            curr.print(data, param);
+            Rprintf("\n");
+          }
+          
+          result->copyFrom(data, curr);
+        }
+      } else {
+       if (param.verbose > 1) Rprintf(" - rejected\n");
+      }
+      
+      if (param.verbose == 1 && (i + 1) % 100 == 0) Rprintf("  iter: %lu\n", i + 1);
+    }
+    if (param.verbose > 0) {
+      if (result->objective == -HUGE_VAL)
+        Rprintf("  no solution found\n");
+      else
+        Rprintf("  min risk at end: %lu\n", result->minRisk);
+    }
+    
+    delete [] scratch.cellProbs_t;
+    delete [] scratch.rowProbs;
+    
+    if (result->objective == -HUGE_VAL) {
+      delete result;
+      result = NULL;
+    }
+    return result;
+  }
+  
+  // puts positive probability on every NA row/col that isn't NA in original data
+  bool getCurrentNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
+  // puts positive probability on every non-NA row/col that isn't NA in original data
+  bool getCurrentNonNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
+  // puts positive probability on every row/col that isn't NA in original data
+  // bool getRandomProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch);
+  
+  bool getRowSwapProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol);
+  
+  // among rows/cols with NAs, pick one and then shuffle that NA to another valid row
+  double rowSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  {
+    if (param.verbose > 1) Rprintf("rs ");
+    
+    if (getCurrentNAProbs(data, param, curr, scratch) == false) {
+      if (param.verbose > 1) Rprintf("- none good");
+      return -HUGE_VAL;
+    }
+    
+    size_t index     = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
+    size_t sourceRow = index / scratch.numProbCols;
+    size_t col       = index % scratch.numProbCols;
+    size_t dataCol   = col + scratch.dataStartCol;
+    
+    if (getRowSwapProbs(data, param, curr, scratch, sourceRow, dataCol) == false) {
+      if (param.verbose > 1) Rprintf("- none good");
+      return -HUGE_VAL;
+    }
+    
+    size_t targetRow = rng_drawFromDiscreteDistribution(scratch.rowProbs, data.nRow);
+    
+    prop.decrementFreqTable(data, prop.xt + sourceRow * data.nCol, 0, 0, 1, false);
+    prop.decrementFreqTable(data, prop.xt + targetRow * data.nCol, 0, 0, 1, false);
+    
+    prop.xt[dataCol + sourceRow * data.nCol] = data.xt[dataCol + sourceRow * data.nCol];
+    prop.xt[dataCol + targetRow * data.nCol] = NA_LEVEL;
+    
+    prop.incrementFreqTable(data, prop.xt + sourceRow * data.nCol, 0, 0, 1, false);
+    prop.incrementFreqTable(data, prop.xt + targetRow * data.nCol, 0, 0, 1, false);
+    
+    prop.minRisk = calculateRisk(data, prop, NULL);
+    prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
     
     double ratio = prop.objective - curr.objective;
     
-    if (-Rf_rexp(1.0) < ratio) {
-      std::memcpy(curr.xt, const_cast<const unsigned char*>(prop.xt), data.nRow * data.nCol * sizeof(unsigned char));
-      std::memcpy(curr.kTable, const_cast<const size_t*>(prop.kTable), tableSize * sizeof(size_t));
-      curr.minK = prop.minK;
-      curr.objective = prop.objective;
+    if (param.verbose > 1)
+      Rprintf("%.3f / %.3f = %.3f",
+              std::exp(prop.objective), std::exp(curr.objective), std::exp(ratio));
+    
+    return ratio;
+  }
+  
+  // among rows/cols with NAs, pick one and then shuffle that NA to another valid col
+  double colSwapStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  {
+    if (param.verbose > 1) Rprintf("cs ");
+    
+    if (getCurrentNAProbs(data, param, curr, scratch) == false) {
+      if (param.verbose > 1) Rprintf("- none good");
+      return -HUGE_VAL;
+    }
+    
+    size_t index     = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
+    size_t row       = index / scratch.numProbCols;
+    size_t sourceCol = index % scratch.numProbCols;
+    
+    double* colProbs = new double[scratch.numProbCols];
+    
+    double total = 0.0;
+    for (size_t col = 0; col < scratch.numProbCols; ++col) {
+      if (col != sourceCol && curr.xt[col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL) {
+        colProbs[col] = 1.0;
+        total += 1.0;
+      } else {
+        colProbs[col] = 0.0;
+      }
+    }
+    if (total == 0.0) {
+      if (param.verbose > 1) Rprintf("- none good");
+      delete [] colProbs;
+      return -HUGE_VAL;
+    }
+    
+    for (size_t col = 0; col < scratch.numProbCols; ++col) colProbs[col] /= total;
+    
+    size_t targetCol = rng_drawFromDiscreteDistribution(colProbs, scratch.numProbCols);
+        
+    prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+    
+    prop.xt[sourceCol + row * data.nCol + scratch.dataStartCol] = data.xt[sourceCol + row * data.nCol + scratch.dataStartCol];
+    prop.xt[targetCol + row * data.nCol + scratch.dataStartCol] = NA_LEVEL;
+    
+    prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+    
+    prop.minRisk = calculateRisk(data, prop, NULL);
+    prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
+    
+    double ratio = prop.objective - curr.objective;
+    
+    if (param.verbose > 1)
+      Rprintf("%.3f / %.3f = %.3f",
+              std::exp(prop.objective), std::exp(curr.objective), std::exp(ratio));
+    
+    delete [] colProbs;
+    
+    return ratio;
+  }
+  
+  double naRevStep(const Data& data, const Param& param, RiskFunction& calculateRisk, const State& curr, MCMCScratch& scratch, State& prop)
+  {
+    double ratio;
+    if (unif_rand() < param.naProb) {
+      if (param.verbose > 1) Rprintf("na ");
       
-      // we only save the first one during burn-in, in case there isn't another
-      if ((i < param.nBurn && best.objective == -HUGE_VAL && curr.minK >= param.k) ||
-          (i >= param.nBurn && curr.objective > best.objective && curr.minK >= param.k)) {
-        if (param.verbose) {
-          Rprintf("iter %lu: updating best from ", i);
-          printState(data, param, best);
-          Rprintf(" to ");
-          printState(data, param, curr);
-          Rprintf("\n");
+      if (getCurrentNonNAProbs(data, param, curr, scratch) == false) {
+        if (param.verbose > 1) Rprintf("- none good");
+        return -HUGE_VAL;
+      }
+      
+      size_t index = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
+      size_t row     = index / scratch.numProbCols;
+      size_t col     = index % scratch.numProbCols;
+      size_t dataCol = col + scratch.dataStartCol;
+      
+      double propProb = scratch.cellProbs_t[index];
+      
+      prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      prop.xt[dataCol + row * data.nCol] = NA_LEVEL;
+      prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      
+      prop.minRisk = calculateRisk(data, prop, NULL);
+      prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
+      
+      getCurrentNAProbs(data, param, prop, scratch);
+      double currProb = scratch.cellProbs_t[index];
+      
+      ratio = (currProb == 0.0 ? HUGE_VAL :
+                (prop.objective + std::log(currProb) + std::log(1.0 - param.naProb)) -
+                (curr.objective + std::log(propProb) + std::log(param.naProb)));
+      
+      if (param.verbose > 1)
+        Rprintf("(%.2f * %.4f * %.2f) / (%.2f * %.4f * %.2f)) = %.3f",
+                std::exp(prop.objective), currProb, 1.0 - param.naProb,
+                std::exp(curr.objective), propProb, param.naProb,
+                currProb == 0.0 ? INFINITY : std::exp(ratio));
+    } else {
+      if (param.verbose > 1) Rprintf("nv ");
+      
+      if (getCurrentNAProbs(data, param, curr, scratch) == false) {
+        if (param.verbose > 1) Rprintf("- none good");
+        return -HUGE_VAL;
+      }
+        
+      size_t index = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
+      size_t row     = index / scratch.numProbCols;
+      size_t col     = index % scratch.numProbCols;
+      size_t dataCol = col + scratch.dataStartCol;
+        
+      double propProb = scratch.cellProbs_t[index];
+      
+      prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      prop.xt[dataCol + row * data.nCol] = data.xt[dataCol + row * data.nCol];
+      prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      
+      prop.minRisk = calculateRisk(data, prop, NULL);
+      prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
+      
+      getCurrentNonNAProbs(data, param, prop, scratch);
+      double currProb = scratch.cellProbs_t[index];
+      
+      ratio = (currProb == 0.0 ? HUGE_VAL :
+                (prop.objective + std::log(currProb) + std::log(param.naProb)) -
+                (curr.objective + std::log(propProb) + std::log(1.0 - param.naProb)));
+      
+      Rprintf("(%.2f * %.4f * %.2f) / (%.2f * %.4f * %.2f)) = %.3f",
+              std::exp(prop.objective), currProb, param.naProb,
+              std::exp(curr.objective), propProb, 1.0 - param.naProb,
+              currProb == 0.0 ? INFINITY : std::exp(ratio));
+    }
+    return ratio;
+  }
+  
+  bool getRowSwapProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch, size_t targetRow, size_t targetDataCol)
+  {
+    double total = 0.0;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      if (state.xt[targetDataCol + row * data.nCol] != NA_LEVEL && row != targetRow) {
+        scratch.rowProbs[row] = 1.0;
+        total += 1.0;
+      } else {
+        scratch.rowProbs[row] = 0.0;
+      }
+    }
+    
+    if (total == 0.0) return false;
+    
+    for (size_t i = 0; i < data.nRow; ++i) scratch.rowProbs[i] /= total;
+    return true;
+  } 
+  
+  bool getCurrentNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch)
+  {
+    double total = 0.0;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      for (size_t col = 0; col < scratch.numProbCols; ++col) {
+        if (state.xt[col + row * data.nCol + scratch.dataStartCol] == NA_LEVEL &&
+            data.xt [col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL)
+        {
+          scratch.cellProbs_t[col + row * scratch.numProbCols] = param.theta_inv[col];
+          total += scratch.cellProbs_t[col + row * scratch.numProbCols];
+        } else {
+          scratch.cellProbs_t[col + row * scratch.numProbCols] = 0.0;
         }
-        
-        std::memcpy(best.xt, const_cast<const unsigned char*>(curr.xt), data.nRow * data.nCol * sizeof(unsigned char));
-        std::memcpy(best.kTable, const_cast<const size_t*>(curr.kTable), tableSize * sizeof(size_t));
-        best.minK = curr.minK;
-        best.objective = curr.objective;
       }
     }
-    if (param.verbose && (i + 1) % 100 == 0) Rprintf("iter: %lu\n", i + 1);
+    
+    if (total == 0.0) return false;
+    
+    for (size_t i = 0; i < scratch.numProbs; ++i) scratch.cellProbs_t[i] /= total;
+    return true;
   }
   
-  delete [] prop.kTable;
-  delete [] prop.xt;
-
-  delete [] curr.kTable;
-  delete [] curr.xt;
-  
-  // delete [] kVec;
-  
-  return best;
-}
-
-void permuteIndexArray(size_t* indices, size_t length);
-
-void pruneResult(const Data& data, const Param& param, State& state)
-{
-  size_t tableSize = data.nLev[0];
-  for (size_t col = 1; col < data.nCol; ++ col) tableSize *= data.nLev[col];
-  
-  State temp = { new unsigned char[data.nRow * data.nCol], new size_t[tableSize],
-                 state.minK, state.objective };
-  
-  
-  size_t* indices = new size_t[data.nRow];
-  for (size_t row = 0; row < data.nRow; ++row) indices[row] = row;
-  permuteIndexArray(indices, data.nRow);
-  
-  
-  for (size_t row = 0; row < data.nRow; ++row) {
-    size_t row_i = indices[row];
+  bool getCurrentNonNAProbs(const Data& data, const Param& param, const State& state, MCMCScratch& scratch)
+  {
+    double total = 0.0;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      for (size_t col = 0; col < scratch.numProbCols; ++col) {
+        if (state.xt[col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL &&
+            data.xt [col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL)
+        {
+          scratch.cellProbs_t[col + row * scratch.numProbCols] = param.theta_inv[col];
+          total += scratch.cellProbs_t[col + row * scratch.numProbCols];
+        } else {
+          scratch.cellProbs_t[col + row * scratch.numProbCols] = 0.0;
+        }
+      }
+    }
     
-    for (size_t col = 0; col < data.nCol; ++col) {
-      if (state.xt[col + row_i * data.nCol] == NA_LEVEL && data.xt[col + row_i * data.nCol] != NA_LEVEL) {
-        std::memcpy(temp.xt, const_cast<const unsigned char*>(state.xt), data.nRow * data.nCol * sizeof(unsigned char));
-        std::memcpy(temp.kTable, const_cast<const size_t*>(state.kTable), tableSize * sizeof(size_t));
+    if (total == 0.0) return false;
+    
+    for (size_t i = 0; i < scratch.numProbs; ++i) scratch.cellProbs_t[i] /= total;
+    return true;
+  }
+    
+  void pruneNAs(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state)
+  {
+    State temp(data);
+    temp.copyFrom(data, state);
+    
+    size_t dataStartCol = param.riskType != mcsupp::RTYPE_COUNT ? 1 : 0;
+    size_t numIndexCols = data.nCol - dataStartCol;
+    size_t numIndices = numIndexCols * data.nRow;
+    
+    size_t* indices = new size_t[numIndices];
+    for (size_t index = 0; index < numIndices; ++index) indices[index] = index;
+    
+    rng_permuteIndexArray(indices, numIndices);
+    
+    for (size_t index = 0; index < numIndices; ++index) {
+      size_t row = indices[index] / numIndexCols;
+      size_t col = indices[index] % numIndexCols;
+      size_t dataCol = col + dataStartCol;
+      
+      if (state.xt[dataCol + row * data.nCol] == NA_LEVEL && data.xt[dataCol + row * data.nCol] != NA_LEVEL) {
+        temp.decrementFreqTable(data, state.xt + row * data.nCol, 0, 0, 1, false);
         
-        temp.xt[col + row_i * data.nCol] = data.xt[col + row_i * data.nCol];
+        temp.xt[dataCol + row * data.nCol] = data.xt[dataCol + row * data.nCol];
         
-        decrementKTable(state.xt + row_i * data.nCol, data.nCol, data.nLev, 0, 0, 1, temp.kTable);
-        incrementKTable(temp.xt + row_i * data.nCol, data.nCol, data.nLev, 0, 0, 1, temp.kTable);
-        temp.minK = calculateK(data, temp.kTable, NULL);
-        
-        if (temp.minK >= param.k) {
-          std::memcpy(state.xt, const_cast<const unsigned char*>(temp.xt), data.nRow * data.nCol * sizeof(unsigned char));
-          std::memcpy(state.kTable, const_cast<const size_t*>(temp.kTable), tableSize * sizeof(size_t));
-          state.minK = temp.minK;
-          state.objective = getObjective(data, param, state.xt, state.minK);
+        temp.incrementFreqTable(data, temp.xt + row * data.nCol, 0, 0, 1, false);
+         
+        temp.minRisk = calculateRisk(data, temp, NULL);
+         
+        if (temp.minRisk >= param.threshold) {
+          state.copyFrom(data, temp);
+        } else {
+          temp.copyFrom(data, state);
         }
       }
     }
   }
-}
-
-void permuteIndexArray(size_t* indices, size_t length)
-{
-  size_t temp, swapPos;
-  for (size_t i = 0; i < length - 1; ++i) {
-    swapPos = static_cast<size_t>(simulateUnsignedIntegerUniformInRange(i, length));
+  
+  // 2 * (1 - gamma) * -log(mean(naTerm)) + log(kTerm)
+  // mean(naTerm) is weighted average of number of NAs in data
+  // riskTerm is a gamma density
+  double getObjective(const Data& data, const Param& param, const unsigned char* xt, double minRisk)
+  {
+    double naTerm = 0.0;
     
-    temp = indices[i];
-    indices[i] = indices[swapPos];
-    indices[swapPos] = temp;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      for (size_t col = 0; col < data.nCol; ++col) if (xt[col + row * data.nCol] == NA_LEVEL) naTerm += param.theta[col]; 
+    }
+    naTerm /= static_cast<double>(data.nRow);
+    
+    double riskTerm = (param.threshold >= 1.0 ?
+     (param.alpha - 1.0) * std::log(minRisk) - param.beta * minRisk :
+     param.alpha * std::log(minRisk) + param.beta * std::log(1.0 - minRisk));
+    
+    return param.gamma * riskTerm + 2.0 * (1.0 - param.gamma) * -std::log(naTerm);
   }
-}
-
-void incrementKTable(const unsigned char* x_i, size_t nCol, const size_t* nLev, size_t currCol, size_t offset, size_t stride, size_t* kTable)
-{
-  if (currCol == nCol - 1) {
-    /* Rprintf("for x_i = ");
-    printObs(x_i, nCol);
-    Rprintf(" incrementing: "); */
-    
-    if (x_i[currCol] != NA_LEVEL) {
-      ++kTable[offset + x_i[currCol] * stride];
-      //Rprintf("%lu\n", offset + x_i[currCol] * stride);
+  
+  void printObs(const Data& data, const unsigned char* x_i)
+  {
+    Rprintf("(");
+    if (data.levelNames == NULL) {
+      if (x_i[0] == NA_LEVEL) Rprintf("NA"); else Rprintf("%hu", x_i[0]);
+      
+      for (size_t col = 1; col < data.nCol; ++col)
+        if (x_i[col] == NA_LEVEL) Rprintf("NA"); else Rprintf(", %hu", x_i[col]);
+      
     } else {
-      //Rprintf("%lu", offset);
-      ++kTable[offset];
-      for (size_t i = 1; i < nLev[currCol]; ++i) {
-        //Rprintf(", %lu", offset + i * stride);
-        ++kTable[offset + i * stride];
+      if (x_i[0] == NA_LEVEL) Rprintf("NA"); else if (data.levelNames[0] != NULL) Rprintf("%s", data.levelNames[0][x_i[0]]);
+      else Rprintf("%hu", x_i[0]);
+      
+      for (size_t col = 1; col < data.nCol; ++col) {
+        if (x_i[col] == NA_LEVEL) Rprintf(", NA"); else if (data.levelNames[col] != NULL) Rprintf(", %s", data.levelNames[col][x_i[col]]);
+        else Rprintf(", %hu", x_i[col]);
       }
-      // Rprintf("\n");
     }
-  } else {
-    if (x_i[currCol] != NA_LEVEL) incrementKTable(x_i, nCol, nLev, currCol + 1, offset + x_i[currCol] * stride, stride * nLev[currCol], kTable);
-    else {
-      for (size_t i = 0; i < nLev[currCol]; ++i)
-        incrementKTable(x_i, nCol, nLev, currCol + 1, offset + i * stride, stride * nLev[currCol], kTable);
-    }
+    Rprintf(")");
   }
 }
 
-void decrementKTable(const unsigned char* x_i, size_t nCol, const size_t* nLev, size_t currCol, size_t offset, size_t stride, size_t* kTable)
-{
-  if (currCol == nCol - 1) {
-    if (x_i[currCol] != NA_LEVEL) {
-      --kTable[offset + x_i[currCol] * stride];
-    } else {
-      for (size_t i = 0; i < nLev[currCol]; ++i)
-        --kTable[offset + i * stride];
-    }
-  } else {
-    if (x_i[currCol] != NA_LEVEL) decrementKTable(x_i, nCol, nLev, currCol + 1, offset + x_i[currCol] * stride, stride * nLev[currCol], kTable);
-    else {
-      for (size_t i = 0; i < nLev[currCol]; ++i)
-        decrementKTable(x_i, nCol, nLev, currCol + 1, offset + i * stride, stride * nLev[currCol], kTable);
-    }
-  }
-}
-
-size_t getKFromTable(const unsigned char* x_i, size_t nCol, const size_t* nLev, size_t currCol, size_t offset, size_t stride, const size_t* kTable)
-{
-  if (currCol == nCol - 1) {
-    if (x_i[currCol] != NA_LEVEL) {
-      return kTable[offset + x_i[currCol] * stride];
-    } else {
-      size_t minK = kTable[offset];
-      for (size_t i = 1; i < nLev[currCol]; ++i)
-        if (kTable[offset + i * stride] < minK) minK = kTable[offset + i * stride];
-      return minK;
-    }
-  } else {
-    if (x_i[currCol] != NA_LEVEL) return getKFromTable(x_i, nCol, nLev, currCol + 1, offset + x_i[currCol] * stride, stride * nLev[currCol], kTable);
-    else {
-      size_t minK = getKFromTable(x_i, nCol, nLev, currCol + 1, offset, stride * nLev[currCol], kTable);
-      for (size_t i = 1; i < nLev[currCol]; ++i) {
-        size_t k = getKFromTable(x_i, nCol, nLev, currCol + 1, offset + i * stride, stride * nLev[currCol], kTable);
-        if (k < minK) minK = k;
-      }
-      return minK;
-    }
-  }
-}
-
-void calculateKTable(const Data& data, size_t* kTable)
-{
-  const unsigned char* xt = data.xt;
-  for (size_t row = 0; row < data.nRow; ++row) {
-    incrementKTable(xt, data.nCol, data.nLev, 0, 0, 1, kTable);
-    xt += data.nCol;
-  }
-}
-
-size_t calculateK(const Data& data, const size_t* kTable, size_t* currK)
-{
-  const unsigned char* xt = data.xt;
-  size_t minK = static_cast<size_t>(-1);
-  
-  for (size_t row = 0; row < data.nRow; ++row) {
-    size_t k_i = getKFromTable(xt, data.nCol, data.nLev, 0, 0, 1, kTable);
-    if (k_i < minK) minK = k_i;
-    
-    xt += data.nCol;
-    
-    if (currK != NULL) currK[row] = k_i;
-  }
-  return minK;
-}
-
-// (1 - gamma) * -log(mean(naTerm)) + log(kTerm)
-// mean(naTerm) is weighted average of number of NAs in data
-// kTerm is a gamma density
-double getObjective(const Data& data, const Param& param, const unsigned char* xt, size_t minK)
-{
-  double naTerm = 0.0;
-  
-  for (size_t row = 0; row < data.nRow; ++row) {
-    for (size_t col = 0; col < data.nCol; ++col) if (xt[col + row * data.nCol] == NA_LEVEL) naTerm += param.theta[col]; 
-  }
-  naTerm /= static_cast<double>(data.nRow);
-  
-  double k_double = static_cast<double>(minK);
-  double kTerm = (param.alpha - 1.0) * std::log(k_double) - param.beta * k_double;
-  
-  return param.gamma * kTerm + (1.0 - param.gamma) * -std::log(naTerm);
-}
-
-void printObs(const unsigned char* x_i, size_t nCol)
-{
-  Rprintf("(");
-  if (x_i[0] != NA_LEVEL) Rprintf("%hu", x_i[0]); else Rprintf("NA");
-  
-  for (size_t j = 1; j < nCol; ++j) {
-    if (x_i[j] != NA_LEVEL) Rprintf(", %hu", x_i[j]); else Rprintf(", NA");
-  }
-  Rprintf(")");
-}
-
-void printState(const Data& data, const Param& param, const State& state)
-{
-  double naTerm = 0.0;
-  
-  for (size_t row = 0; row < data.nRow; ++row) {
-    for (size_t col = 0; col < data.nCol; ++col) if (state.xt[col + row * data.nCol] == NA_LEVEL) naTerm += param.theta[col]; 
-  }
-  naTerm /= static_cast<double>(data.nRow);
- 
-  Rprintf("(o = %.4f, k = %lu, n = %.4f)", state.objective, state.minK, naTerm);
-}
+extern "C" {
 
 #define DEF_FUNC(_N_, _F_, _A_) { _N_, reinterpret_cast<DL_FUNC>(&_F_), _A_ }
-
-static R_CallMethodDef R_callMethods[] = {
-  DEF_FUNC("anonymize", anonymize, 8),
-  DEF_FUNC("calcK", calcK, 1),
-  { NULL, NULL, 0 }
-};
-
+  
+  static R_CallMethodDef R_callMethods[] = {
+    DEF_FUNC("localSuppression", localSuppression, 3),
+    DEF_FUNC("calcRisk", calcRisk, 2),
+    DEF_FUNC("getAtRiskSubset", getAtRiskSubset, 3),
+    { NULL, NULL, 0 }
+  };
+  
 #undef DEF_FUNC
-
-void R_init_mcsupp(DllInfo* info)
-{
-  R_registerRoutines(info, NULL, R_callMethods, NULL, NULL);
-  R_useDynamicSymbols(info, static_cast<Rboolean>(FALSE));
-}
-
+  
+  void R_init_mcsupp(DllInfo* info)
+  {
+    R_registerRoutines(info, NULL, R_callMethods, NULL, NULL);
+    R_useDynamicSymbols(info, static_cast<Rboolean>(FALSE));
+  }
+  
 }

@@ -1,3 +1,3 @@
 useDynLib(mcsupp, .registration = TRUE, .fixes = "C_")
 
-export(kAnon)
+export(localSuppression, mcsupp.par, calcRisk, getAtRiskSubset)

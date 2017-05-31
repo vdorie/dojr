@@ -3,6 +3,8 @@ Version: 1.0-0
 Date: 2017-04-27
 Title: Markov Chain Monte Carlo Local Suppression
 Authors@R: c(person("Vincent", "Dorie",    role = c("aut", "cre"), email = "vdorie@gmail.com"))
+Suggests:
+  testthat
 Description: Locally suppresses categorical variable data frames using randomization.
 License: GPL (>= 2)
 NeedsCompilation: yes

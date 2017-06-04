@@ -13,7 +13,8 @@ namespace rsupp {
   bool* getSuppressValues(const Data& fullData, RiskFunction& calculateRisk);
   
   Param::Param(const Data& data, RiskFunction* divRiskFunction, double _threshold, uint8_t _verbose) : 
-    threshold(_threshold), riskType(RTYPE_INVALID), suppressValues(NULL), verbose(_verbose)
+    threshold(_threshold), riskType(RTYPE_INVALID), suppressValues(NULL), verbose(_verbose),
+    numKeyCols(INVALID_EXTENT), keyStartCol(INVALID_EXTENT)
   {
     if (divRiskFunction == NULL) {
       riskType = rsupp::RTYPE_COUNT;
@@ -26,6 +27,9 @@ namespace rsupp {
       if (suppressValues == NULL)
         Rf_error("could not find values to suppress for threshold < 1.0");
     }
+    
+    keyStartCol = riskType != RTYPE_COUNT ? 1 : 0;
+    numKeyCols = data.nCol - keyStartCol;
   }
   
   Param::~Param() {
@@ -137,20 +141,20 @@ namespace rsupp {
       beta = alpha / threshold - alpha;
     }
     
-    this->theta = new double[data.nCol];
-    std::memcpy(this->theta, const_cast<const double*>(theta), sizeof(double) * data.nCol);
-    this->theta_inv = new double[data.nCol];
+    this->theta = new double[numKeyCols];
+    std::memcpy(this->theta, const_cast<const double*>(theta), sizeof(double) * numKeyCols);
+    this->theta_inv = new double[numKeyCols];
     
     double thetaTotal = 0.0;
     // normalize theta as a penalty weight so that the sum across a row = num cols
-    for (size_t i = 0; i < data.nCol; ++i)
+    for (size_t i = 0; i < numKeyCols; ++i)
       if (R_finite(theta[i])) thetaTotal += theta[i];
-    for (size_t i = 0; i < data.nCol; ++i)
-      if (R_finite(theta[i])) this->theta[i] *= static_cast<double>(data.nCol) / thetaTotal;
+    for (size_t i = 0; i < numKeyCols; ++i)
+      if (R_finite(theta[i])) this->theta[i] *= static_cast<double>(numKeyCols) / thetaTotal;
     
     thetaTotal = 0.0;
     // normalize theta_inv as a probability
-    for (size_t i = 0; i < data.nCol; ++i) {
+    for (size_t i = 0; i < numKeyCols; ++i) {
       if (R_finite(theta[i])) {
         this->theta_inv[i] = 1.0 / this->theta[i];
         thetaTotal += this->theta_inv[i];
@@ -158,7 +162,7 @@ namespace rsupp {
         this->theta_inv[i] = 0.0;
       }
     }
-    for (size_t i = 0; i < data.nCol; ++i) this->theta_inv[i] /= thetaTotal;
+    for (size_t i = 0; i < numKeyCols; ++i) this->theta_inv[i] /= thetaTotal;
   }
     
   MCMCParam::~MCMCParam() {

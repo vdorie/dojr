@@ -6,7 +6,7 @@
 namespace rsupp {
   struct Data;
   struct DivRiskFunction;
-  struct Param;
+  struct MCMCParam;
   
   struct State {
     unsigned char* xt;
@@ -14,7 +14,7 @@ namespace rsupp {
     std::size_t* naCount; // na
     std::size_t* ccCount; // complete cases
     
-    std::size_t minRisk;
+    double minRisk;
     double objective;
     
     State(const Data& data);
@@ -44,7 +44,7 @@ namespace rsupp {
                            std::size_t currCol, std::size_t offset, std::size_t stride,
                            DivRiskFunction& calculateRisk) const;
     
-    void print(const Data& data, const Param& param);
+    void print(const Data& data, const MCMCParam& param);
   };
 }
 

@@ -30,8 +30,10 @@ using rsupp::RiskFunction;
 using rsupp::KRiskFunction;
 using rsupp::DivRiskFunction;
 
+#define MAX_RANDOM_INIT_ITERATIONS 500
+
 namespace {
-  void initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state);
+  bool initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state);
   State* mcmcSuppression(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& state);
   void pruneNAs(const Data& data, const Param& param, RiskFunction& calculateRisk, State& state);
   
@@ -164,10 +166,9 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   
   if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
     Rprintf("created percent risk function, supresssing values:\n");
-    SEXP levelsExpr = rc_getLevels(VECTOR_ELT(xExpr, 0));
     for (size_t i = 0; i < origData.nLev[0]; ++i)
       if (param.suppressValues[i])
-        Rprintf("  %s\n", CHAR(STRING_ELT(levelsExpr, i)));
+        Rprintf("  %s\n", origData.levelNames[0][i]);
   }
   
   size_t* subsetIndices;
@@ -179,14 +180,15 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   
   GetRNGstate();
   
+  bool randomInitFailed = false;
   if (!skipRandomInit) {
-    initializeStateWithRandomSuppressions(subsetData, param, calculateRisk, subsetState);
+    randomInitFailed = !initializeStateWithRandomSuppressions(subsetData, param, calculateRisk, subsetState);
   } else {
     subsetState.minRisk = calculateRisk(subsetData, subsetState, NULL);
     subsetState.objective = getObjective(subsetData, param, subsetState.xt, subsetState.minRisk);
   }
   
-  if (param.nSamp > 0) {
+  if (!randomInitFailed && param.nSamp > 0) {
     State* randomState = mcmcSuppression(subsetData, param, calculateRisk, subsetState);
     
     // see if there are any NAs that we can safely restore without increasing k
@@ -203,8 +205,22 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   
   PutRNGstate();
   
-  State* fullState = mergeSubset(origData, subsetData, subsetState, subsetIndices, subsetLength);
+  State* fullState = mergeSubset(origData, subsetData, subsetState, subsetIndices, subsetLength); 
   
+  delete subsetDataPtr;
+  delete [] subsetIndices;
+  
+   if (randomInitFailed) {
+    // no solution possible, NA everything
+    for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
+      for (size_t row = 0; row < origData.nRow; ++row) {
+        fullState->xt[col + row * origData.nCol] = NA_LEVEL;
+      }
+    }
+    fullState->minRisk = static_cast<double>(origData.nRow);
+    getObjective(origData, param, fullState->xt, fullState->minRisk);
+  }
+    
   // package up results into a list
   SEXP result = PROTECT(rc_newList(3));
   SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(origData.nCol + 1));
@@ -220,16 +236,17 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
     Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
   }
+  
+  // store risk
   SET_VECTOR_ELT(xNew, origData.nCol, rc_newReal(origData.nRow));
   
   calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
   
-  delete fullState;
-  
   Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
   Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));
-  rc_setNames(xNew, PROTECT(rc_newCharacter(origData.nCol + 1)));
   
+  // set colnames
+  rc_setNames(xNew, PROTECT(rc_newCharacter(origData.nCol + 1)));
   SEXP names_old = rc_getNames(xExpr);
   SEXP names_new = rc_getNames(xNew);
   for (size_t col = 0; col < origData.nCol; ++col)
@@ -237,20 +254,20 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   SET_STRING_ELT(names_new, origData.nCol, Rf_mkChar("risk"));
   
   // store numeric results
-  SET_VECTOR_ELT(result, 1, Rf_ScalarReal(subsetState.objective));
+  SET_VECTOR_ELT(result, 1, Rf_ScalarReal(fullState->objective));
+  // rebuild NA term - might have NA'd entire data so look in full state, not subset
   double naTerm = 0.0;
-  for (size_t row = 0; row < subsetData.nRow; ++row) {
-    for (size_t col = 0; col < subsetData.nCol; ++col) {
-      if (subsetState.xt[col + row * subsetData.nCol] == NA_LEVEL && subsetData.xt[col + row * subsetData.nCol] != NA_LEVEL)
+  for (size_t row = 0; row < origData.nRow; ++row) {
+    for (size_t col = 0; col < param.numKeyCols; ++col) {
+      if (fullState->xt[col + row * origData.nCol + param.keyStartCol] == NA_LEVEL &&
+          origData.xt[col + row * origData.nCol + param.keyStartCol] != NA_LEVEL)
         naTerm += param.theta[col]; 
     }
   }
-  naTerm /= static_cast<double>(subsetData.nRow);
+  naTerm /= static_cast<double>(origData.nRow);
   SET_VECTOR_ELT(result, 2, Rf_ScalarReal(naTerm));
   
-  delete subsetDataPtr;
-  delete [] subsetIndices;
-  
+  delete fullState;
   delete calculateRiskPtr;
   
   rc_setNames(result, PROTECT(rc_newCharacter(2)));
@@ -258,7 +275,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   SET_STRING_ELT(namesExpr, 0, Rf_mkChar("x"));
   SET_STRING_ELT(namesExpr, 1, Rf_mkChar("obj"));
   SET_STRING_ELT(namesExpr, 2, Rf_mkChar("n"));
-    
+  
   UNPROTECT(3);
   
   return result;
@@ -290,8 +307,6 @@ namespace {
     }
    
     
-    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
-    
     size_t*& subsetIndices(*subsetIndicesPtr);
     size_t& subsetLength(*subsetLengthPtr);
     
@@ -321,7 +336,7 @@ namespace {
       for (size_t atRiskRow = 0; atRiskRow < data.nRow && !keepRow[row]; ++atRiskRow) {
         if (atRiskRow == row || !rowAtRisk[atRiskRow]) continue;
         
-        for (size_t col = dataStartCol; col < data.nCol; ++col) {
+        for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
           if (data.xt[col + row * data.nCol] == data.xt[col + atRiskRow * data.nCol]) {
             keepRow[row] = true;
             ++subsetLength;
@@ -369,7 +384,7 @@ namespace {
                          const bool* originallyAtRisk, size_t row_atRisk, size_t col_atRisk,
                          double* probs);
   
-  void initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state)
+  bool initializeStateWithRandomSuppressions(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, State& state)
   {
     state.calculateFreqTable(data);
     
@@ -380,7 +395,7 @@ namespace {
     if (state.minRisk >= param.threshold) {
       state.objective = getObjective(data, param, state.xt, state.minRisk);
       delete [] risk;
-      return;
+      return true;
     }
     
     size_t numProbs = (data.nCol - (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0)) * data.nRow;
@@ -448,12 +463,19 @@ namespace {
       state.minRisk = calculateRisk(data, state, risk);
       
       ++numSuppressions;
-    } while (state.minRisk < param.threshold && iter <= 500);
+    } while (state.minRisk < param.threshold && iter < MAX_RANDOM_INIT_ITERATIONS);
+    
+    bool result = iter != MAX_RANDOM_INIT_ITERATIONS || numFailures != MAX_RANDOM_INIT_ITERATIONS;
     
     if (param.verbose > 0) {
-      if (param.verbose == 1) Rprintf(", "); else Rprintf("  min risk ");
-      Rprintf("at end: %lu\n", state.minRisk);
-      Rprintf("  iters: %lu, suppressions: %lu, failures: %lu\n", iter, numSuppressions, numFailures);
+      if (result == true) {
+        if (param.verbose == 1) Rprintf(", "); else Rprintf("  min risk ");
+        Rprintf("at end: %lu\n", state.minRisk);
+        Rprintf("  iters: %lu, suppressions: %lu, failures: %lu\n", iter, numSuppressions, numFailures);
+      } else {
+        if (param.verbose == 1) Rprintf(",  no solution found\n");
+        else Rprintf("  at end: no solution found\n");
+      }
     }
     
     state.objective = getObjective(data, param, state.xt, state.minRisk);
@@ -461,6 +483,8 @@ namespace {
     delete [] originallyAtRisk;
     delete [] probs_t;
     delete [] risk;
+    
+    return result;
   }
   
   // Rows at risk are those with risk below the threshold and at least one column that is not
@@ -471,34 +495,32 @@ namespace {
   // obs, we only allow the selection of a row with NAs in it if it was originally at risk
   void getAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,
                       const bool* originallyAtRisk, const double* risk, double* probs_t) {
-    size_t dataStartCol = (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
-    size_t numProbCols = data.nCol - dataStartCol;
-    size_t numProbs = numProbCols * data.nRow;
+    size_t numProbs = param.numKeyCols * data.nRow;
     
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
       if (getRowAtRisk(data, param, row, risk[row]) == false) {
-        for (size_t col = 0; col < numProbCols; ++col)
-          probs_t[col + row * numProbCols] = 0.0;
+        for (size_t col = 0; col < param.numKeyCols; ++col)
+          probs_t[col + row * param.numKeyCols] = 0.0;
         continue;
       }
       
       bool rowCurrentlyHasNAs = false;
       if (!originallyAtRisk[row]) {
-        for (size_t col = 0; col < numProbCols; ++col) {
-          if (state.xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) {
+        for (size_t col = 0; col < param.numKeyCols; ++col) {
+          if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL) {
             rowCurrentlyHasNAs = true;
             break;
           }
         }
       }
       
-      for (size_t col = 0; col < numProbCols; ++col) {
-        if (rowCurrentlyHasNAs || data.xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) {
-          probs_t[col + row * numProbCols] = 0.0;
+      for (size_t col = 0; col < param.numKeyCols; ++col) {
+        if (rowCurrentlyHasNAs || data.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL) {
+          probs_t[col + row * param.numKeyCols] = 0.0;
         } else {
-          probs_t[col + row * numProbCols] = param.theta_inv[col];
-          total += probs_t[col + row * numProbCols];
+          probs_t[col + row * param.numKeyCols] = param.theta_inv[col];
+          total += probs_t[col + row * param.numKeyCols];
         }
       }
     }
@@ -512,8 +534,7 @@ namespace {
     // of those rows not at risk and matching the at-risk row in all but the one column, randomly pick one if one exists
     double total = 0.0;
     const unsigned char* xt_atRisk = data.xt + row_atRisk * data.nCol;
-    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
-    size_t dataCol_atRisk = col_atRisk + dataStartCol;
+    size_t dataCol_atRisk = col_atRisk + param.keyStartCol;
     
     // first try and match those with no-NAs present
     for (size_t row = 0; row < data.nRow; ++row) {
@@ -526,7 +547,7 @@ namespace {
       // check that row matches row at risk in all but selected one
       const unsigned char* xt_i = state.xt + row * data.nCol;
       bool rowMatches = true;
-      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+      for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         if (col == dataCol_atRisk) continue;
         if (xt_atRisk[col] != xt_i[col]) {
           rowMatches = false;
@@ -556,7 +577,7 @@ namespace {
       
       const unsigned char* xt_i = state.xt + row * data.nCol;
       bool rowMatches = true, rowIsAllNA = true;
-      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+      for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         if (col == dataCol_atRisk) continue;
         if (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL) {
           rowMatches = false;
@@ -590,7 +611,7 @@ namespace {
       
       const unsigned char* xt_i = state.xt + row * data.nCol;
       bool rowMatches = true;
-      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+      for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         // bad if match in selected col or differ in other cols
         if ((col == dataCol_atRisk && xt_atRisk[col] == xt_i[col]) ||
             (xt_atRisk[col] != xt_i[col]))
@@ -622,7 +643,7 @@ namespace {
       
       const unsigned char* xt_i = state.xt + row * data.nCol;
       bool rowMatches = true, rowIsAllNA = true;
-      for (size_t col = dataStartCol; col < data.nCol; ++col) {
+      for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         // bad if match in selected col or differ in other cols
         if ((col == dataCol_atRisk && xt_atRisk[col] == xt_i[col]) ||
             (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL))
@@ -652,8 +673,6 @@ namespace {
   }
   
   struct MCMCScratch {
-    size_t dataStartCol;
-    size_t numProbCols;
     size_t numProbs;
     double* cellProbs_t;
     double* rowProbs;
@@ -677,9 +696,7 @@ namespace {
     
     MCMCScratch scratch;
     
-    scratch.dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
-    scratch.numProbCols  = data.nCol - scratch.dataStartCol;
-    scratch.numProbs     = scratch.numProbCols * data.nRow;
+    scratch.numProbs     = param.numKeyCols * data.nRow;
     scratch.cellProbs_t  = new double[scratch.numProbs];
     scratch.rowProbs     = new double[data.nRow];
     
@@ -767,9 +784,9 @@ namespace {
     }
     
     size_t index     = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
-    size_t sourceRow = index / scratch.numProbCols;
-    size_t col       = index % scratch.numProbCols;
-    size_t dataCol   = col + scratch.dataStartCol;
+    size_t sourceRow = index / param.numKeyCols;
+    size_t col       = index % param.numKeyCols;
+    size_t dataCol   = col + param.keyStartCol;
     
     if (getRowSwapProbs(data, param, curr, scratch, sourceRow, dataCol) == false) {
       if (param.verbose > 1) Rprintf("- none good");
@@ -810,14 +827,14 @@ namespace {
     }
     
     size_t index     = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
-    size_t row       = index / scratch.numProbCols;
-    size_t sourceCol = index % scratch.numProbCols;
+    size_t row       = index / param.numKeyCols;
+    size_t sourceCol = index % param.numKeyCols;
     
-    double* colProbs = new double[scratch.numProbCols];
+    double* colProbs = new double[param.numKeyCols];
     
     double total = 0.0;
-    for (size_t col = 0; col < scratch.numProbCols; ++col) {
-      if (col != sourceCol && curr.xt[col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL) {
+    for (size_t col = 0; col < param.numKeyCols; ++col) {
+      if (col != sourceCol && curr.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL) {
         colProbs[col] = 1.0;
         total += 1.0;
       } else {
@@ -830,14 +847,14 @@ namespace {
       return -HUGE_VAL;
     }
     
-    for (size_t col = 0; col < scratch.numProbCols; ++col) colProbs[col] /= total;
+    for (size_t col = 0; col < param.numKeyCols; ++col) colProbs[col] /= total;
     
-    size_t targetCol = rng_drawFromDiscreteDistribution(colProbs, scratch.numProbCols);
+    size_t targetCol = rng_drawFromDiscreteDistribution(colProbs, param.numKeyCols);
         
     prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
     
-    prop.xt[sourceCol + row * data.nCol + scratch.dataStartCol] = data.xt[sourceCol + row * data.nCol + scratch.dataStartCol];
-    prop.xt[targetCol + row * data.nCol + scratch.dataStartCol] = NA_LEVEL;
+    prop.xt[sourceCol + row * data.nCol + param.keyStartCol] = data.xt[sourceCol + row * data.nCol + param.keyStartCol];
+    prop.xt[targetCol + row * data.nCol + param.keyStartCol] = NA_LEVEL;
     
     prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
     
@@ -867,9 +884,9 @@ namespace {
       }
       
       size_t index = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
-      size_t row     = index / scratch.numProbCols;
-      size_t col     = index % scratch.numProbCols;
-      size_t dataCol = col + scratch.dataStartCol;
+      size_t row     = index / param.numKeyCols;
+      size_t col     = index % param.numKeyCols;
+      size_t dataCol = col + param.keyStartCol;
       
       double propProb = scratch.cellProbs_t[index];
       
@@ -901,9 +918,9 @@ namespace {
       }
         
       size_t index = rng_drawFromDiscreteDistribution(scratch.cellProbs_t, scratch.numProbs);
-      size_t row     = index / scratch.numProbCols;
-      size_t col     = index % scratch.numProbCols;
-      size_t dataCol = col + scratch.dataStartCol;
+      size_t row     = index / param.numKeyCols;
+      size_t col     = index % param.numKeyCols;
+      size_t dataCol = col + param.keyStartCol;
         
       double propProb = scratch.cellProbs_t[index];
       
@@ -951,14 +968,14 @@ namespace {
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
-      for (size_t col = 0; col < scratch.numProbCols; ++col) {
-        if (state.xt[col + row * data.nCol + scratch.dataStartCol] == NA_LEVEL &&
-            data.xt [col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL)
+      for (size_t col = 0; col < param.numKeyCols; ++col) {
+        if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL &&
+            data.xt [col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
         {
-          scratch.cellProbs_t[col + row * scratch.numProbCols] = param.theta_inv[col];
-          total += scratch.cellProbs_t[col + row * scratch.numProbCols];
+          scratch.cellProbs_t[col + row * param.numKeyCols] = param.theta_inv[col];
+          total += scratch.cellProbs_t[col + row * param.numKeyCols];
         } else {
-          scratch.cellProbs_t[col + row * scratch.numProbCols] = 0.0;
+          scratch.cellProbs_t[col + row * param.numKeyCols] = 0.0;
         }
       }
     }
@@ -973,14 +990,14 @@ namespace {
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
-      for (size_t col = 0; col < scratch.numProbCols; ++col) {
-        if (state.xt[col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL &&
-            data.xt [col + row * data.nCol + scratch.dataStartCol] != NA_LEVEL)
+      for (size_t col = 0; col < param.numKeyCols; ++col) {
+        if (state.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL &&
+            data.xt [col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
         {
-          scratch.cellProbs_t[col + row * scratch.numProbCols] = param.theta_inv[col];
-          total += scratch.cellProbs_t[col + row * scratch.numProbCols];
+          scratch.cellProbs_t[col + row * param.numKeyCols] = param.theta_inv[col];
+          total += scratch.cellProbs_t[col + row * param.numKeyCols];
         } else {
-          scratch.cellProbs_t[col + row * scratch.numProbCols] = 0.0;
+          scratch.cellProbs_t[col + row * param.numKeyCols] = 0.0;
         }
       }
     }
@@ -1034,9 +1051,10 @@ namespace {
   double getObjective(const Data& data, const MCMCParam& param, const unsigned char* xt, double minRisk)
   {
     double naTerm = 0.0;
-    
+    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
+    size_t numProbCols = data.nCol - dataStartCol;
     for (size_t row = 0; row < data.nRow; ++row) {
-      for (size_t col = 0; col < data.nCol; ++col) if (xt[col + row * data.nCol] == NA_LEVEL) naTerm += param.theta[col]; 
+      for (size_t col = 0; col < numProbCols; ++col) if (xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) naTerm += param.theta[col]; 
     }
     naTerm /= static_cast<double>(data.nRow);
     

@@ -25,6 +25,9 @@ namespace rsupp {
     bool* suppressValues;
     uint8_t verbose;
     
+    std::size_t numKeyCols;
+    std::size_t keyStartCol;
+    
     Param(const Data& data, RiskFunction* divRiskFunction, double threshold, uint8_t verbose);
     virtual ~Param();
   };

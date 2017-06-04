@@ -1,43 +1,63 @@
-calcRisk <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL)
+getRunVariables <- function(vars, keyVars, strataVars, divVar)
+{
+  runVars <- keyVars
+  
+  if (any(keyVars %not_in% vars))
+    stop("keyVars '", paste0(keyVars[keyVars %not_in% vars], collapse = "', '"), "' not found")
+  if (!is.null(divVar)) {
+    if (length(divVar) > 1L) stop("'divVar' must specify a single variable")
+    if (divVar %not_in% vars) stop("div variable '", divVar, "' not found")
+    if (divVar %in% keyVars) stop("div variable cannot be in keyVars")
+    
+    runVars <- c(divVar, runVars)
+  }
+  nonStrataVars <- runVars
+  
+  if (!is.null(strataVars)) {
+    if (any(strataVars %not_in% vars))
+      stop("strata variables '", paste0(strataVars[strataVars %not_in% vars], collapse = "', '"), "' not found")
+    if (any(strataVars %in% keyVars))
+      stop("strata variables cannot be in keyVars")
+    if (!is.null(divVar) && divVar %in% strataVars)
+      stop("div variable cannot be in strataVars")
+    
+    runVars <- c(strataVars, runVars)
+  }
+  
+  namedList(nonStrataVars, runVars)
+}
+
+calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL)
 {
   if (!is.data.frame(x)) x <- as.data.frame(x)
-  if (any(keyVars %not_in% colnames(x)))
-    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
-  if (!is.null(div)) {
-    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
-    if (div %in% keyVars) stop("div variable cannot be in keyVars")
-    
-    x.run <- x[,match(c(div, keyVars), names(x))]
-  } else {
-    x.run <- x[,keyVars]
-  }
+  vars <- colnames(x)
+  
+  massign[nonStrataVars, runVars] <- getRunVariables(vars, keyVars, strataVars, divVar)
+  
+  x.run <- x[,match(runVars, vars)]
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
-  .Call(C_calcRisk, x.run, risk.f)
+  if (is.null(strataVars)) {
+    .Call(C_calcRisk, x.run, risk.f)
+  } else {
+    x.run <- data.table(x.run)
+    x.run[,list(risk = .Call(C_calcRisk, data.frame(.SD), risk.f)),
+          by = strataVars, .SDcols = nonStrataVars]$risk
+  }
 }
 
-rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
-                      n.chain = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
-  namedList(alpha, gamma, n.burn, n.samp, n.chain, rowSwap.prob, colSwap.prob, na.prob)
-
-
-getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5)
+getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, risk.k = 5)
 {
   risk.k <- coerceOrError(risk.k[1L], "double")
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
-  if (any(keyVars %not_in% colnames(x)))
-    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
-  if (!is.null(div)) {
-    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
-    if (div %in% keyVars) stop("div variable cannot be in keyVars")
-    
-    x.run <- x[,match(c(div, keyVars), names(x))]
-  } else {
-    x.run <- x[,keyVars]
-  }
+  vars <- colnames(x)
   
+  massign[,runVars] <- getRunVariables(vars, keyVars, NULL, divVar)
+  browser()
+  x.run <- x[,match(runVars, vars)]
+    
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
   res <- .Call(C_getAtRiskSubset, x.run, risk.f, risk.k)
@@ -49,10 +69,13 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), div = NULL, risk.f = NULL,
   }
   res
 }
-  
+
+rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
+                      n.chain = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
+  namedList(alpha, gamma, n.burn, n.samp, n.chain, rowSwap.prob, colSwap.prob, na.prob)
 
 localSuppression <-
-  function(x, keyVars = colnames(x), div = NULL, risk.f = NULL, risk.k = 5,
+  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, risk.k = 5,
            keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 {
   par$risk.k  <- coerceOrError(risk.k[1L], "double")
@@ -67,45 +90,64 @@ localSuppression <-
   
   skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
   
-  n.chain <- par$n.chain
+  n.chain <- coerceOrError(par$n.chain, "integer")
   par$n.chain <- NULL
+  if (n.chain <= 0L) stop("n.chain must be a positive integer")
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
-  if (any(keyVars %not_in% colnames(x)))
-    stop("keyVars '", paste0(keyVars[keyVars %not_in% colnames(x)], collapse = "', '"), "' not found")
-  if (!is.null(div)) {
-    if (div %not_in% colnames(x)) stop("div '", div, "' not found")
-    if (div %in% keyVars) stop("div variable cannot be in keyVars")
-    
-    x.run <- x[,match(c(div, keyVars), names(x))]
-  } else {
-    x.run <- x[,keyVars]
-  }
+  vars <- colnames(x)
+  
+  massign[nonStrataVars, runVars] <- getRunVariables(vars, keyVars, strataVars, divVar)
+  
+  x.run <- x[,match(runVars, vars)]
   
   if (is.null(keyVars.w)) {
     par$theta <- rep.int(1, length(keyVars))
   } else {
     if (is.character(keyVars.w)) {
+      
+      if (any(keyVars %not_in% keyVars.w))
+        stop("keyVars '", paste0(keyVars.w[keyVars.w %not_in% keyVars], collapse = "', '"), "' not in keyVar weights")
+      
       temp <- seq_along(keyVars.w)
       names(temp) <- keyVars.w
       keyVars.w <- temp
       rm(temp)
     }
     if (is.null(names(keyVars.w))) par$theta <- coerceOrError(keyVars.w, "double")
-    else par$theta <- coerceOrError(keyVars.w[match(colnames(x), names(keyVars.w), nomatch = 0L)], "double")
+    else {
+      if (any(names(keyVars.w) %not_in% keyVars)) {
+        stop("keyVar weights '", paste0(names(keyVars.w)[names(keyVars.w) %not_in% keyVars], collapse = "', '"), "' not in keyVars")
+        par$theta <- coerceOrError(keyVars.w[match(runVars, names(keyVars.w))], "double")
+      }
+    }
   }
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
  
-  risk.min <- min(.Call(C_calcRisk, x.run, risk.f))
-  if (risk.min >= risk.k) return(list(x = x, obj = NA_real_, n = NA_real_))
-  
-  res <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
-  if (any(colnames(x) %not_in% colnames(x.run))) {
-    extraCols <- colnames(x)[colnames(x) %not_in% colnames(x.run)]
-    res$x[,extraCols] <- x[,extraCols]
-    res$x <- res$x[,c(colnames(x), "risk")]
+  risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f)
+  if (min(risk) >= risk.k) {
+    x[,"risk"] <- risk
+    return(list(x = x, obj = NA_real_, n = NA_real_))
   }
+  
+  
+  if (is.null(strataVars)) {
+    res <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
+  } else {
+    browser()
+    
+    x.run <- data.table(x.run)
+    res <- x.run[,paste(runVars) := .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)$x,
+                 by = strataVars, .SDcols = nonStrataVars]$risk
+  }
+  
+  if (any(vars %not_in% runVars)) {
+    extraCols <- vars[vars %not_in% runVars]
+    res$x[,extraCols] <- x[,extraCols]
+    res$x <- res$x[,c(vars, "risk")]
+  }
+  
   res
 }
 

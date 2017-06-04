@@ -6,8 +6,8 @@ testData <- data.frame(gender = c("male", "male", "male", "male", "female"),
 
 test_that("fails with invalid inputs", {
   expect_error(getAtRiskSubset(testData, keyVars = "not-a-col"))
-  expect_error(getAtRiskSubset(testData, div = "not-a-col"))
-  expect_error(getAtRiskSubset(testData, div = "gender"))
+  expect_error(getAtRiskSubset(testData, divVar = "not-a-col"))
+  expect_error(getAtRiskSubset(testData, divVar = "gender"))
   expect_error(getAtRiskSubset(testData, risk.f = "not-a-function"))
   expect_error(getAtRiskSubset(testData, risk.k = -1))
   expect_error(getAtRiskSubset(testData, risk.k = "not-a-number"))

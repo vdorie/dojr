@@ -1,3 +1,5 @@
 useDynLib(rsupp, .registration = TRUE, .fixes = "C_")
 
-export(localSuppression, rsupp.par, calcRisk, getAtRiskSubset)
+import(data.table)
+
+export(calcRisk, getAtRiskSubset, localSuppression, rsupp.par)

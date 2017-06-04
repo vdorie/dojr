@@ -21,7 +21,7 @@ namespace rsupp {
     xt(new unsigned char[data.nRow * data.nCol]),
     naCount(new size_t[data.tableSize]),
     ccCount(new size_t[data.tableSize]),
-    minRisk(data.nRow),
+    minRisk(static_cast<double>(data.nRow)),
     objective(-HUGE_VAL)
   {
     std::memcpy(xt, data.xt, data.nRow * data.nCol * sizeof(unsigned char));
@@ -163,7 +163,7 @@ namespace rsupp {
     }
   }
   
-  void State::print(const Data& data, const Param& param) {
+  void State::print(const Data& data, const MCMCParam& param) {
     double naTerm = 0.0;
     
     for (size_t row = 0; row < data.nRow; ++row) {

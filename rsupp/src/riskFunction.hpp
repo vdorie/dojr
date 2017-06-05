@@ -35,9 +35,9 @@ namespace rsupp {
     double operator()(const Data& data, const State& state, double* risk);
     ~DivRiskFunction();
     
-    // works on individual cell of freq table by putting naFreq when ccFreq > 0 into freq_int
+    // works on individual cell of freq table by putting naFreq into freq_int
     // and evaluating the closure (in the environment)
-    double operator()(const std::size_t* naFreq, const std::size_t* ccFreq);
+    double operator()(const std::size_t* naFreq);
   };
 }
 

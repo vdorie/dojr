@@ -72,12 +72,12 @@ namespace rsupp {
     return minRisk;
   }
   
-  double DivRiskFunction::operator()(const size_t* naFreq, const size_t* ccFreq) {
-    for (size_t i = 0; i < numFrequencies; ++i) freq_int[i] = static_cast<int>(ccFreq[i] > 0 ? naFreq[i] : 0);
+  double DivRiskFunction::operator()(const size_t* naFreq) {
+    for (size_t i = 0;  i < numFrequencies; ++i) freq_int[i] = static_cast<int>(naFreq[i]);
     
     SEXP result = Rf_eval(closure, environment);
+    
     if (Rf_isInteger(result)) return static_cast<double>(INTEGER(result)[0]);
-     
     return REAL(result)[0];
   }
 }

@@ -76,7 +76,7 @@ namespace rsupp {
       } else if (std::strcmp(param_name_i, "theta") == 0) {
         if (!Rf_isReal(param_i)) throw "theta parameter must be double type";
         if (rc_getLength(param_i) != numKeyCols) throw "theta parameter must be of length equal to number of key variables";
-        for (size_t i = 0; i < data.nCol; ++i) if (REAL(param_i)[i] < 0.0) throw "theta parameter must be positive";
+        for (size_t i = 0; i < numKeyCols; ++i) if (REAL(param_i)[i] < 0.0) throw "theta parameter must be positive";
         
         theta = REAL(param_i);
       } else if (std::strcmp(param_name_i, "rowSwap.prob") == 0) {
@@ -201,7 +201,7 @@ namespace rsupp {
       calculateRisk(data, state, &risk);
       state.decrementFreqTable(data, state.xt, 0, 0, 1, false);
       
-      result[i] = risk < 1.0;
+      result[i] = risk > 0.0;
       suppressAny |= result[i];
     }
     

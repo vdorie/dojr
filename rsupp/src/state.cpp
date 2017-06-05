@@ -133,7 +133,7 @@ namespace rsupp {
     }
   }
   
-   
+  extern void printObs(const Data& data, const unsigned char*x);
   
   double State::getDivFromTable(const Data& data, const unsigned char* x_i,
                                 size_t currCol, size_t offset, size_t stride, 
@@ -141,11 +141,11 @@ namespace rsupp {
   {
     if (currCol == data.nCol - 1) {
       if (x_i[currCol] != NA_LEVEL) {
-        return calculateRisk(naCount + offset + x_i[currCol] * stride, ccCount + offset + x_i[currCol] * stride);
+        return calculateRisk(naCount + offset + x_i[currCol] * stride);
       } else {
         double minRisk = static_cast<double>(data.nRow);
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
-          double risk_i = calculateRisk(naCount + offset + i * stride, ccCount + offset + i * stride);
+          double risk_i = calculateRisk(naCount + offset + i * stride);
           if (risk_i < minRisk) minRisk = risk_i;
         }
         return minRisk;

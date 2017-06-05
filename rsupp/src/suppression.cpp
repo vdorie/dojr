@@ -41,10 +41,16 @@ namespace {
                                      size_t** subsetIndices, size_t* subsetLength);
   State* mergeSubset(const Data& origData, const Data& subsetData, const State& subsetState, size_t* subsetIndices, size_t subsetLength);
   
-  void printObs(const Data& data, const unsigned char* x_i);
+  // void printObs(const Data& data, const unsigned char* x_i);
 
   double getObjective(const Data& data, const MCMCParam& param, const unsigned char* xt, double minRisk);
 }
+
+namespace rsupp {
+  void printObs(const rsupp::Data& data, const unsigned char* x_i);
+}
+
+using rsupp::printObs;
 
 extern "C" {
 
@@ -324,7 +330,7 @@ namespace {
     return risk < param.threshold &&
       (param.suppressValues == NULL ? true :
         data.xt[row * data.nCol] != NA_LEVEL &&
-        param.suppressValues[data.xt[row * data.nCol]] == false);
+        param.suppressValues[data.xt[row * data.nCol]] == true);
   }
   
   Data* subsetDataOnAtRiskAndSimilar(const Data& data, const Param& param, RiskFunction& calculateRisk,
@@ -1100,7 +1106,8 @@ namespace {
     
     return param.gamma * riskTerm + 2.0 * (1.0 - param.gamma) * -std::log(naTerm);
   }
-  
+}
+namespace rsupp {
   void printObs(const Data& data, const unsigned char* x_i)
   {
     Rprintf("(");

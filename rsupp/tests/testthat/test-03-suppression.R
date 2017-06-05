@@ -81,4 +81,8 @@ test_that("percent risk", {
   res <- localSuppression(testData, risk.k = 0.5, risk.f = function(x) x["misdemeanor"] / sum(x),
                           par = rsupp.par(n.burn = 0, n.samp = 0, n.chain = 1L),
                           keyVars = c("gender", "age_group", "race"), divVar = "offense_level")
+  ## problem requires NAing the age of one of the misdemeanor rows
+  expect_true(with(res$x, sum(is.na(age_group[offense_level == "misdemeanor"])) == 1L &&
+                          !anyNA(age_group[offense_level != "misdemeanor"])))
+  expect_true(all(res$x[,"risk"] == 0.5))
 })

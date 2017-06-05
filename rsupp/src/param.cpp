@@ -75,7 +75,7 @@ namespace rsupp {
         gamma = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "theta") == 0) {
         if (!Rf_isReal(param_i)) throw "theta parameter must be double type";
-        if (rc_getLength(param_i) != data.nCol) throw "theta parameter must be of length equal to number of columns in x";
+        if (rc_getLength(param_i) != numKeyCols) throw "theta parameter must be of length equal to number of key variables";
         for (size_t i = 0; i < data.nCol; ++i) if (REAL(param_i)[i] < 0.0) throw "theta parameter must be positive";
         
         theta = REAL(param_i);

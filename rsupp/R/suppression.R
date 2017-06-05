@@ -130,22 +130,47 @@ localSuppression <-
     return(list(x = x, obj = NA_real_, n = NA_real_))
   }
   
-  
-  if (is.null(strataVars)) {
-    res <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
-  } else {
-    browser()
+  res <- list(x = NULL, obj = -Inf)
+  for (i in seq_len(n.chain)) {
+    if (is.null(strataVars)) {
+      res.i <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
+    } else {
+      ## mess here is to use data.table to get an efficient subset and update of the data frame within each stratum
+      totalObjective <- 0
+      x.dt <- data.table(x.run)
+      x.dt[,paste(nonStrataVars) := {
+        x.dt.j <- as.data.frame(.SD)
+        risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f)
+        if (par$risk.k > 0 && min(risk) >= par$risk.k) {
+          .SD
+        } else {
+          res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, NULL, par, FALSE)
+          callingEnv <- parent.env(environment())
+          if (!is.na(res.j$obj) && is.finite(res.j$obj))
+            callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj
+          res.j$x[,nonStrataVars]
+        }
+      },by = strataVars, .SDcols = nonStrataVars]
+      x.dt <- as.data.frame(x.dt)
+      ## unfortunately, we can't return a data frame above, at least not with integer and double columns
+      ## so stratified risk needs to be recalculated
+      x.dt$risk <- calcRisk(x.dt, keyVars, strataVars, divVar, risk.f)
+      res.i <- list(x = x.dt, obj = totalObjective)
+    }
     
-    x.run <- data.table(x.run)
-    res <- x.run[,paste(runVars) := .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)$x,
-                 by = strataVars, .SDcols = nonStrataVars]$risk
+    if (res.i$obj > res$obj) {
+      res$x <- res.i$x
+      res$obj <- res.i$obj
+    } else if (is.null(res$x)) {
+      res$x <- res.i$x
+    }
   }
   
   if (any(vars %not_in% runVars)) {
     extraCols <- vars[vars %not_in% runVars]
-    res$x[,extraCols] <- x[,extraCols]
-    res$x <- res$x[,c(vars, "risk")]
+    res$x[,extraCols] <- x[,extraCols] 
   }
+  res$x <- res$x[,c(vars, "risk")]
   
   res
 }

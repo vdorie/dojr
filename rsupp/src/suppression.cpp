@@ -251,10 +251,10 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
         fullState->xt[col + row * origData.nCol] = NA_LEVEL;
       }
     }
-    fullState->minRisk = static_cast<double>(origData.nRow);
-    getObjective(origData, param, fullState->xt, fullState->minRisk);
+  } else {
+    fullState->calculateFreqTable(origData);
   }
-    
+  
   // package up results into a list
   SEXP result = PROTECT(rc_newList(3));
   SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(origData.nCol + 1));
@@ -274,8 +274,8 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   // store risk
   SET_VECTOR_ELT(xNew, origData.nCol, rc_newReal(origData.nRow));
   
-  fullState->calculateFreqTable(origData);
-  calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
+  fullState->minRisk = calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
+  fullState->objective = getObjective(origData, param, fullState->xt, fullState->minRisk);
   
   Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
   Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));

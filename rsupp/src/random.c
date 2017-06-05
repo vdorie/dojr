@@ -25,6 +25,8 @@ size_t rng_drawFromDiscreteDistribution(const double* probabilities, size_t leng
 
 void rng_permuteIndexArray(size_t* indices, size_t length)
 {
+  if (length == 0) return;
+    
   size_t temp, swapPos;
   for (size_t i = 0; i < length - 1; ++i) {
     swapPos = (size_t) rng_simulateUnsignedIntegerUniformInRange(i, length);

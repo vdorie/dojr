@@ -56,7 +56,29 @@ test_that("random init returns non-trivial solution", {
                          age_group = c("10 to 17", "10 to 17", "18 to 19", "18 to 19", "18 to 19"),
                          race = c("white", "white", "white", "white", "black"))
   ## problem should be solvable with only a single NA
-  res <- localSuppression(testData, risk.k = 2, par = rsupp.par(n.burn = 0, n.samp = 0))
-  expect_true(sum(is.na(res$x[,c("gender", "age_group", "race")])) == 2L)
+  res <- localSuppression(testData, risk.k = 2, par = rsupp.par(n.burn = 0, n.samp = 0, n.chain = 1L))
+  expect_true(sum(is.na(res$x[,c("gender", "age_group", "race")])) == 1L)
   expect_true(all(res$x[,"risk"] >= 2))
+})
+
+test_that("R wrapper works across strata", {
+  testData <- data.frame(gender = c("male", "male", "male", "male", "male", "female", "male"),
+                         age_group = c("10 to 17", "10 to 17", "18 to 19", "18 to 19", "18 to 19", "18 to 19", "18 to 19"),
+                         race = c("white", "white", "white", "white", "black", "white", "white"),
+                         strata = c("g1", "g1", "g2", "g2", "g2", "g3", "g3"))
+  ## problem requires NAing the last group entirely and a single observation in the second group
+  res <- localSuppression(testData, risk.k = 2, par = rsupp.par(n.burn = 0, n.samp = 0, n.chain = 1L),
+                          keyVars = c("gender", "age_group", "race"), strataVars = "strata")
+  expect_true(sum(is.na(res$x[,c("gender", "age_group", "race")])) == 7L)
+  expect_equal(res$x[,"risk"], c(2, 2, 3, 3, 3, 2, 2))
+})
+
+test_that("percent risk", {
+  testData <- data.frame(gender = c("male", "male", "male", "male"),
+                         age_group = c("18 to 19", "18 to 19", "18 to 19", "10 to 17"),
+                         race = c("white", "white", "white", "white"),
+                         offense_level = c("misdemeanor", "felony", "felony", "misdemeanor"))
+  res <- localSuppression(testData, risk.k = 0.5, risk.f = function(x) x["misdemeanor"] / sum(x),
+                          par = rsupp.par(n.burn = 0, n.samp = 0, n.chain = 1L),
+                          keyVars = c("gender", "age_group", "race"), divVar = "offense_level")
 })

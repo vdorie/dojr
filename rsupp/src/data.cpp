@@ -117,10 +117,7 @@ namespace rsupp {
         }
       }
     }
-    
    
-    
-    
     this->xt = xt;
     this->nLev = nLev;
     this->colNames = colNames;

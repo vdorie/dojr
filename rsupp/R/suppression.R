@@ -55,7 +55,6 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NU
   vars <- colnames(x)
   
   massign[,runVars] <- getRunVariables(vars, keyVars, NULL, divVar)
-  browser()
   x.run <- x[,match(runVars, vars)]
     
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
@@ -126,7 +125,7 @@ localSuppression <-
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
  
   risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f)
-  if (min(risk) >= risk.k) {
+  if (par$risk.k > 0 && min(risk) >= par$risk.k) {
     x[,"risk"] <- risk
     return(list(x = x, obj = NA_real_, n = NA_real_))
   }

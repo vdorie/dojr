@@ -51,9 +51,16 @@ extern "C" {
 SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
 {
   Data data(xExpr);
+  
   RiskFunction* calculateRiskPtr = NULL;
-  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(data, riskFunctionExpr);
+  try {
+    if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+    else calculateRiskPtr = new DivRiskFunction(data, riskFunctionExpr);
+  } catch (const char* error) {
+    // get around Rf_error not unwinding stack
+    data.Data::~Data();
+    Rf_error(error);
+  }
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
   State state(data);
@@ -78,19 +85,31 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   if (REAL(thresholdExpr)[0] <= 0.0) Rf_error("threshold parameter must be non-negative");
   
   Data origData(xExpr);
+  
   RiskFunction* calculateRiskPtr = NULL;
-  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+  try {
+    if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+  } catch (const char* error) {
+    origData.Data::~Data();
+    Rf_error(error);
+  }
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
-    
-  Param param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, REAL(thresholdExpr)[0], 0);
+  Param* paramPtr = NULL;
+  try {
+    paramPtr = new Param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, REAL(thresholdExpr)[0], 0);
+  } catch (const char* error) {
+    delete calculateRiskPtr;
+    origData.Data::~Data();
+    Rf_error(error);
+  }
+  Param& param(*paramPtr);
     
   size_t* subsetIndices;
   size_t subsetLength;
   Data* subsetDataPtr = subsetDataOnAtRiskAndSimilar(origData, param, calculateRisk, &subsetIndices, &subsetLength);
   Data& subsetData(*subsetDataPtr);
-  
   
   SEXP xNew = PROTECT(rc_newList(subsetData.nCol + 1));
   for (size_t col = 0; col < subsetData.nCol; ++col) {
@@ -143,6 +162,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   delete subsetDataPtr;
   delete [] subsetIndices;
   
+  delete paramPtr;
   delete calculateRiskPtr;
  
   UNPROTECT(3);
@@ -157,12 +177,26 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   bool skipRandomInit = LOGICAL(skipRandomInitExpr)[0];
   
   Data origData(xExpr);
+  
   RiskFunction* calculateRiskPtr = NULL;
-  if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-  else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+  try {
+    if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
+    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+  } catch (const char* error) {
+    origData.Data::~Data();
+    Rf_error(error);
+  }
   RiskFunction& calculateRisk(*calculateRiskPtr);
   
-  MCMCParam param(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+  MCMCParam* paramPtr = NULL;
+  try {
+    paramPtr = new MCMCParam(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+  } catch (const char* error) {
+    delete calculateRiskPtr;
+    origData.Data::~Data();
+    Rf_error(error);
+  }
+  MCMCParam& param(*paramPtr);
   
   if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
     Rprintf("created percent risk function, supresssing values:\n");
@@ -240,6 +274,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   // store risk
   SET_VECTOR_ELT(xNew, origData.nCol, rc_newReal(origData.nRow));
   
+  fullState->calculateFreqTable(origData);
   calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
   
   Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
@@ -268,6 +303,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   SET_VECTOR_ELT(result, 2, Rf_ScalarReal(naTerm));
   
   delete fullState;
+  delete paramPtr;
   delete calculateRiskPtr;
   
   rc_setNames(result, PROTECT(rc_newCharacter(2)));
@@ -366,7 +402,7 @@ namespace {
     size_t subsetRow = 0;
     for (size_t row = 0; row < origData.nRow; ++row) {
       if (subsetRow < subsetLength && subsetIndices[subsetRow] == row) {
-        std::memcpy(result->xt + row * origData.nCol, subsetData.xt + subsetRow * origData.nCol, origData.nCol * sizeof(unsigned char));
+        std::memcpy(result->xt + row * origData.nCol, subsetState.xt + subsetRow * origData.nCol, origData.nCol * sizeof(unsigned char));
         ++subsetRow;
       } else {
         std::memcpy(result->xt + row * origData.nCol, origData.xt + row * origData.nCol, origData.nCol * sizeof(unsigned char));
@@ -410,7 +446,7 @@ namespace {
     size_t numFailures = 0;
     size_t iter = 0;
     if (param.verbose > 0) {
-      Rprintf("random initialization:\n  min risk at start: %lu", state.minRisk);
+      Rprintf("random initialization:\n  min risk at start: %.2f", state.minRisk);
       if (param.verbose > 1)
         Rprintf("\n");
     }
@@ -470,7 +506,7 @@ namespace {
     if (param.verbose > 0) {
       if (result == true) {
         if (param.verbose == 1) Rprintf(", "); else Rprintf("  min risk ");
-        Rprintf("at end: %lu\n", state.minRisk);
+        Rprintf("at end: %.2f\n", state.minRisk);
         Rprintf("  iters: %lu, suppressions: %lu, failures: %lu\n", iter, numSuppressions, numFailures);
       } else {
         if (param.verbose == 1) Rprintf(",  no solution found\n");
@@ -1013,9 +1049,7 @@ namespace {
     State temp(data);
     temp.copyFrom(data, state);
     
-    size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
-    size_t numIndexCols = data.nCol - dataStartCol;
-    size_t numIndices = numIndexCols * data.nRow;
+    size_t numIndices = param.numKeyCols * data.nRow;
     
     size_t* indices = new size_t[numIndices];
     for (size_t index = 0; index < numIndices; ++index) indices[index] = index;
@@ -1023,19 +1057,19 @@ namespace {
     rng_permuteIndexArray(indices, numIndices);
     
     for (size_t index = 0; index < numIndices; ++index) {
-      size_t row = indices[index] / numIndexCols;
-      size_t col = indices[index] % numIndexCols;
-      size_t dataCol = col + dataStartCol;
+      size_t row = indices[index] / param.numKeyCols;
+      size_t col = indices[index] % param.numKeyCols;
+      size_t keyCol = col + param.keyStartCol;
       
-      if (state.xt[dataCol + row * data.nCol] == NA_LEVEL && data.xt[dataCol + row * data.nCol] != NA_LEVEL) {
-        temp.decrementFreqTable(data, state.xt + row * data.nCol, 0, 0, 1, false);
+      if (state.xt[keyCol + row * data.nCol] == NA_LEVEL && data.xt[keyCol + row * data.nCol] != NA_LEVEL) {
+        temp.decrementFreqTable(data, temp.xt + row * data.nCol, 0, 0, 1, false);
         
-        temp.xt[dataCol + row * data.nCol] = data.xt[dataCol + row * data.nCol];
+        temp.xt[keyCol + row * data.nCol] = data.xt[keyCol + row * data.nCol];
         
         temp.incrementFreqTable(data, temp.xt + row * data.nCol, 0, 0, 1, false);
          
         temp.minRisk = calculateRisk(data, temp, NULL);
-         
+        
         if (temp.minRisk >= param.threshold) {
           state.copyFrom(data, temp);
         } else {
@@ -1043,6 +1077,8 @@ namespace {
         }
       }
     }
+    
+    delete [] indices;
   }
   
   // 2 * (1 - gamma) * -log(mean(naTerm)) + log(kTerm)

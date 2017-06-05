@@ -25,7 +25,7 @@ namespace rsupp {
       
       suppressValues = getSuppressValues(data, *divRiskFunction);
       if (suppressValues == NULL)
-        Rf_error("could not find values to suppress for threshold < 1.0");
+        throw "could not find values to suppress for threshold < 1.0";
     }
     
     keyStartCol = riskType != RTYPE_COUNT ? 1 : 0;
@@ -45,10 +45,10 @@ namespace rsupp {
     rowSwapProb(-1.0), colSwapProb(-1.0), naProb(-1.0),
     nBurn(INVALID_EXTENT), nSamp(INVALID_EXTENT)
   {
-    if (!Rf_isVector(paramExpr)) Rf_error("params argument must be a named list");
+    if (!Rf_isVector(paramExpr)) throw "params argument must be a named list";
     
     SEXP paramNames = rc_getNames(paramExpr);
-    if (paramNames == R_NilValue) Rf_error("params argument must have names");
+    if (paramNames == R_NilValue) throw "params argument must have names";
     
     double* theta = NULL;
     for (size_t i = 0; i < rc_getLength(paramExpr); ++i) {
@@ -56,84 +56,84 @@ namespace rsupp {
       const char* param_name_i = CHAR(STRING_ELT(paramNames, i));
       
       if (std::strcmp(param_name_i, "risk.k") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("risk.k parameter must be real type");
-        if (rc_getLength(param_i) != 1) Rf_error("risk.k parameter must be of length 1");
-        if (REAL(param_i)[0] <= 0.0) Rf_error("risk.k parameter must be non-negative");
+        if (!Rf_isReal(param_i)) throw "risk.k parameter must be real type";
+        if (rc_getLength(param_i) != 1) throw "risk.k parameter must be of length 1";
+        if (REAL(param_i)[0] <= 0.0) throw "risk.k parameter must be non-negative";
         
         threshold = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "alpha") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("alpha parameter must be double type");
-        if (rc_getLength(param_i) != 1) Rf_error("alpha parameter must be of length 1");
-        if (REAL(param_i)[0] <= 1.0) Rf_error("alpha parameter must be a greater than 1");
+        if (!Rf_isReal(param_i)) throw "alpha parameter must be double type";
+        if (rc_getLength(param_i) != 1) throw "alpha parameter must be of length 1";
+        if (REAL(param_i)[0] <= 1.0) throw "alpha parameter must be a greater than 1";
         
         alpha = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "gamma") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("gamma parameter must be double type");
-        if (rc_getLength(param_i) != 1) Rf_error("gamma parameter must be of length 1");
-        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) Rf_error("gamma parameter must be in [0,1]");
+        if (!Rf_isReal(param_i)) throw "gamma parameter must be double type";
+        if (rc_getLength(param_i) != 1) throw "gamma parameter must be of length 1";
+        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) throw "gamma parameter must be in [0,1]";
         
         gamma = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "theta") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("theta parameter must be double type");
-        if (rc_getLength(param_i) != data.nCol) Rf_error("theta parameter must be of length equal to number of columns in x");
-        for (size_t i = 0; i < data.nCol; ++i) if (REAL(param_i)[i] < 0.0) Rf_error("theta parameter must be positive");
+        if (!Rf_isReal(param_i)) throw "theta parameter must be double type";
+        if (rc_getLength(param_i) != data.nCol) throw "theta parameter must be of length equal to number of columns in x";
+        for (size_t i = 0; i < data.nCol; ++i) if (REAL(param_i)[i] < 0.0) throw "theta parameter must be positive";
         
         theta = REAL(param_i);
       } else if (std::strcmp(param_name_i, "rowSwap.prob") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("rowSwap.prob parameter must be double type");
-        if (rc_getLength(param_i) != 1) Rf_error("rowSwap.prob parameter must be of length 1");
-        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) Rf_error("rowSwap.prob must be in [0, 1]");
+        if (!Rf_isReal(param_i)) throw "rowSwap.prob parameter must be double type";
+        if (rc_getLength(param_i) != 1) throw "rowSwap.prob parameter must be of length 1";
+        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) throw "rowSwap.prob must be in [0, 1]";
         
         rowSwapProb = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "colSwap.prob") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("colSwap.prob parameter must be double type");
-        if (rc_getLength(param_i) != 1) Rf_error("colSwap.prob parameter must be of length 1");
-        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) Rf_error("colSwap.prob must be in [0, 1]");
+        if (!Rf_isReal(param_i)) throw "colSwap.prob parameter must be double type";
+        if (rc_getLength(param_i) != 1) throw "colSwap.prob parameter must be of length 1";
+        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) throw "colSwap.prob must be in [0, 1]";
         
         colSwapProb = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "na.prob") == 0) {
-        if (!Rf_isReal(param_i)) Rf_error("na.prob parameter must be double type");
-        if (rc_getLength(param_i) != 1) Rf_error("na.prob parameter must be of length 1");
-        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) Rf_error("na.prob must be in [0, 1]");
+        if (!Rf_isReal(param_i)) throw "na.prob parameter must be double type";
+        if (rc_getLength(param_i) != 1) throw "na.prob parameter must be of length 1";
+        if (REAL(param_i)[0] < 0.0 || REAL(param_i)[0] > 1.0) throw "na.prob must be in [0, 1]";
         
         naProb = REAL(param_i)[0];
       } else if (std::strcmp(param_name_i, "n.burn") == 0) {
-        if (!Rf_isInteger(param_i)) Rf_error("nBurn parameter must be integer type");
-        if (rc_getLength(param_i) != 1) Rf_error("nBurn parameter must be of length 1");
-        if (INTEGER(param_i)[0] < 0) Rf_error("nBurn parameter must be a non-negative integer");
+        if (!Rf_isInteger(param_i)) throw "nBurn parameter must be integer type";
+        if (rc_getLength(param_i) != 1) throw "nBurn parameter must be of length 1";
+        if (INTEGER(param_i)[0] < 0) throw "nBurn parameter must be a non-negative integer";
         
         nBurn = static_cast<size_t>(INTEGER(param_i)[0]);
       } else if (std::strcmp(param_name_i, "n.samp") == 0) {
-        if (!Rf_isInteger(param_i)) Rf_error("nSamp parameter must be integer type");
-        if (rc_getLength(param_i) != 1) Rf_error("nSamp parameter must be of length 1");
-        if (INTEGER(param_i)[0] < 0) Rf_error("nSamp parameter must be a non-negative integer");
+        if (!Rf_isInteger(param_i)) throw "nSamp parameter must be integer type";
+        if (rc_getLength(param_i) != 1) throw "nSamp parameter must be of length 1";
+        if (INTEGER(param_i)[0] < 0) throw "nSamp parameter must be a non-negative integer";
         
         nSamp = static_cast<size_t>(INTEGER(param_i)[0]);
       } else if (std::strcmp(param_name_i, "verbose") == 0) {
-        if (!Rf_isInteger(param_i)) Rf_error("verbose parameter must be integer type");
-        if (rc_getLength(param_i) != 1) Rf_error("verbose parameter must be of length 1");
-        if (INTEGER(param_i) < 0) Rf_error("verbose parameter must be a non-negative integer");
+        if (!Rf_isInteger(param_i)) throw "verbose parameter must be integer type";
+        if (rc_getLength(param_i) != 1) throw "verbose parameter must be of length 1";
+        if (INTEGER(param_i) < 0) throw "verbose parameter must be a non-negative integer";
         
         verbose = static_cast<uint8_t>(INTEGER(param_i)[0]);
       } else {
-        Rf_error("unrecognized parameter '%s'", param_name_i);
+        throw "unrecognized parameter";
       }
     }
     
-    if (threshold == -1.0) Rf_error("risk.k parameter unset");
-    if (alpha == -1.0) Rf_error("alpha parameter unset");
-    if (gamma == -1.0) Rf_error("gamma parameter unset");
-    if (theta == NULL) Rf_error("theta parameter unset");
-    if (rowSwapProb == -1.0) Rf_error("rowSwap.prob parameter unset");
-    if (colSwapProb == -1.0) Rf_error("colSwap.prob parameter unset");
-    if (naProb == -1.0) Rf_error("na.prob parameter unset");
-    if (nBurn == INVALID_EXTENT) Rf_error("n.burn parameter unset");
-    if (nSamp == INVALID_EXTENT) Rf_error("n.samp parameter unset");
+    if (threshold == -1.0) throw "risk.k parameter unset";
+    if (alpha == -1.0) throw "alpha parameter unset";
+    if (gamma == -1.0) throw "gamma parameter unset";
+    if (theta == NULL) throw "theta parameter unset";
+    if (rowSwapProb == -1.0) throw "rowSwap.prob parameter unset";
+    if (colSwapProb == -1.0) throw "colSwap.prob parameter unset";
+    if (naProb == -1.0) throw "na.prob parameter unset";
+    if (nBurn == INVALID_EXTENT) throw "n.burn parameter unset";
+    if (nSamp == INVALID_EXTENT) throw "n.samp parameter unset";
     
     
-    if (nSamp < nBurn) Rf_error("n.samp must be greater than or equal to n.burn");
-    if (threshold > data.nRow) Rf_error("threshold is greater than the number of rows in the data");
-    if (rowSwapProb + colSwapProb > 1.0) Rf_error("rowSwap + colSwap probabilities must be less than or equal to 1");
+    if (nSamp < nBurn) throw "n.samp must be greater than or equal to n.burn";
+    if (threshold > data.nRow) throw "threshold is greater than the number of rows in the data";
+    if (rowSwapProb + colSwapProb > 1.0) throw "rowSwap + colSwap probabilities must be less than or equal to 1";
         
     if (threshold >= 1.0) {
       beta = (alpha - 1.0) / threshold;

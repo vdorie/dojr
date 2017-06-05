@@ -31,13 +31,13 @@ namespace rsupp {
   }
 
   DivRiskFunction::DivRiskFunction(const Data& data, SEXP riskFunction) {
-    if (rc_getLength(riskFunction) != 2) Rf_error("length of riskMeasure for functions must be 2");
+    if (rc_getLength(riskFunction) != 2) throw "length of riskMeasure for functions must be 2";
     
     SEXP function = VECTOR_ELT(riskFunction, 0);
     environment = VECTOR_ELT(riskFunction, 1);
     
-    if (!Rf_isFunction(function)) Rf_error("first element of list for function riskMeasure must be a closure");
-    if (!Rf_isEnvironment(environment)) Rf_error("second element of list for function riskMeasure must be an environment");
+    if (!Rf_isFunction(function)) throw "first element of list for function riskMeasure must be a function";
+    if (!Rf_isEnvironment(environment)) throw "second element of list for function riskMeasure must be an environment";
     
     SEXP freq = PROTECT(rc_newInteger(data.nLev[0]));
     SEXP freqNames = PROTECT(rc_newCharacter(data.nLev[0]));
@@ -74,7 +74,10 @@ namespace rsupp {
   
   double DivRiskFunction::operator()(const size_t* naFreq, const size_t* ccFreq) {
     for (size_t i = 0; i < numFrequencies; ++i) freq_int[i] = static_cast<int>(ccFreq[i] > 0 ? naFreq[i] : 0);
-      
-    return REAL(Rf_eval(closure, environment))[0];
+    
+    SEXP result = Rf_eval(closure, environment);
+    if (Rf_isInteger(result)) return static_cast<double>(INTEGER(result)[0]);
+     
+    return REAL(result)[0];
   }
 }

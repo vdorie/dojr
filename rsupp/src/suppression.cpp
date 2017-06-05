@@ -1,7 +1,7 @@
 #include <climits> // UCHAR_MAX
 #include <cmath>   // log
 #include <cstring> // strcmp
-#include <cstdint> // uint64
+#include <stdint.h> // uint64
 #include <cstddef> // size_t
 
 #include "rc.h"
@@ -151,7 +151,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
     for (size_t temp = subsetData.nRow + 1; temp > 0; temp /= 10) ++numDigits;
   char* rowName = new char[numDigits + 1];
   for (size_t row = 0; row < subsetData.nRow; ++row) {
-    std::sprintf(rowName, "%lu", row + 1);
+    std::sprintf(rowName, SIZE_T_FMT, row + 1);
     SET_STRING_ELT(rowNames, row, Rf_mkChar(rowName));
   }
   delete [] rowName;
@@ -470,7 +470,7 @@ namespace {
       size_t dataCol_atRisk = col_atRisk + (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
       
       if (param.verbose > 1) {
-        Rprintf("  r: %lu, c: %lu ", row_atRisk + 1, dataCol_atRisk + 1);
+        Rprintf("  r: " SIZE_T_FMT ", c: " SIZE_T_FMT " ", row_atRisk + 1, dataCol_atRisk + 1);
         printObs(data, state.xt + row_atRisk * data.nCol);
         Rprintf(" [%.2f]", risk[row_atRisk]);
       }
@@ -487,7 +487,7 @@ namespace {
       size_t row_toNa = rng_drawFromDiscreteDistribution(probs_t, data.nRow);
       
       if (param.verbose > 1) {
-        Rprintf(" - r: %lu ", row_toNa + 1);
+        Rprintf(" - r: " SIZE_T_FMT " ", row_toNa + 1);
         printObs(data, state.xt + row_toNa * data.nCol);
         Rprintf("\n");
       }
@@ -513,7 +513,7 @@ namespace {
       if (result == true) {
         if (param.verbose == 1) Rprintf(", "); else Rprintf("  min risk ");
         Rprintf("at end: %.2f\n", state.minRisk);
-        Rprintf("  iters: %lu, suppressions: %lu, failures: %lu\n", iter, numSuppressions, numFailures);
+        Rprintf("  iters: " SIZE_T_FMT ", suppressions: " SIZE_T_FMT ", failures: " SIZE_T_FMT "\n", iter, numSuppressions, numFailures);
       } else {
         if (param.verbose == 1) Rprintf(",  no solution found\n");
         else Rprintf("  at end: no solution found\n");
@@ -744,7 +744,7 @@ namespace {
     
     double r, ratio;
    
-    if (param.verbose > 0) Rprintf("mcmc:\n  min risk at start: %lu\n", curr.minRisk);
+    if (param.verbose > 0) Rprintf("mcmc:\n  min risk at start: " SIZE_T_FMT "\n", curr.minRisk);
     
     int numDigits = 0;
     for (size_t temp = param.nSamp; temp > 0; temp /= 10) ++numDigits;
@@ -765,7 +765,7 @@ namespace {
       }
                   
       if (-Rf_rexp(1.0) < ratio) {
-        if (param.verbose > 1) Rprintf(" - accepted, min risk: %lu\n", prop.minRisk);
+        if (param.verbose > 1) Rprintf(" - accepted, min risk: " SIZE_T_FMT "\n", prop.minRisk);
         curr.copyFrom(data, prop);
         
         if ((i >= param.nBurn && curr.objective > result->objective && curr.minRisk >= param.threshold)) {
@@ -787,13 +787,13 @@ namespace {
        if (param.verbose > 1) Rprintf(" - rejected\n");
       }
       
-      if (param.verbose == 1 && (i + 1) % 100 == 0) Rprintf("  iter: %lu\n", i + 1);
+      if (param.verbose == 1 && (i + 1) % 100 == 0) Rprintf("  iter: " SIZE_T_FMT "\n", i + 1);
     }
     if (param.verbose > 0) {
       if (result->objective == -HUGE_VAL)
         Rprintf("  no solution found\n");
       else
-        Rprintf("  min risk at end: %lu\n", result->minRisk);
+        Rprintf("  min risk at end: " SIZE_T_FMT "\n", result->minRisk);
     }
     
     delete [] scratch.cellProbs_t;

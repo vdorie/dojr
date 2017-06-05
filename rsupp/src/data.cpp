@@ -41,7 +41,7 @@ namespace rsupp {
           delete [] colNames;
           Rf_error("column '%s' of x not of factor type", colName);
         } else {
-          Rf_error("column '%lu of x not of factor type", col + 1);
+          Rf_error("column '" SIZE_T_FMT " of x not of factor type", col + 1);
         }
       }
       
@@ -52,9 +52,9 @@ namespace rsupp {
         if (colNames != NULL) {
           const char* colName = colNames[col];
           delete [] colNames;
-          Rf_error("column '%s' of x has more levels than maximum (%lu > %hu)", colName, nLev[col], UCHAR_MAX - 1);
+          Rf_error("column '%s' of x has more levels than maximum (" SIZE_T_FMT " > %hu)", colName, nLev[col], UCHAR_MAX - 1);
         } else {
-          Rf_error("column %lu of x has more levels than maximum (%lu > %hu)", col + 1, nLev[col], UCHAR_MAX - 1);
+          Rf_error("column " SIZE_T_FMT " of x has more levels than maximum (" SIZE_T_FMT " > %hu)", col + 1, nLev[col], UCHAR_MAX - 1);
         }
       }
       

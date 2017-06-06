@@ -41,12 +41,13 @@ namespace {
                                      size_t** subsetIndices, size_t* subsetLength);
   State* mergeSubset(const Data& origData, const Data& subsetData, const State& subsetState, size_t* subsetIndices, size_t subsetLength);
   
-  // void printObs(const Data& data, const unsigned char* x_i);
-
   double getObjective(const Data& data, const MCMCParam& param, const unsigned char* xt, double minRisk);
+  
+  SEXP packageSuppressionResult(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& state, SEXP xExpr);
 }
 
 namespace rsupp {
+  // not in anonymous in case it needs to be externed for testing purposes
   void printObs(const rsupp::Data& data, const unsigned char* x_i);
 }
 
@@ -204,6 +205,22 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   }
   MCMCParam& param(*paramPtr);
   
+  if (param.threshold >= 1.0 && param.threshold > static_cast<double>(origData.nRow)) {
+    // no solution possible, NA everything
+    State state(origData);
+    
+    for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
+      for (size_t row = 0; row < origData.nRow; ++row)
+        state.xt[col + row * origData.nCol] = NA_LEVEL;
+    }
+    
+    SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
+    delete paramPtr;
+    delete calculateRiskPtr;
+      
+    return result;
+  }
+  
   if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
     Rprintf("created percent risk function, supresssing values:\n");
     for (size_t i = 0; i < origData.nLev[0]; ++i)
@@ -211,7 +228,8 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
         Rprintf("  %s\n", origData.levelNames[0][i]);
   }
   
-  size_t* subsetIndices;
+  
+  size_t* subsetIndices = NULL;
   size_t subsetLength;
   Data* subsetDataPtr = subsetDataOnAtRiskAndSimilar(origData, param, calculateRisk, &subsetIndices, &subsetLength);
   Data& subsetData(*subsetDataPtr);
@@ -228,7 +246,24 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     subsetState.objective = getObjective(subsetData, param, subsetState.xt, subsetState.minRisk);
   }
   
-  if (!randomInitFailed && param.nSamp > 0) {
+  if (randomInitFailed) {
+    State state(origData);
+     
+    for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
+      for (size_t row = 0; row < origData.nRow; ++row)
+        state.xt[col + row * origData.nCol] = NA_LEVEL;
+    }
+    
+    SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
+    delete subsetDataPtr;
+    delete [] subsetIndices;
+    delete paramPtr;
+    delete calculateRiskPtr;
+      
+    return result;
+  }
+  
+  if (param.nSamp > 0) {
     State* randomState = mcmcSuppression(subsetData, param, calculateRisk, subsetState);
     
     // see if there are any NAs that we can safely restore without increasing k
@@ -261,71 +296,78 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     fullState->calculateFreqTable(origData);
   }
   
-  // package up results into a list
-  SEXP result = PROTECT(rc_newList(3));
-  SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(origData.nCol + 1));
-  for (size_t col = 0; col < origData.nCol; ++col) {
-    SEXP x_j_old = VECTOR_ELT(xExpr, col);
-    SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(origData.nRow));
+  SEXP result = packageSuppressionResult(origData, param, calculateRisk, *fullState, xExpr);
     
-    int* x_j = INTEGER(x_j_new);
-    
-    for (size_t row = 0; row < origData.nRow; ++row)
-      x_j[row] = fullState->xt[col + row * origData.nCol] == NA_LEVEL ? R_NaInt : (fullState->xt[col + row * origData.nCol] + 1);
-    
-    Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
-    Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
-  }
-  
-  // store risk
-  SET_VECTOR_ELT(xNew, origData.nCol, rc_newReal(origData.nRow));
-  
-  fullState->minRisk = calculateRisk(origData, *fullState, REAL(VECTOR_ELT(xNew, origData.nCol)));
-  fullState->objective = getObjective(origData, param, fullState->xt, fullState->minRisk);
-  
-  Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
-  Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));
-  
-  // set colnames
-  rc_setNames(xNew, PROTECT(rc_newCharacter(origData.nCol + 1)));
-  SEXP names_old = rc_getNames(xExpr);
-  SEXP names_new = rc_getNames(xNew);
-  for (size_t col = 0; col < origData.nCol; ++col)
-    SET_STRING_ELT(names_new, col, STRING_ELT(names_old, col));
-  SET_STRING_ELT(names_new, origData.nCol, Rf_mkChar("risk"));
-  
-  // store numeric results
-  SET_VECTOR_ELT(result, 1, Rf_ScalarReal(fullState->objective));
-  // rebuild NA term - might have NA'd entire data so look in full state, not subset
-  double naTerm = 0.0;
-  for (size_t row = 0; row < origData.nRow; ++row) {
-    for (size_t col = 0; col < param.numKeyCols; ++col) {
-      if (fullState->xt[col + row * origData.nCol + param.keyStartCol] == NA_LEVEL &&
-          origData.xt[col + row * origData.nCol + param.keyStartCol] != NA_LEVEL)
-        naTerm += param.theta[col]; 
-    }
-  }
-  naTerm /= static_cast<double>(origData.nRow);
-  SET_VECTOR_ELT(result, 2, Rf_ScalarReal(naTerm));
-  
   delete fullState;
   delete paramPtr;
   delete calculateRiskPtr;
-  
-  rc_setNames(result, PROTECT(rc_newCharacter(2)));
-  SEXP namesExpr = rc_getNames(result);
-  SET_STRING_ELT(namesExpr, 0, Rf_mkChar("x"));
-  SET_STRING_ELT(namesExpr, 1, Rf_mkChar("obj"));
-  SET_STRING_ELT(namesExpr, 2, Rf_mkChar("n"));
-  
-  UNPROTECT(3);
-  
+    
   return result;
 }
 
 }
 
 namespace {
+  SEXP packageSuppressionResult(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& state, SEXP xExpr)
+  {
+    // package up results into a list
+    SEXP result = PROTECT(rc_newList(3));
+    SEXP xNew = SET_VECTOR_ELT(result, 0, rc_newList(data.nCol + 1));
+    for (size_t col = 0; col < data.nCol; ++col) {
+      SEXP x_j_old = VECTOR_ELT(xExpr, col);
+      SEXP x_j_new = SET_VECTOR_ELT(xNew, col, rc_newInteger(data.nRow));
+      
+      int* x_j = INTEGER(x_j_new);
+      
+      for (size_t row = 0; row < data.nRow; ++row)
+        x_j[row] = state.xt[col + row * data.nCol] == NA_LEVEL ? R_NaInt : (state.xt[col + row * data.nCol] + 1);
+      
+      Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
+      Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
+    }
+    
+    // store risk
+    SET_VECTOR_ELT(xNew, data.nCol, rc_newReal(data.nRow));
+    
+    double minRisk = calculateRisk(data, state, REAL(VECTOR_ELT(xNew, data.nCol)));
+    double objective = getObjective(data, param, state.xt, minRisk);
+    
+    Rf_setAttrib(xNew, R_ClassSymbol, rc_getClass(xExpr));
+    Rf_setAttrib(xNew, R_RowNamesSymbol, Rf_getAttrib(xExpr, R_RowNamesSymbol));
+    
+    // set colnames
+    rc_setNames(xNew, PROTECT(rc_newCharacter(data.nCol + 1)));
+    SEXP names_old = rc_getNames(xExpr);
+    SEXP names_new = rc_getNames(xNew);
+    for (size_t col = 0; col < data.nCol; ++col)
+      SET_STRING_ELT(names_new, col, STRING_ELT(names_old, col));
+    SET_STRING_ELT(names_new, data.nCol, Rf_mkChar("risk"));
+    
+    // store numeric results
+    SET_VECTOR_ELT(result, 1, Rf_ScalarReal(objective));
+    // rebuild NA term
+    double naTerm = 0.0;
+    for (size_t row = 0; row < data.nRow; ++row) {
+      for (size_t col = 0; col < param.numKeyCols; ++col) {
+        if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL &&
+            data.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
+          naTerm += param.theta[col]; 
+      }
+    }
+    naTerm /= static_cast<double>(data.nRow);
+    SET_VECTOR_ELT(result, 2, Rf_ScalarReal(naTerm));
+    
+    rc_setNames(result, PROTECT(rc_newCharacter(2)));
+    SEXP namesExpr = rc_getNames(result);
+    SET_STRING_ELT(namesExpr, 0, Rf_mkChar("x"));
+    SET_STRING_ELT(namesExpr, 1, Rf_mkChar("obj"));
+    SET_STRING_ELT(namesExpr, 2, Rf_mkChar("n"));
+    
+    UNPROTECT(3);
+  
+    return result;
+  }
+  
   inline bool getRowAtRisk(const Data& data, const Param& param, size_t row, double risk) {
     return risk < param.threshold &&
       (param.suppressValues == NULL ? true :
@@ -980,10 +1022,11 @@ namespace {
                 (prop.objective + std::log(currProb) + std::log(param.naProb)) -
                 (curr.objective + std::log(propProb) + std::log(1.0 - param.naProb)));
       
-      Rprintf("(%.2f * %.4f * %.2f) / (%.2f * %.4f * %.2f)) = %.3f",
-              std::exp(prop.objective), currProb, param.naProb,
-              std::exp(curr.objective), propProb, 1.0 - param.naProb,
-              currProb == 0.0 ? INFINITY : std::exp(ratio));
+      if (param.verbose > 1)
+        Rprintf("(%.2f * %.4f * %.2f) / (%.2f * %.4f * %.2f)) = %.3f",
+                std::exp(prop.objective), currProb, param.naProb,
+                std::exp(curr.objective), propProb, 1.0 - param.naProb,
+                currProb == 0.0 ? INFINITY : std::exp(ratio));
     }
     return ratio;
   }

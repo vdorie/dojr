@@ -115,10 +115,9 @@ localSuppression <-
     }
     if (is.null(names(keyVars.w))) par$theta <- coerceOrError(keyVars.w, "double")
     else {
-      if (any(names(keyVars.w) %not_in% keyVars)) {
+      if (any(names(keyVars.w) %not_in% keyVars))
         stop("keyVar weights '", paste0(names(keyVars.w)[names(keyVars.w) %not_in% keyVars], collapse = "', '"), "' not in keyVars")
-        par$theta <- coerceOrError(keyVars.w[match(runVars, names(keyVars.w))], "double")
-      }
+      par$theta <- coerceOrError(keyVars.w[match(keyVars, names(keyVars.w))], "double")
     }
   }
   
@@ -144,7 +143,9 @@ localSuppression <-
         if (par$risk.k > 0 && min(risk) >= par$risk.k) {
           .SD
         } else {
-          res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, NULL, par, FALSE)
+          tryResult <- tryCatch(res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, NULL, par, FALSE), error = function(e) e)
+          if (is(tryResult, "error")) browser()
+          
           callingEnv <- parent.env(environment())
           if (!is.na(res.j$obj) && is.finite(res.j$obj))
             callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj

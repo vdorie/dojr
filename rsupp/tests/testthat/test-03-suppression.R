@@ -49,6 +49,10 @@ test_that("returns trivial solutions", {
   ## already above threshold
   res <- localSuppression(testData, risk.k = 1)
   expect_equal(res$x[,c("gender", "age_group", "race")], testData)
+  
+  ## not enough rows
+  res <- localSuppression(testData, risk.k = 6)
+  expect_true(all(is.na(res$x[,c("gender", "age_group", "race")])))
 })
 
 test_that("random init returns non-trivial solution", {

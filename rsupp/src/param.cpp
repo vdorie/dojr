@@ -132,7 +132,6 @@ namespace rsupp {
     
     
     if (nSamp < nBurn) throw "n.samp must be greater than or equal to n.burn";
-    if (threshold > data.nRow) throw "threshold is greater than the number of rows in the data";
     if (rowSwapProb + colSwapProb > 1.0) throw "rowSwap + colSwap probabilities must be less than or equal to 1";
         
     if (threshold >= 1.0) {

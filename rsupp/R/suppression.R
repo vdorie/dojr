@@ -138,12 +138,14 @@ localSuppression <-
       totalObjective <- 0
       x.dt <- data.table(x.run)
       x.dt[,paste(nonStrataVars) := {
+        gc(FALSE)
+        if (verbose > 0) cat("suppressing subset '", paste(sapply(.BY, as.character), collapse = "/"), "':\n", sep = "")
         x.dt.j <- as.data.frame(.SD)
         risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f)
         if (par$risk.k > 0 && min(risk) >= par$risk.k) {
           .SD
         } else {
-          tryResult <- tryCatch(res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, NULL, par, FALSE), error = function(e) e)
+          tryResult <- tryCatch(res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
           if (is(tryResult, "error")) browser()
           
           callingEnv <- parent.env(environment())

@@ -45,6 +45,20 @@ namespace {
   
   SEXP packageSuppressionResult(const Data& data, const MCMCParam& param, RiskFunction& calculateRisk, const State& state, SEXP xExpr);
 }
+/*
+#undef new
+void* operator new (size_t size, const char* filename, int line) {
+  void* ptr = new char[size];
+  Rprintf("alloc size = " SIZE_T_FMT ", file = %s, line = %d\n", size, filename, line);
+  return ptr;
+}
+void* operator new[] (size_t size, const char* filename, int line) {
+  void* ptr = new char[size];
+  Rprintf("alloc size = " SIZE_T_FMT ", file = %s, line = %d\n", size, filename, line);
+  return ptr;
+}
+#define new new(__FILE__, __LINE__)
+*/
 
 namespace rsupp {
   // not in anonymous in case it needs to be externed for testing purposes
@@ -217,7 +231,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
     delete paramPtr;
     delete calculateRiskPtr;
-      
+    
     return result;
   }
   
@@ -233,6 +247,19 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   size_t subsetLength;
   Data* subsetDataPtr = subsetDataOnAtRiskAndSimilar(origData, param, calculateRisk, &subsetIndices, &subsetLength);
   Data& subsetData(*subsetDataPtr);
+  
+  if (subsetData.nRow == 0) {
+    // already above risk threshold, just return
+    delete subsetDataPtr;
+    
+    State state(origData);
+    
+    SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
+    delete paramPtr;
+    delete calculateRiskPtr;    
+    
+    return result;
+  }
    
   State subsetState(subsetData);
   
@@ -372,7 +399,7 @@ namespace {
     return risk < param.threshold &&
       (param.suppressValues == NULL ? true :
         data.xt[row * data.nCol] != NA_LEVEL &&
-        param.suppressValues[data.xt[row * data.nCol]] == true);
+        param.suppressValues[data.xt[row * data.nCol]] == false);
   }
   
   Data* subsetDataOnAtRiskAndSimilar(const Data& data, const Param& param, RiskFunction& calculateRisk,
@@ -499,17 +526,24 @@ namespace {
         Rprintf("\n");
     }
     
-    size_t numProbCols = (data.nCol - (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0));
     do {
       ++iter;
       getAtRiskProbs(data, param, state, originallyAtRisk, risk, probs_t);
       
       // randomly pick a row at risk and a column from that row
       size_t index = rng_drawFromDiscreteDistribution(probs_t, numProbs);
-      size_t row_atRisk = index / numProbCols;
-      size_t col_atRisk = index % numProbCols;
+      if (index == RNG_DISCRETE_DRAW_FAILURE) {
+        Rf_warning("random initialization failed with inability to find at risk rows - this is not normal");
+        delete [] originallyAtRisk;
+        delete [] probs_t;
+        delete [] risk;
+        return false;
+      }
+ 
+      size_t row_atRisk = index / param.numKeyCols;
+      size_t col_atRisk = index % param.numKeyCols;
       
-      size_t dataCol_atRisk = col_atRisk + (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0);
+      size_t dataCol_atRisk = col_atRisk + param.keyStartCol;
       
       if (param.verbose > 1) {
         Rprintf("  r: " SIZE_T_FMT ", c: " SIZE_T_FMT " ", row_atRisk + 1, dataCol_atRisk + 1);
@@ -609,6 +643,18 @@ namespace {
       }
     }
     if (total > 0.0) for (size_t i = 0; i < numProbs; ++i) probs_t[i] /= total;
+    if (total == 0.0) {
+      Rprintf("\nget at risk failed!!!!\n");
+      for (size_t row = 0; row < data.nRow; ++row) {
+        Rprintf("  ");
+        Rprintf(getRowAtRisk(data, param, row, risk[row]) ? "*" : " ");
+        Rprintf(originallyAtRisk[row] ? "+" : " ");
+        Rprintf(" %.2f ", risk[row]);
+        printObs(data, state.xt + row * data.nCol);
+        Rprintf("\n");
+      }
+      Rf_error("suckit");
+    }
   }
   
   bool getNotAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,

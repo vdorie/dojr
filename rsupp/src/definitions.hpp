@@ -10,5 +10,12 @@
 #  define SIZE_T_FMT "%zu"
 #endif
 
+/*
+void* operator new (size_t size, const char* filename, int line);
+void* operator new[] (size_t size, const char* filename, int line);
+
+#define new new(__FILE__, __LINE__)
+*/
+
 #endif
 

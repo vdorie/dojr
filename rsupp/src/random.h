@@ -16,7 +16,11 @@ extern "C" {
 #endif
 
 
-#define RNG_DISCRETE_DRAW_FAILURE ((rng_size_t) -1)
+#ifdef __cplusplus
+#  define RNG_DISCRETE_DRAW_FAILURE static_cast<rng_size_t>(-1)
+#else
+#  define RNG_DISCRETE_DRAW_FAILURE ((rng_size_t) -1)
+#endif
 rng_size_t rng_drawFromDiscreteDistribution(const double* probabilities, rng_size_t length);
 
 void rng_permuteIndexArray(rng_size_t* indices, rng_size_t length);

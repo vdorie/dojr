@@ -35,18 +35,20 @@ namespace rsupp {
                             std::size_t currCol, std::size_t offset, std::size_t stride,
                             bool anyNA);
     
-    // for obs pointed to at x_i, recursively dig through table and find
-    // naCount when ccCount > 0
+    // for obs pointed to at x_i, recursively dig through table and find matching counts
+    //   if there the observation is a complete case, report all that match in anyway
+    //   if the observation has NAs, find the minimum of complete cases with which it matches
+    //   if no complete cases are found, report the maximum of all with which it could be entagled
     double getKFromTable(const Data& data, const unsigned char* x_i) const;
     double getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const;
     
     // recursive function
     void getKFromTable(const Data& data, const unsigned char* x_i,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, double& ccMin, double& naMin) const;
+                         bool& hasCompleteCase, double& ccMin, double& naMax) const;
     void getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, double& ccMin, double& naMin) const;
+                         bool& hasCompleteCase, double& ccMin, double& naMax) const;
     
     void print(const Data& data, const MCMCParam& param);
   };

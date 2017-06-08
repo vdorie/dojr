@@ -533,10 +533,21 @@ namespace {
       // randomly pick a row at risk and a column from that row
       size_t index = rng_drawFromDiscreteDistribution(probs_t, numProbs);
       if (index == RNG_DISCRETE_DRAW_FAILURE) {
-        Rf_warning("random initialization failed with inability to find at risk rows - this is not normal");
+        /* for (size_t row = 0; row < data.nRow; ++row) {
+          Rprintf("  ");
+          Rprintf("%s", originallyAtRisk[row] ? "+" : " ");
+          Rprintf("%s", getRowAtRisk(data, param, row, risk[row]) ? "*" : " ");
+          Rprintf(" %.2f ", risk[row]);
+          printObs(data, data.xt + row * data.nCol);
+          Rprintf(" -> ");
+          printObs(data, state.xt + row * data.nCol);
+          Rprintf("\n");
+        } */
+
         delete [] originallyAtRisk;
         delete [] probs_t;
         delete [] risk;
+        Rf_warning("random initialization failed with inability to find at risk rows - this is not normal");
         return false;
       }
  

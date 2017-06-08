@@ -93,6 +93,9 @@ invisible(gc(FALSE))
 ## Protecting That Arrested
 
 ```{r 'that_arrested', echo = FALSE, results = "asis"}
+
+
+
 subRows <- with(macr.puf, disposition %in% "released")
 selectOffenseCodes <- with(bcsSummaryOffenseCodes, summary_offense_code[match(c("Prostitution", "Drunk"), summary_offense_type)])
 releasedResult <- enforceKAnonymity(macr.puf[subRows,],

@@ -23,7 +23,7 @@ if (FALSE) enforceKAnonymity <- function(x, across, inQuasiIdentifiers, suppress
   list(suppressed = x[,suppressing], numSuppressed = numSuppressed)
 }
 
-enforceKAnonymity <- function(x, across, inQuasiIdentifiers, suppressing, k, matchingCriteria = NULL)
+if (FALSE) enforceKAnonymity <- function(x, across, inQuasiIdentifiers, suppressing, k, matchingCriteria = NULL)
 {
   by <- if (is.factor(x[,across])) levels(x[,across]) else sort(unique(x[,across]))
   numSuppressed <- matrix(NA_real_, length(by), 2L, dimnames = list(as.character(by), c("k #", "k %")))
@@ -58,6 +58,93 @@ enforceKAnonymity <- function(x, across, inQuasiIdentifiers, suppressing, k, mat
   list(suppressed = x[,suppressing], numSuppressed = numSuppressed)
 }
 
+if (FALSE) enforceKAnonymity <- function(x, k, inKeyVars, groupedBy = NULL, suppressionOrder = NULL)
+{
+  x.sub <- x[,unique(c(groupedBy, inKeyVars))]
+  sdc <- createSdcObj(x.sub, keyVars = inKeyVars, strataVar = groupedBy)
+  
+  suppressionOrder <- if (!is.null(suppressionOrder)) {
+    if (is.character(suppressionOrder)) suppressionOrder <- match(suppressionOrder, inKeyVars)
+    length(inKeyVars) - suppressionOrder + 1L
+  } else {
+    NULL
+  }
+  suppressWarnings(sup <- kAnon(sdc, k = k, importance = suppressionOrder))
+  
+  if (!is.null(groupedBy)) {
+    dt <- data.table(sup@manipKeyVars, sup@origData[,sup@strataVar])
+    dt[,fk := as.double(freqCalc(.SD, inKeyVars)$fk),
+       by = groupedBy,
+       .SDcols = inKeyVars]
+    
+    # eval(substitute(dt[dt$fk < k,inKeyVars] <- NA, list2env(list(inKeyVars = inKeyVars))))
+    dt[fk < k, paste(inKeyVars) := NA]
+    
+    sup@manipKeyVars <- dt[,inKeyVars,with=FALSE]
+  }
+  
+  list(keyVars = as.data.frame(sup@manipKeyVars[,inKeyVars,with=FALSE]),
+       sup = sapply(colnames(sup@origData)[sup@keyVars], function(keyVar) sum(is.na(sup@manipKeyVars[[keyVar]]) & !is.na(sup@origData[[keyVar]]))))
+}
+
+enforceKAnonymity <- function(x, k, inKeyVars, groupedBy = NULL, suppressionWeight = NULL)
+{
+  x.sub <- x[,unique(c(groupedBy, inKeyVars))]
+  
+  suppressionWeight <- if (!is.null(suppressionWeight)) {
+    if (is.character(suppressionWeight)) suppressionWeight <- match(suppressionWeight, inKeyVars)
+  } else {
+    rep.int(1, length(inKeyVars))
+  }
+  
+  dt <- data.table(x)
+  
+  dt <- dt[,paste(inKeyVars) := kAnon(data.frame(.SD), theta = suppressionWeight)$x[,inKeyVars],
+           by = groupedBy, .SDcols = inKeyVars]
+
+  list(keyVars = data.frame(dt[,inKeyVars,with=FALSE]),
+       sup = sapply(inKeyVars, function(keyVar) sum(is.na(dt[[keyVar]]) & !is.na(x[[keyVar]]))))
+}
+
+enforceLDiversity <- function(x, l, inKeyVars, forSensitiveValues, groupedBy = NULL, suppressionOrder = NULL)
+{
+  x.sub <- x[,unique(c(groupedBy, inKeyVars))]
+  if (length(forSensitiveValues) == 1L) {
+    x.sub[,"_sensitive_key"] <- as.factor(x[,forSensitiveValues])
+  } else {
+    x.sub[,"_sensitive_key"] <- as.factor(apply(sapply(x[,forSensitiveValues], as.character), 1L, function(row) paste0(row, collapse = ":")))
+  }
+  
+  tab <- table(x.sub, useNA = "ifany")
+  tab <- apply(tab, seq_len(length(dim(tab)) - 1L), function(x) sum(x > 0L))
+  tableDims <- dim(tab)
+  dimNames <- dimnames(tab)
+  
+  indexExpression <- substitute(match(x.sub[,.A.], dimNames[[.J.]]), list2env(list(.A. = names(dimNames)[1L], .J. = 1)))
+  j <- 2L
+  for (k in seq.int(2L, length(tableDims))) {
+    indexExpression <- substitute(.A. + .B.,
+                                  list2env(list(.A. = indexExpression,
+                                                .B. = substitute((match(x.sub[,.C.], dimNames[[.J.]]) - 1L) * prod(head(tableDims, .J. - 1L)),
+                                                                 list2env(list(.C. = names(dimNames)[k], .J. = j))))))
+    j <- j + 1L
+  }
+    
+  x.sub[,"_l"] <- tab[eval(indexExpression)]
+  browser()
+  
+  suppressionOrder <- if (!is.null(suppressionOrder)) {
+    if (is.character(suppressionOrder)) suppressionOrder <- match(suppressionOrder, inKeyVars)
+    length(inKeyVars) - suppressionOrder + 1L
+  } else {
+    NULL
+  }
+
+  
+  suppSubsetLdiv(subset(x.sub, arrest_year == 1980 & ncic_jurisdiction == "0100", c(inKeyVars, "_sensitive_key")),
+                 l, inKeyVars, "_sensitive_key", suppressionOrder)
+}
+
 if (FALSE) enforceLDiversity <- function(x, across, inQuasiIdentifiers, forSensitiveValues, suppressing, l, matchingCriteria = NULL)
 {
   by <- if (is.factor(x[,across])) levels(x[,across]) else sort(unique(x[,across]))
@@ -88,7 +175,7 @@ if (FALSE) enforceLDiversity <- function(x, across, inQuasiIdentifiers, forSensi
   list(suppressed = x[,suppressing], numSuppressed = numSuppressed)
 }
 
-enforceLDiversity <- function(x, across, inQuasiIdentifiers, forSensitiveValues, suppressing, l, matchingCriteria = NULL)
+if (FALSE) enforceLDiversity <- function(x, across, inQuasiIdentifiers, forSensitiveValues, suppressing, l, matchingCriteria = NULL)
 {
   by <- if (is.factor(x[,across])) levels(x[,across]) else sort(unique(x[,across]))
   numSuppressed <- matrix(NA_real_, length(by), 2L, dimnames = list(as.character(by), c("l #", "l %")))

@@ -4,7 +4,9 @@ Date: 2017-04-27
 Title: Random Local Suppression
 Authors@R: c(person("Vincent", "Dorie",    role = c("aut", "cre"), email = "vdorie@gmail.com"))
 Imports:
-  data.table
+  data.table,
+  methods,
+  stats
 Suggests:
   testthat
 Description: Locally suppresses categorical variable data frames using randomization.

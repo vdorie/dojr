@@ -3,3 +3,6 @@ useDynLib(rsupp, .registration = TRUE, .fixes = "C_")
 import(data.table)
 
 export(calcRisk, getAtRiskSubset, localSuppression, rsupp.par)
+
+importFrom("methods", "is")
+importFrom("stats", "setNames")

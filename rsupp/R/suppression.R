@@ -32,6 +32,7 @@ calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL,
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)
   
+  nonStrataVars <- NULL; runVars <- NULL # R CMD check warnings
   massign[nonStrataVars, runVars] <- getRunVariables(vars, keyVars, strataVars, divVar)
   
   x.run <- x[,match(runVars, vars)]
@@ -54,6 +55,7 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NU
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)
   
+  runVars <- NULL # R CMD check warnings
   massign[,runVars] <- getRunVariables(vars, keyVars, NULL, divVar)
   x.run <- x[,match(runVars, vars)]
     
@@ -96,6 +98,7 @@ localSuppression <-
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)
   
+  nonStrataVars <- NULL; runVars <- NULL # R CMD check warnings
   massign[nonStrataVars, runVars] <- getRunVariables(vars, keyVars, strataVars, divVar)
   
   x.run <- x[,match(runVars, vars)]
@@ -145,8 +148,11 @@ localSuppression <-
         if (par$risk.k > 0 && min(risk) >= par$risk.k) {
           .SD
         } else {
-          tryResult <- tryCatch(res.j <- .Call(rsupp:::C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
-          if (is(tryResult, "error")) browser()
+          tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
+          if (is(tryResult, "error")) {
+            cat("caught error: ", toString(tryResult), "\n")
+            browser()
+          }
           
           callingEnv <- parent.env(environment())
           if (!is.na(res.j$obj) && is.finite(res.j$obj))

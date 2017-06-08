@@ -18,7 +18,7 @@ namespace rsupp {
     
     const unsigned char* xt = state.xt;
     for (size_t row = 0; row < data.nRow; ++row) {
-      double k_i = state.getKFromTable(data, xt, 0, 0, 1);
+      double k_i = state.getKFromTable(data, xt);
             
       if (k_i < minK) minK = k_i;
       
@@ -61,7 +61,7 @@ namespace rsupp {
     double minRisk = static_cast<double>(data.nRow);
     
     for (size_t row = 0; row < data.nRow; ++row) {
-      double risk_i = state.getDivFromTable(data, xt, 1, 0, data.nLev[0], *this);
+      double risk_i = state.getDivFromTable(data, xt, *this);
       if (risk_i < minRisk) minRisk = risk_i;
       
       xt += data.nCol;

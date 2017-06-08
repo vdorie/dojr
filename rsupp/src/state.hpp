@@ -27,7 +27,7 @@ namespace rsupp {
     
     // for obs pointed to at x_i, recursively go through columns and increment
     // naCount/ccCount; typically called as:
-    //   state.incrementFreqTable(data, x_i, 0, 0, 1, false);
+    //   state.incrementFreqTable(data, x_i, 0, 0, 1);
     void incrementFreqTable(const Data& data, const unsigned char* x_i,
                             std::size_t currCol, std::size_t offset, std::size_t stride,
                             bool anyNA);
@@ -36,13 +36,17 @@ namespace rsupp {
                             bool anyNA);
     
     // for obs pointed to at x_i, recursively dig through table and find
-    // naCount when ccCount > 0; typically called as:
-    //   state.getKFromTable(data, x_i, 0, 0, 1)
-    double getKFromTable(const Data& data, const unsigned char* x_i,
-                         std::size_t currCol, std::size_t offset, std::size_t stride) const;
-    double getDivFromTable(const Data& data, const unsigned char* x_i,
-                           std::size_t currCol, std::size_t offset, std::size_t stride,
-                           DivRiskFunction& calculateRisk) const;
+    // naCount when ccCount > 0
+    double getKFromTable(const Data& data, const unsigned char* x_i) const;
+    double getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const;
+    
+    // recursive function
+    void getKFromTable(const Data& data, const unsigned char* x_i,
+                         std::size_t currCol, std::size_t offset, std::size_t stride,
+                         bool& hasCompleteCase, double& ccMin, double& naMin) const;
+    void getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
+                         std::size_t currCol, std::size_t offset, std::size_t stride,
+                         bool& hasCompleteCase, double& ccMin, double& naMin) const;
     
     void print(const Data& data, const MCMCParam& param);
   };

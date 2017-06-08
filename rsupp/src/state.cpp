@@ -106,59 +106,102 @@ namespace rsupp {
     }
   }
   
-  double State::getKFromTable(const Data& data, const unsigned char* x_i,
-                              size_t currCol, size_t offset, size_t stride) const
+  extern void printObs(const Data& data, const unsigned char* x);
+  
+  double State::getKFromTable(const Data& data, const unsigned char* x_i) const {
+    bool hasCompleteCase = false;
+    double naMin = HUGE_VAL, ccMin = HUGE_VAL;
+    
+    getKFromTable(data, x_i, 0, 0, 1, hasCompleteCase, ccMin, naMin);
+    
+    return hasCompleteCase ? ccMin : naMin;
+  }
+  
+  void State::getKFromTable(const Data& data, const unsigned char* x_i,
+                              size_t currCol, size_t offset, size_t stride,
+                              bool& hasCompleteCase, double& ccMin, double& naMin) const
   {
     if (currCol == data.nCol - 1) {
       if (x_i[currCol] != NA_LEVEL) {
-        return ccCount[offset + x_i[currCol] * stride] > 0 ? naCount[offset + x_i[currCol] * stride] : data.nRow;
+        hasCompleteCase |= ccCount[offset + x_i[currCol] * stride] > 0;
+        
+        double risk_i = static_cast<double>(naCount[offset + x_i[currCol] * stride]);
+        
+        naMin = risk_i < naMin ? risk_i : naMin;
+        if (ccCount[offset + x_i[currCol] * stride] > 0)
+          ccMin = risk_i < ccMin ? risk_i : ccMin;
       } else {
-        double minK = static_cast<double>(data.nRow);
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
-          double k_i = static_cast<double>(ccCount[offset + i * stride] > 0 ? naCount[offset + i * stride] : data.nRow);
-          if (k_i < minK) minK = k_i;
+          hasCompleteCase |= ccCount[offset + i * stride] > 0;
+          
+          double risk_i = static_cast<double>(naCount[offset + i * stride]);
+          
+          naMin = risk_i < naMin ? risk_i : naMin;
+          if (ccCount[offset + i * stride] > 0)
+            ccMin = risk_i < ccMin ? risk_i : ccMin;
         }
-        return minK;
       }
     } else {
-      if (x_i[currCol] != NA_LEVEL) return getKFromTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol]);
-      else {
-        double minK = static_cast<double>(data.nRow);
+      if (x_i[currCol] != NA_LEVEL) {
+        getKFromTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol],
+                      hasCompleteCase, ccMin, naMin);
+      } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
-          double k_i = getKFromTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol]);
-          if (k_i < minK) minK = k_i;
+          getKFromTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol],
+                        hasCompleteCase, ccMin, naMin);
         }
-        return minK;
       }
     }
   }
   
-  extern void printObs(const Data& data, const unsigned char*x);
+  double State::getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const {
+    bool hasCompleteCase = false;
+    double naMin = HUGE_VAL, ccMin = HUGE_VAL;
+    
+    /* Rprintf("for obs ");
+    printObs(data, x_i);
+    Rprintf("\n"); */
+    getDivFromTable(data, x_i, calculateRisk, 1, 0, data.nLev[0], hasCompleteCase, ccMin, naMin);
+    
+    // Rprintf("  cc %s, ccMin %.2f, naMin %.2f\n", hasCompleteCase ? "true" : "false", ccMin, naMin);
+    return hasCompleteCase ? ccMin : naMin;
+  }
   
-  double State::getDivFromTable(const Data& data, const unsigned char* x_i,
-                                size_t currCol, size_t offset, size_t stride, 
-                                DivRiskFunction& calculateRisk) const
+  void State::getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
+                              size_t currCol, size_t offset, size_t stride, 
+                              bool& hasCompleteCase, double& ccMin, double& naMin) const
   {
     if (currCol == data.nCol - 1) {
       if (x_i[currCol] != NA_LEVEL) {
-        return calculateRisk(naCount + offset + x_i[currCol] * stride);
+        hasCompleteCase |= ccCount[offset + x_i[currCol] * stride] > 0;
+        
+        double risk_i = calculateRisk(naCount + offset + x_i[currCol] * stride);
+        
+        naMin = risk_i < naMin ? risk_i : naMin;
+        if (ccCount[offset + x_i[currCol] * stride] > 0)
+          ccMin = risk_i < ccMin ? risk_i : ccMin;
       } else {
-        double minRisk = static_cast<double>(data.nRow);
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
+          hasCompleteCase |= ccCount[offset + i * stride] > 0;
+          
           double risk_i = calculateRisk(naCount + offset + i * stride);
-          if (risk_i < minRisk) minRisk = risk_i;
+          
+          naMin = risk_i < naMin ? risk_i : naMin;
+          if (ccCount[offset + i * stride] > 0)
+            ccMin = risk_i < ccMin ? risk_i : ccMin;
         }
-        return minRisk;
       }
     } else {
-      if (x_i[currCol] != NA_LEVEL) return getDivFromTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol], calculateRisk);
-      else {
-        double minRisk = static_cast<double>(data.nRow);
+      if (x_i[currCol] != NA_LEVEL) {
+        getDivFromTable(data, x_i, calculateRisk,
+                        currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol],
+                        hasCompleteCase, ccMin, naMin);
+      } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
-          double risk_i = getDivFromTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol], calculateRisk);
-          if (risk_i < minRisk) minRisk = risk_i;
+          getDivFromTable(data, x_i, calculateRisk,
+                          currCol + 1, offset + i * stride, stride * data.nLev[currCol],
+                          hasCompleteCase, ccMin, naMin);
         }
-        return minRisk;
       }
     }
   }

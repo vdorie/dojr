@@ -509,7 +509,7 @@ namespace {
       return true;
     }
     
-    size_t numProbs = (data.nCol - (param.riskType != rsupp::RTYPE_COUNT ? 1 : 0)) * data.nRow;
+    size_t numProbs = param.numKeyCols * data.nRow;
     double* probs_t = new double[numProbs];
     
     bool* originallyAtRisk = new bool[data.nRow];
@@ -643,18 +643,6 @@ namespace {
       }
     }
     if (total > 0.0) for (size_t i = 0; i < numProbs; ++i) probs_t[i] /= total;
-    if (total == 0.0) {
-      Rprintf("\nget at risk failed!!!!\n");
-      for (size_t row = 0; row < data.nRow; ++row) {
-        Rprintf("  ");
-        Rprintf(getRowAtRisk(data, param, row, risk[row]) ? "*" : " ");
-        Rprintf(originallyAtRisk[row] ? "+" : " ");
-        Rprintf(" %.2f ", risk[row]);
-        printObs(data, state.xt + row * data.nCol);
-        Rprintf("\n");
-      }
-      Rf_error("suckit");
-    }
   }
   
   bool getNotAtRiskProbs(const Data& data, const MCMCParam& param, const State& state,

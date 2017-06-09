@@ -89,7 +89,6 @@ SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
   state.calculateFreqTable(data);
   
   SEXP result = PROTECT(rc_newReal(data.nRow));
-  
   calculateRisk(data, state, REAL(result));
   
   delete calculateRiskPtr;

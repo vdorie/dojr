@@ -125,13 +125,18 @@ localSuppression <-
   }
   
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
- 
+  
+  ## check for trivial conditions first
+  if (all(is.na(x.run[,keyVars]))) {
+    return(list(x = x, obj = NA_real_, n = NA_real_))
+  }
   risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f)
   if (par$risk.k > 0 && min(risk) >= par$risk.k) {
     x[,"risk"] <- risk
     return(list(x = x, obj = NA_real_, n = NA_real_))
   }
-  
+
+    
   res <- list(x = NULL, obj = -Inf)
   for (i in seq_len(n.chain)) {
     if (is.null(strataVars)) {
@@ -144,20 +149,24 @@ localSuppression <-
         gc(FALSE)
         if (verbose > 0) cat("suppressing subset '", paste(sapply(.BY, as.character), collapse = "/"), "':\n", sep = "")
         x.dt.j <- as.data.frame(.SD)
-        risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f)
-        if (par$risk.k > 0 && min(risk) >= par$risk.k) {
-          .SD
+        if (all(is.na(x.dt.j[,keyVars]))) {
+          x.dt.j
         } else {
-          tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
-          if (is(tryResult, "error")) {
-            cat("caught error: ", toString(tryResult), "\n")
-            browser()
+          risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f)
+          if (par$risk.k > 0 && min(risk) >= par$risk.k) {
+            .SD
+          } else {
+            tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
+            if (is(tryResult, "error")) {
+              cat("caught error: ", toString(tryResult), "\n")
+              browser()
+            }
+            
+            callingEnv <- parent.env(environment())
+            if (!is.na(res.j$obj) && is.finite(res.j$obj))
+              callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj
+            res.j$x[,nonStrataVars]
           }
-          
-          callingEnv <- parent.env(environment())
-          if (!is.na(res.j$obj) && is.finite(res.j$obj))
-            callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj
-          res.j$x[,nonStrataVars]
         }
       },by = strataVars, .SDcols = nonStrataVars]
       x.dt <- as.data.frame(x.dt)

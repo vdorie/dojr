@@ -13,9 +13,12 @@ namespace rsupp {
     // frequency counts in total cross-tab
     std::size_t* naCount; // na
     std::size_t* ccCount; // complete cases
+    std::size_t** mCounts; // marginal counts
     
     double minRisk;
     double objective;
+    
+    std::size_t nCol;
     
     State(const Data& data);
     ~State();
@@ -45,10 +48,10 @@ namespace rsupp {
     // recursive function
     void getKFromTable(const Data& data, const unsigned char* x_i,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, double& ccMin, double& naMax) const;
+                         bool& hasCompleteCase, bool hasMarignalCase, double& ccMin, double& naMin) const;
     void getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, double& ccMin, double& naMax) const;
+                         bool& hasCompleteCase, bool hasMarginalCase, double& ccMin, double& naMin) const;
     
     void print(const Data& data, const MCMCParam& param);
   };

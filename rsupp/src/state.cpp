@@ -21,13 +21,20 @@ namespace rsupp {
     xt(new unsigned char[data.nRow * data.nCol]),
     naCount(new size_t[data.tableSize]),
     ccCount(new size_t[data.tableSize]),
-    minRisk(static_cast<double>(data.nRow)),
-    objective(-HUGE_VAL)
+    mCounts(new size_t*[data.nCol]),
+    minRisk(HUGE_VAL),
+    objective(-HUGE_VAL),
+    nCol(data.nCol)
   {
     std::memcpy(xt, data.xt, data.nRow * data.nCol * sizeof(unsigned char));
     for (size_t i = 0; i < data.tableSize; ++i) {
       naCount[i] = 0;
       ccCount[i] = 0;
+    }
+    
+    for (size_t col = 0; col < data.nCol; ++col) {
+      mCounts[col] = new size_t[data.nLev[col]];
+      for (size_t i = 0; i < data.nLev[col]; ++i) mCounts[col][i] = 0;
     }
   }
   
@@ -44,12 +51,20 @@ namespace rsupp {
       delete [] ccCount;
       ccCount = NULL;
     }
+    if (mCounts != NULL) {
+      for (size_t col = 0; col < nCol; ++col)
+        if (mCounts[col] != NULL) delete [] mCounts[col];
+      delete [] mCounts;
+      mCounts = NULL;
+    }
   }
   
   void State::copyFrom(const Data& data, const State& other) {
     std::memcpy(xt, other.xt, data.nRow * data.nCol * sizeof(unsigned char));
     std::memcpy(naCount, other.naCount, data.tableSize * sizeof(size_t));
     std::memcpy(ccCount, other.ccCount, data.tableSize * sizeof(size_t));
+    for (size_t col = 0; col < data.nCol; ++col)
+      std::memcpy(mCounts[col], other.mCounts[col], data.nLev[col] * sizeof(size_t));
     minRisk = other.minRisk;
     objective = other.objective;
   }
@@ -69,15 +84,17 @@ namespace rsupp {
       if (x_i[currCol] != NA_LEVEL) {
         ++naCount[offset + x_i[currCol] * stride];
         if (!anyNA) ++ccCount[offset + x_i[currCol] * stride];
+        mCounts[currCol][x_i[currCol]] += 1;
       } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
           ++naCount[offset + i * stride];
         }
       }
     } else {
-      if (x_i[currCol] != NA_LEVEL)
+      if (x_i[currCol] != NA_LEVEL) {
         incrementFreqTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol], anyNA);
-      else {
+        mCounts[currCol][x_i[currCol]] += 1;
+      } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i)
           incrementFreqTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol], true);
       }
@@ -91,15 +108,17 @@ namespace rsupp {
       if (x_i[currCol] != NA_LEVEL) {
         --naCount[offset + x_i[currCol] * stride];
         if (!anyNA) --ccCount[offset + x_i[currCol] * stride];
+        mCounts[currCol][x_i[currCol]] -= 1;
       } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
           --naCount[offset + i * stride];
         }
       }
     } else {
-      if (x_i[currCol] != NA_LEVEL)
+      if (x_i[currCol] != NA_LEVEL) {
         decrementFreqTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol], anyNA);
-      else {
+        mCounts[currCol][x_i[currCol]] -= 1;
+      } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i)
           decrementFreqTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol], true);
       }
@@ -110,20 +129,20 @@ namespace rsupp {
   
   double State::getKFromTable(const Data& data, const unsigned char* x_i) const {
     bool hasCompleteCase = false;
-    double naMax = 0.0, ccMin = HUGE_VAL;
+    double naMin = HUGE_VAL, ccMin = HUGE_VAL;
     
     /* Rprintf("for obs ");
     printObs(data, x_i);
     Rprintf("\n"); */
-    getKFromTable(data, x_i, 0, 0, 1, hasCompleteCase, ccMin, naMax);
-    // Rprintf("  cc %s, ccMin %.2f, naMax %.2f\n", hasCompleteCase ? "true" : "false", ccMin, naMax);
+    getKFromTable(data, x_i, 0, 0, 1, hasCompleteCase, true, ccMin, naMin);
+    // Rprintf("  cc %s, ccMin %.2f, naMax %.2f\n", hasCompleteCase ? "true" : "false", ccMin, naMin);
     
-    return hasCompleteCase ? ccMin : naMax;
+    return hasCompleteCase ? ccMin : naMin;
   }
   
   void State::getKFromTable(const Data& data, const unsigned char* x_i,
-                              size_t currCol, size_t offset, size_t stride,
-                              bool& hasCompleteCase, double& ccMin, double& naMax) const
+                            size_t currCol, size_t offset, size_t stride,
+                            bool& hasCompleteCase, bool hasMarginalCase, double& ccMin, double& naMin) const
   {
     if (currCol == data.nCol - 1) {
       if (x_i[currCol] != NA_LEVEL) {
@@ -131,9 +150,10 @@ namespace rsupp {
         
         double risk_i = static_cast<double>(naCount[offset + x_i[currCol] * stride]);
         
-        //Rprintf("    %s %.2f\n", data.levelNames[data.nCol - 1][x_i[currCol]], risk_i);
+        // Rprintf("    %s %.2f\n", data.levelNames[data.nCol - 1][x_i[currCol]], risk_i);
         
-        naMax = risk_i > naMax ? risk_i : naMax;
+        if (hasMarginalCase)
+          naMin = risk_i < naMin ? risk_i : naMin;
         if (ccCount[offset + x_i[currCol] * stride] > 0)
           ccMin = risk_i < ccMin ? risk_i : ccMin;
       } else {
@@ -141,8 +161,9 @@ namespace rsupp {
           hasCompleteCase |= ccCount[offset + i * stride] > 0;
           
           double risk_i = static_cast<double>(naCount[offset + i * stride]);
-          //Rprintf("    %s %.2f\n", data.levelNames[data.nCol - 1][i], risk_i);
-          naMax = risk_i > naMax ? risk_i : naMax;
+          // Rprintf("    %s %.2f\n", data.levelNames[data.nCol - 1][i], risk_i);
+          if (hasMarginalCase && mCounts[currCol][i] > 0)
+            naMin = risk_i < naMin ? risk_i : naMin;
           if (ccCount[offset + i * stride] > 0)
             ccMin = risk_i < ccMin ? risk_i : ccMin;
         }
@@ -150,11 +171,11 @@ namespace rsupp {
     } else {
       if (x_i[currCol] != NA_LEVEL) {
         getKFromTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol],
-                      hasCompleteCase, ccMin, naMax);
+                      hasCompleteCase, true, ccMin, naMin);
       } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
           getKFromTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol],
-                        hasCompleteCase, ccMin, naMax);
+                        hasCompleteCase, hasMarginalCase && mCounts[currCol][i] > 0, ccMin, naMin);
         }
       }
     }
@@ -162,16 +183,16 @@ namespace rsupp {
   
   double State::getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const {
     bool hasCompleteCase = false;
-    double naMax = 0.0, ccMin = HUGE_VAL;
+    double naMin = HUGE_VAL, ccMin = HUGE_VAL;
     
-    getDivFromTable(data, x_i, calculateRisk, 1, 0, data.nLev[0], hasCompleteCase, ccMin, naMax);
+    getDivFromTable(data, x_i, calculateRisk, 1, 0, data.nLev[0], hasCompleteCase, true, ccMin, naMin);
     
-    return hasCompleteCase ? ccMin : naMax;
+    return hasCompleteCase ? ccMin : naMin;
   }
   
   void State::getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
                               size_t currCol, size_t offset, size_t stride, 
-                              bool& hasCompleteCase, double& ccMin, double& naMax) const
+                              bool& hasCompleteCase, bool hasMarginalCase, double& ccMin, double& naMin) const
   {
     if (currCol == data.nCol - 1) {
       if (x_i[currCol] != NA_LEVEL) {
@@ -179,7 +200,8 @@ namespace rsupp {
         
         double risk_i = calculateRisk(naCount + offset + x_i[currCol] * stride);
         
-        naMax = risk_i < naMax ? risk_i : naMax;
+        if (hasMarginalCase)
+          naMin = risk_i < naMin ? risk_i : naMin;
         if (ccCount[offset + x_i[currCol] * stride] > 0)
           ccMin = risk_i < ccMin ? risk_i : ccMin;
       } else {
@@ -188,7 +210,8 @@ namespace rsupp {
           
           double risk_i = calculateRisk(naCount + offset + i * stride);
           
-          naMax = risk_i < naMax ? risk_i : naMax;
+          if (hasMarginalCase && mCounts[currCol][i] > 0)
+            naMin = risk_i < naMin ? risk_i : naMin;
           if (ccCount[offset + i * stride] > 0)
             ccMin = risk_i < ccMin ? risk_i : ccMin;
         }
@@ -197,12 +220,12 @@ namespace rsupp {
       if (x_i[currCol] != NA_LEVEL) {
         getDivFromTable(data, x_i, calculateRisk,
                         currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol],
-                        hasCompleteCase, ccMin, naMax);
+                        hasCompleteCase, true, ccMin, naMin);
       } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
           getDivFromTable(data, x_i, calculateRisk,
                           currCol + 1, offset + i * stride, stride * data.nLev[currCol],
-                          hasCompleteCase, ccMin, naMax);
+                          hasCompleteCase, hasMarginalCase && mCounts[currCol][i] > 0, ccMin, naMin);
         }
       }
     }

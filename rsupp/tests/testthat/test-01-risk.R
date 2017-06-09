@@ -130,11 +130,22 @@ test_that("returns the correct answer with NAs present", {
   expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                rep_len(2, 6L))
   
-  # To parse this, consider the first row: it is entangled with everything that has
-  # a race of white or NA, of which there are 11 rows. But one of those has an age
-  # group of "40 to 69" and can't be included in the count for the rest (10 rows at
-  # "40 to 69"). Alternatively, the second row is directly similar to 10 rows, but
-  # there are 8 that are "black" or NA and 8 that are "white" or NA.
+  # These tables can be difficult to parse, so consider just the first row. It matches
+  # anything in the first two columns and white/NA in the last, that includes:
+  #     male/30 to 39: 10
+  #     male/40 to 69:  7
+  #   female/30 to 39:  6
+  #   female/40 to 69:  3
+  #
+  # But because there are no females left in the data, we rules those out and have
+  # the answer be the minimum of those where the marginals are still present, i.e. 7
+  
+  # For the second row:
+  #   white: 7
+  #   black: 8
+  # but here things are trickier. There are no complete instances of male/40 to 69/white,
+  # but there are of black, so the black number takes precendence
+
   testData <- data.frame(matrix(c(
       NA,     NA,         "white", 
       "male", "40 to 69", NA,
@@ -160,6 +171,6 @@ test_that("returns the correct answer with NAs present", {
 
   
   expect_equal(calcRisk(testData, keyVars = keyVars)[seq_len(2L)],
-               c(10, 8))
+               c(7, 8))
 })
 

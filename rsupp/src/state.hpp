@@ -48,10 +48,10 @@ namespace rsupp {
     // recursive function
     void getKFromTable(const Data& data, const unsigned char* x_i,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, bool hasMarignalCase, double& ccMin, double& naMin) const;
+                         bool& hasCompleteCase, bool hasMarignalCase, double& ccMin, double& mMin, double& naMin) const;
     void getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
                          std::size_t currCol, std::size_t offset, std::size_t stride,
-                         bool& hasCompleteCase, bool hasMarginalCase, double& ccMin, double& naMin) const;
+                         bool& hasCompleteCase, bool hasMarginalCase, double& ccMin, double& mMin, double& naMin) const;
     
     void print(const Data& data, const MCMCParam& param);
   };

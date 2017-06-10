@@ -172,5 +172,25 @@ test_that("returns the correct answer with NAs present", {
   
   expect_equal(calcRisk(testData, keyVars = keyVars)[seq_len(2L)],
                c(7, 8))
+  
+  ## marginal counts for missing columns (again)
+  testData <- data.frame(matrix(c(
+      "male", NA,         NA,
+      "male", NA,         "white",
+      "male", NA,         NA,
+      NA,     "40 to 69", NA,
+      "male", NA,         "white",
+      "male", NA,         NA,
+      "male", "40 to 69", NA,
+      NA,     NA,         NA,
+      NA,     NA,         "white",
+      NA,     NA,         "white"),
+    byrow = TRUE, ncol = 3L,
+    dimnames = list(NULL, c("gender", "age_group", "race"))))
+  levels(testData$gender) <- c("male", "female")
+  levels(testData$age_group) <- c("40 to 69", "30 to 39", "20 to 29")
+  levels(testData$race) <- c("white", "Hispanic")
+  
+  expect_equal(calcRisk(testData), rep_len(10, nrow(testData)))
 })
 

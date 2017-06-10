@@ -90,3 +90,4 @@ test_that("percent risk", {
                           !anyNA(age_group[offense_level != "misdemeanor"])))
   expect_true(all(res$x[,"risk"] == 0.5))
 })
+  

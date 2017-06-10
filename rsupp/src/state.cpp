@@ -131,12 +131,13 @@ namespace rsupp {
     bool hasCompleteCase = false;
     double ccMin = HUGE_VAL, mMin = HUGE_VAL, naMin = HUGE_VAL;
     
-    /* Rprintf("for obs ");
-    printObs(data, x_i);
-    Rprintf("\n"); */
+    // Rprintf("for obs ");
+    // printObs(data, x_i);
+    // Rprintf("\n");
     getKFromTable(data, x_i, 0, 0, 1, hasCompleteCase, true, ccMin, mMin, naMin);
-    // Rprintf("  cc %s, ccMin %.2f, naMax %.2f\n", hasCompleteCase ? "true" : "false", ccMin, naMin);
+    // Rprintf("  cc %s, ccMin %.2f, mMin %.2f, naMin %.2f\n", hasCompleteCase ? "true" : "false", ccMin, mMin, naMin);
     
+    // Rprintf("  mcounts %lu %lu\n", mCounts[0][0], mCounts[0][1]);
     return hasCompleteCase ? ccMin : (mMin < HUGE_VAL ? mMin : naMin);
   }
   
@@ -150,8 +151,10 @@ namespace rsupp {
         
         double risk_i = static_cast<double>(naCount[offset + x_i[currCol] * stride]);
         
-        if (hasMarginalCase)
+        if (hasMarginalCase) {
+          // if (risk_i < mMin) Rprintf("  updating marginal min for %s %.2f -> %.2f\n" , data.levelNames[currCol][x_i[currCol]], mMin, risk_i);
           mMin = risk_i < mMin ? risk_i : mMin;
+        }
         if (ccCount[offset + x_i[currCol] * stride] > 0)
           ccMin = risk_i < ccMin ? risk_i : ccMin;
         naMin = risk_i < naMin ? risk_i : naMin;
@@ -161,19 +164,24 @@ namespace rsupp {
           
           double risk_i = static_cast<double>(naCount[offset + i * stride]);
           
-          if (hasMarginalCase && mCounts[currCol][i] > 0)
+          if (hasMarginalCase && mCounts[currCol][i] > 0) {
+            // if (risk_i < mMin) Rprintf("  updating marginal min for %s %.2f -> %.2f\n" , data.levelNames[currCol][i], mMin, risk_i);
             mMin = risk_i < mMin ? risk_i : mMin;
-          if (ccCount[offset + i * stride] > 0)
+          } if (ccCount[offset + i * stride] > 0)
             ccMin = risk_i < ccMin ? risk_i : ccMin;
           naMin = risk_i < naMin ? risk_i : naMin;
         }
       }
     } else {
       if (x_i[currCol] != NA_LEVEL) {
+        // for (size_t i = 0; i <= currCol; ++i) Rprintf("  ");
+        // Rprintf("%s\n", data.levelNames[currCol][x_i[currCol]]);
         getKFromTable(data, x_i, currCol + 1, offset + x_i[currCol] * stride, stride * data.nLev[currCol],
-                      hasCompleteCase, true, ccMin, mMin, naMin);
+                      hasCompleteCase, hasMarginalCase, ccMin, mMin, naMin);
       } else {
         for (size_t i = 0; i < data.nLev[currCol]; ++i) {
+          // for (size_t j = 0; j <= currCol; ++j) Rprintf("  ");
+          // Rprintf("%s\n", data.levelNames[currCol][i]);
           getKFromTable(data, x_i, currCol + 1, offset + i * stride, stride * data.nLev[currCol],
                         hasCompleteCase, hasMarginalCase && mCounts[currCol][i] > 0, ccMin, mMin, naMin);
         }

@@ -29,9 +29,10 @@ namespace rsupp {
     
     int* freq_int;
     std::size_t numFrequencies;
+    bool naRiskWithin;
     
     // pulls names from x
-    DivRiskFunction(const Data& data, SEXP riskFunction);
+    DivRiskFunction(const Data& data, SEXP riskFunction, bool naRiskWithin);
     double operator()(const Data& data, const State& state, double* risk);
     ~DivRiskFunction();
     

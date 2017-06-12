@@ -61,14 +61,14 @@ namespace rsupp {
       int* x_j_int = INTEGER(x_j);
       
       for (size_t row = 0; row < nRow; ++row)
-        xt[col + row * nCol] = x_j_int[row] == R_NaInt ? NA_LEVEL : x_j_int[row] - 1;
+        xt[col + row * nCol] = x_j_int[row] == R_NaInt ? nLev[col] : x_j_int[row] - 1;
     }
     
     const char*** levelNames = new const char**[nCol];
     
     tableSize = 1; 
     for (size_t col = 0; col < nCol; ++ col) {
-      tableSize *= nLev[col];
+      tableSize *= (nLev[col] + 1);
       
       SEXP levelsExpr = rc_getLevels(VECTOR_ELT(x, col));
       if (levelsExpr == R_NilValue) {

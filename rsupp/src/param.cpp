@@ -186,7 +186,7 @@ namespace rsupp {
     
     // just need temp values
     for (size_t col = 0; col < data.nCol; ++col)
-      if (state.xt[col] == NA_LEVEL) state.xt[col] = 0;
+      if (state.xt[col] == data.nLev[col]) state.xt[col] = 0;
     
     
     double risk;
@@ -196,9 +196,9 @@ namespace rsupp {
     // fiddle with diversity column
     for (unsigned char i = 0; i < data.nLev[0]; ++i) {
       state.xt[0] = i;
-      state.incrementFreqTable(data, state.xt, 0, 0, 1, false);
+      state.incrementFreqTable(data, state.xt, 0, 0, 1);
       calculateRisk(data, state, &risk);
-      state.decrementFreqTable(data, state.xt, 0, 0, 1, false);
+      state.decrementFreqTable(data, state.xt, 0, 0, 1);
       
       result[i] = risk > 0.0;
       suppressAny |= result[i];

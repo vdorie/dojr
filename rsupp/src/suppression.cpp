@@ -69,14 +69,16 @@ using rsupp::printObs;
 
 extern "C" {
 
-SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
+SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr)
 {
+  if (!Rf_isLogical(naRiskWithinExpr)) Rf_error("naRiskWithin parameter must be logical type");
+  
   Data data(xExpr);
   
   RiskFunction* calculateRiskPtr = NULL;
   try {
     if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-    else calculateRiskPtr = new DivRiskFunction(data, riskFunctionExpr);
+    else calculateRiskPtr = new DivRiskFunction(data, riskFunctionExpr, INTEGER(naRiskWithinExpr)[0] > 0);
   } catch (const char* error) {
     // get around Rf_error not unwinding stack
     data.Data::~Data();
@@ -98,8 +100,9 @@ SEXP calcRisk(SEXP xExpr, SEXP riskFunctionExpr)
   return result;
 }
 
-SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
+SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, SEXP thresholdExpr)
 {
+  if (!Rf_isLogical(naRiskWithinExpr)) Rf_error("naRiskWithin parameter must be logical type");
   if (!Rf_isReal(thresholdExpr)) Rf_error("threshold parameter must be real type");
   if (rc_getLength(thresholdExpr) != 1) Rf_error("threshold parameter must be of length 1");
   if (REAL(thresholdExpr)[0] <= 0.0) Rf_error("threshold parameter must be non-negative");
@@ -109,7 +112,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   RiskFunction* calculateRiskPtr = NULL;
   try {
     if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr, INTEGER(naRiskWithinExpr)[0] > 0);
   } catch (const char* error) {
     origData.Data::~Data();
     Rf_error(error);
@@ -139,7 +142,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
     int* x_j = INTEGER(x_j_new);
     
     for (size_t row = 0; row < subsetData.nRow; ++row)
-      x_j[row] = subsetData.xt[col + row * subsetData.nCol] == NA_LEVEL ? R_NaInt : (subsetData.xt[col + row * subsetData.nCol] + 1);
+      x_j[row] = subsetData.xt[col + row * subsetData.nCol] == subsetData.nLev[col] ? R_NaInt : (subsetData.xt[col + row * subsetData.nCol] + 1);
     
     Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
     Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
@@ -190,8 +193,9 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP thresholdExpr)
   return xNew;
 }
 
-SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
+SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
 {
+  if (!Rf_isLogical(naRiskWithinExpr)) Rf_error("naRiskWithin parameter must be logical type");
   if (!Rf_isLogical(skipRandomInitExpr)) Rf_error("skipRandomInit parameter must be logical type");
   if (rc_getLength(skipRandomInitExpr) != 1) Rf_error("skipRandomInit parameter must be of length 1");
   bool skipRandomInit = LOGICAL(skipRandomInitExpr)[0];
@@ -201,7 +205,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
   RiskFunction* calculateRiskPtr = NULL;
   try {
     if (riskFunctionExpr == R_NilValue) calculateRiskPtr = new KRiskFunction();
-    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr);
+    else calculateRiskPtr = new DivRiskFunction(origData, riskFunctionExpr, INTEGER(naRiskWithinExpr)[0] > 0);
   } catch (const char* error) {
     origData.Data::~Data();
     Rf_error(error);
@@ -224,7 +228,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     
     for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
       for (size_t row = 0; row < origData.nRow; ++row)
-        state.xt[col + row * origData.nCol] = NA_LEVEL;
+        state.xt[col + row * origData.nCol] = origData.nLev[col];
     }
     
     SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
@@ -277,7 +281,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
      
     for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
       for (size_t row = 0; row < origData.nRow; ++row)
-        state.xt[col + row * origData.nCol] = NA_LEVEL;
+        state.xt[col + row * origData.nCol] = origData.nLev[col];
     }
     
     SEXP result = packageSuppressionResult(origData, param, calculateRisk, state, xExpr);
@@ -315,7 +319,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP paramExpr, SEXP sk
     // no solution possible, NA everything
     for (size_t col = param.keyStartCol; col < origData.nCol; ++col) {
       for (size_t row = 0; row < origData.nRow; ++row) {
-        fullState->xt[col + row * origData.nCol] = NA_LEVEL;
+        fullState->xt[col + row * origData.nCol] = origData.nLev[col];
       }
     }
   } else {
@@ -346,7 +350,7 @@ namespace {
       int* x_j = INTEGER(x_j_new);
       
       for (size_t row = 0; row < data.nRow; ++row)
-        x_j[row] = state.xt[col + row * data.nCol] == NA_LEVEL ? R_NaInt : (state.xt[col + row * data.nCol] + 1);
+        x_j[row] = state.xt[col + row * data.nCol] == data.nLev[col] ? R_NaInt : (state.xt[col + row * data.nCol] + 1);
       
       Rf_setAttrib(x_j_new, R_LevelsSymbol, rc_getLevels(x_j_old));
       Rf_setAttrib(x_j_new, R_ClassSymbol, rc_getClass(x_j_old));
@@ -375,8 +379,8 @@ namespace {
     double naTerm = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
       for (size_t col = 0; col < param.numKeyCols; ++col) {
-        if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL &&
-            data.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
+        if (state.xt[col + row * data.nCol + param.keyStartCol] == data.nLev[col] &&
+            data.xt[col + row * data.nCol + param.keyStartCol] != data.nLev[col])
           naTerm += param.theta[col]; 
       }
     }
@@ -397,7 +401,7 @@ namespace {
   inline bool getRowAtRisk(const Data& data, const Param& param, size_t row, double risk) {
     return risk < param.threshold &&
       (param.suppressValues == NULL ? true :
-        data.xt[row * data.nCol] != NA_LEVEL &&
+        data.xt[row * data.nCol] != data.nLev[0] &&
         param.suppressValues[data.xt[row * data.nCol]] == false);
   }
   
@@ -434,7 +438,7 @@ namespace {
       }
       
       if (param.suppressValues != NULL &&
-          data.xt[row * data.nCol] != NA_LEVEL &&
+          data.xt[row * data.nCol] != data.nLev[0] &&
           param.suppressValues[data.xt[row * data.nCol]] == false)
       {
         keepRow[row] = false;
@@ -528,27 +532,29 @@ namespace {
     do {
       ++iter;
       getAtRiskProbs(data, param, state, originallyAtRisk, risk, probs_t);
-      
       // randomly pick a row at risk and a column from that row
       size_t index = rng_drawFromDiscreteDistribution(probs_t, numProbs);
       if (index == RNG_DISCRETE_DRAW_FAILURE) {
-        /* Rprintf("failure at iter %lu\n", iter);
+        Rprintf("failure at iter %lu\n", iter);
         for (size_t row = 0; row < data.nRow; ++row) {
           Rprintf("  ");
-          Rprintf("%s", originallyAtRisk[row] ? "+" : " ");
-          Rprintf("%s", getRowAtRisk(data, param, row, risk[row]) ? "*" : " ");
-          Rprintf(" %.2f ", risk[row]);
-          printObs(data, data.xt + row * data.nCol);
-          Rprintf(" -> ");
-          printObs(data, state.xt + row * data.nCol);
+          Rprintf("%s, ", originallyAtRisk[row] ? "TRUE" : "FALSE");
+          Rprintf("%s, ", getRowAtRisk(data, param, row, risk[row]) ? "TRUE" : "FALSE");
+          Rprintf("%.2f, ", risk[row]);
+          for (size_t col = 0; col < data.nCol; ++col) {
+            if (state.xt[col + row * data.nCol] == data.nLev[col]) Rprintf("NA");
+            else Rprintf("\"%s\"", data.levelNames[col][state.xt[col + row * data.nCol]]);
+            if (row != data.nRow - 1 || col != data.nCol - 1) Rprintf(", ");
+          }
           Rprintf("\n");
-        }*/
+        }
          
         delete [] originallyAtRisk;
         delete [] probs_t;
         delete [] risk;
         
-        Rf_warning("random initialization failed with inability to find at risk rows - this is not normal");
+        Rf_error("random initialization failed with inability to find at risk rows - this is not normal");
+        // Rf_warning("random initialization failed with inability to find at risk rows - this is not normal");
         return false;
       }
  
@@ -581,14 +587,14 @@ namespace {
       }
       
       // na both out
-      state.decrementFreqTable(data, state.xt + row_atRisk * data.nCol, 0, 0, 1, false);
-      state.decrementFreqTable(data, state.xt + row_toNa   * data.nCol, 0, 0, 1, false);
+      state.decrementFreqTable(data, state.xt + row_atRisk * data.nCol);
+      state.decrementFreqTable(data, state.xt + row_toNa   * data.nCol);
       
-      state.xt[dataCol_atRisk + row_atRisk * data.nCol] = NA_LEVEL;
-      state.xt[dataCol_atRisk + row_toNa   * data.nCol] = NA_LEVEL;
+      state.xt[dataCol_atRisk + row_atRisk * data.nCol] = data.nLev[dataCol_atRisk];
+      state.xt[dataCol_atRisk + row_toNa   * data.nCol] = data.nLev[dataCol_atRisk];
       
-      state.incrementFreqTable(data, state.xt + row_atRisk * data.nCol, 0, 0, 1, false);
-      state.incrementFreqTable(data, state.xt + row_toNa   * data.nCol, 0, 0, 1, false);
+      state.incrementFreqTable(data, state.xt + row_atRisk * data.nCol);
+      state.incrementFreqTable(data, state.xt + row_toNa   * data.nCol);
       
       state.minRisk = calculateRisk(data, state, risk);
       
@@ -638,7 +644,7 @@ namespace {
       bool rowCurrentlyHasNAs = false;
       if (!originallyAtRisk[row]) {
         for (size_t col = 0; col < param.numKeyCols; ++col) {
-          if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL) {
+          if (state.xt[col + row * data.nCol + param.keyStartCol] == data.nLev[col]) {
             rowCurrentlyHasNAs = true;
             break;
           }
@@ -646,7 +652,7 @@ namespace {
       }
       
       for (size_t col = 0; col < param.numKeyCols; ++col) {
-        if (rowCurrentlyHasNAs || data.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL) {
+        if (rowCurrentlyHasNAs || data.xt[col + row * data.nCol + param.keyStartCol] == data.nLev[col + param.keyStartCol]) {
           probs_t[col + row * param.numKeyCols] = 0.0;
         } else {
           probs_t[col + row * param.numKeyCols] = param.theta_inv[col];
@@ -686,7 +692,7 @@ namespace {
       }
       // check (if applicable) that row can be suppressed
       if (rowMatches && param.suppressValues != NULL)
-       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+       rowMatches &= data.xt[row * data.nCol] != data.nLev[0] && param.suppressValues[data.xt[row * data.nCol]];
       
       if (!rowMatches) {
         probs[row] = 0.0;
@@ -709,16 +715,16 @@ namespace {
       bool rowMatches = true, rowIsAllNA = true;
       for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         if (col == dataCol_atRisk) continue;
-        if (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL) {
+        if (xt_atRisk[col] != xt_i[col] && xt_i[col] != data.nLev[col]) {
           rowMatches = false;
           break;
         }
-        rowIsAllNA &= xt_i[col] == NA_LEVEL;
+        rowIsAllNA &= xt_i[col] == data.nLev[col];
       }
       rowMatches &= !rowIsAllNA;
       
       if (rowMatches && param.suppressValues != NULL)
-       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+       rowMatches &= data.xt[row * data.nCol] != data.nLev[0] && param.suppressValues[data.xt[row * data.nCol]];
       
       if (!rowMatches) {
         probs[row] = 0.0;
@@ -753,7 +759,7 @@ namespace {
       
       // check (if applicable) that row can be suppressed
       if (rowMatches && param.suppressValues != NULL)
-       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+       rowMatches &= data.xt[row * data.nCol] != data.nLev[0] && param.suppressValues[data.xt[row * data.nCol]];
       
       // total was 0, just need to handle case when they now match
       if (rowMatches) {
@@ -776,18 +782,18 @@ namespace {
       for (size_t col = param.keyStartCol; col < data.nCol; ++col) {
         // bad if match in selected col or differ in other cols
         if ((col == dataCol_atRisk && xt_atRisk[col] == xt_i[col]) ||
-            (xt_atRisk[col] != xt_i[col] && xt_i[col] != NA_LEVEL))
+            (xt_atRisk[col] != xt_i[col] && xt_i[col] != data.nLev[col]))
         {
           rowMatches = false;
           break;
         }
-        rowIsAllNA &= xt_i[col] == NA_LEVEL;
+        rowIsAllNA &= xt_i[col] == data.nLev[col];
       }
       rowMatches &= !rowIsAllNA;
       
       // check (if applicable) that row can be suppressed
       if (rowMatches && param.suppressValues != NULL)
-       rowMatches &= data.xt[row * data.nCol] != NA_LEVEL && param.suppressValues[data.xt[row * data.nCol]];
+       rowMatches &= data.xt[row * data.nCol] != data.nLev[0] && param.suppressValues[data.xt[row * data.nCol]];
       
       // total was 0, just need to handle case when they now match
       if (rowMatches) {
@@ -925,14 +931,14 @@ namespace {
     
     size_t targetRow = rng_drawFromDiscreteDistribution(scratch.rowProbs, data.nRow);
     
-    prop.decrementFreqTable(data, prop.xt + sourceRow * data.nCol, 0, 0, 1, false);
-    prop.decrementFreqTable(data, prop.xt + targetRow * data.nCol, 0, 0, 1, false);
+    prop.decrementFreqTable(data, prop.xt + sourceRow * data.nCol);
+    prop.decrementFreqTable(data, prop.xt + targetRow * data.nCol);
     
     prop.xt[dataCol + sourceRow * data.nCol] = data.xt[dataCol + sourceRow * data.nCol];
-    prop.xt[dataCol + targetRow * data.nCol] = NA_LEVEL;
+    prop.xt[dataCol + targetRow * data.nCol] = data.nLev[dataCol];
     
-    prop.incrementFreqTable(data, prop.xt + sourceRow * data.nCol, 0, 0, 1, false);
-    prop.incrementFreqTable(data, prop.xt + targetRow * data.nCol, 0, 0, 1, false);
+    prop.incrementFreqTable(data, prop.xt + sourceRow * data.nCol);
+    prop.incrementFreqTable(data, prop.xt + targetRow * data.nCol);
     
     prop.minRisk = calculateRisk(data, prop, NULL);
     prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
@@ -964,7 +970,7 @@ namespace {
     
     double total = 0.0;
     for (size_t col = 0; col < param.numKeyCols; ++col) {
-      if (col != sourceCol && curr.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL) {
+      if (col != sourceCol && curr.xt[col + row * data.nCol + param.keyStartCol] != data.nLev[col]) {
         colProbs[col] = 1.0;
         total += 1.0;
       } else {
@@ -981,12 +987,12 @@ namespace {
     
     size_t targetCol = rng_drawFromDiscreteDistribution(colProbs, param.numKeyCols);
         
-    prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+    prop.decrementFreqTable(data, prop.xt + row * data.nCol);
     
     prop.xt[sourceCol + row * data.nCol + param.keyStartCol] = data.xt[sourceCol + row * data.nCol + param.keyStartCol];
-    prop.xt[targetCol + row * data.nCol + param.keyStartCol] = NA_LEVEL;
+    prop.xt[targetCol + row * data.nCol + param.keyStartCol] = data.nLev[targetCol];
     
-    prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+    prop.incrementFreqTable(data, prop.xt + row * data.nCol);
     
     prop.minRisk = calculateRisk(data, prop, NULL);
     prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
@@ -1020,9 +1026,9 @@ namespace {
       
       double propProb = scratch.cellProbs_t[index];
       
-      prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
-      prop.xt[dataCol + row * data.nCol] = NA_LEVEL;
-      prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      prop.decrementFreqTable(data, prop.xt + row * data.nCol);
+      prop.xt[dataCol + row * data.nCol] = data.nLev[dataCol];
+      prop.incrementFreqTable(data, prop.xt + row * data.nCol);
       
       prop.minRisk = calculateRisk(data, prop, NULL);
       prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
@@ -1054,9 +1060,9 @@ namespace {
         
       double propProb = scratch.cellProbs_t[index];
       
-      prop.decrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      prop.decrementFreqTable(data, prop.xt + row * data.nCol);
       prop.xt[dataCol + row * data.nCol] = data.xt[dataCol + row * data.nCol];
-      prop.incrementFreqTable(data, prop.xt + row * data.nCol, 0, 0, 1, false);
+      prop.incrementFreqTable(data, prop.xt + row * data.nCol);
       
       prop.minRisk = calculateRisk(data, prop, NULL);
       prop.objective = getObjective(data, param, prop.xt, prop.minRisk);
@@ -1081,7 +1087,7 @@ namespace {
   {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
-      if (state.xt[targetDataCol + row * data.nCol] != NA_LEVEL && row != targetRow) {
+      if (state.xt[targetDataCol + row * data.nCol] != data.nLev[targetDataCol] && row != targetRow) {
         scratch.rowProbs[row] = 1.0;
         total += 1.0;
       } else {
@@ -1100,8 +1106,8 @@ namespace {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
       for (size_t col = 0; col < param.numKeyCols; ++col) {
-        if (state.xt[col + row * data.nCol + param.keyStartCol] == NA_LEVEL &&
-            data.xt [col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
+        if (state.xt[col + row * data.nCol + param.keyStartCol] == data.nLev[col] &&
+            data.xt [col + row * data.nCol + param.keyStartCol] != data.nLev[col])
         {
           scratch.cellProbs_t[col + row * param.numKeyCols] = param.theta_inv[col];
           total += scratch.cellProbs_t[col + row * param.numKeyCols];
@@ -1122,8 +1128,8 @@ namespace {
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
       for (size_t col = 0; col < param.numKeyCols; ++col) {
-        if (state.xt[col + row * data.nCol + param.keyStartCol] != NA_LEVEL &&
-            data.xt [col + row * data.nCol + param.keyStartCol] != NA_LEVEL)
+        if (state.xt[col + row * data.nCol + param.keyStartCol] != data.nLev[col] &&
+            data.xt [col + row * data.nCol + param.keyStartCol] != data.nLev[col])
         {
           scratch.cellProbs_t[col + row * param.numKeyCols] = param.theta_inv[col];
           total += scratch.cellProbs_t[col + row * param.numKeyCols];
@@ -1156,12 +1162,12 @@ namespace {
       size_t col = indices[index] % param.numKeyCols;
       size_t keyCol = col + param.keyStartCol;
       
-      if (state.xt[keyCol + row * data.nCol] == NA_LEVEL && data.xt[keyCol + row * data.nCol] != NA_LEVEL) {
-        temp.decrementFreqTable(data, temp.xt + row * data.nCol, 0, 0, 1, false);
+      if (state.xt[keyCol + row * data.nCol] == data.nLev[keyCol] && data.xt[keyCol + row * data.nCol] != data.nLev[keyCol]) {
+        temp.decrementFreqTable(data, temp.xt + row * data.nCol);
         
         temp.xt[keyCol + row * data.nCol] = data.xt[keyCol + row * data.nCol];
         
-        temp.incrementFreqTable(data, temp.xt + row * data.nCol, 0, 0, 1, false);
+        temp.incrementFreqTable(data, temp.xt + row * data.nCol);
          
         temp.minRisk = calculateRisk(data, temp, NULL);
         
@@ -1185,7 +1191,7 @@ namespace {
     size_t dataStartCol = param.riskType != rsupp::RTYPE_COUNT ? 1 : 0;
     size_t numProbCols = data.nCol - dataStartCol;
     for (size_t row = 0; row < data.nRow; ++row) {
-      for (size_t col = 0; col < numProbCols; ++col) if (xt[col + row * data.nCol + dataStartCol] == NA_LEVEL) naTerm += param.theta[col]; 
+      for (size_t col = 0; col < numProbCols; ++col) if (xt[col + row * data.nCol + dataStartCol] == data.nLev[col]) naTerm += param.theta[col]; 
     }
     naTerm /= static_cast<double>(data.nRow);
     
@@ -1201,17 +1207,17 @@ namespace rsupp {
   {
     Rprintf("(");
     if (data.levelNames == NULL) {
-      if (x_i[0] == NA_LEVEL) Rprintf("NA"); else Rprintf("%hu", x_i[0]);
+      if (x_i[0] == data.nLev[0]) Rprintf("NA"); else Rprintf("%hu", x_i[0]);
       
       for (size_t col = 1; col < data.nCol; ++col)
-        if (x_i[col] == NA_LEVEL) Rprintf("NA"); else Rprintf(", %hu", x_i[col]);
+        if (x_i[col] == data.nLev[col]) Rprintf("NA"); else Rprintf(", %hu", x_i[col]);
       
     } else {
-      if (x_i[0] == NA_LEVEL) Rprintf("NA"); else if (data.levelNames[0] != NULL) Rprintf("%s", data.levelNames[0][x_i[0]]);
+      if (x_i[0] == data.nLev[0]) Rprintf("NA"); else if (data.levelNames[0] != NULL) Rprintf("%s", data.levelNames[0][x_i[0]]);
       else Rprintf("%hu", x_i[0]);
       
       for (size_t col = 1; col < data.nCol; ++col) {
-        if (x_i[col] == NA_LEVEL) Rprintf(", NA"); else if (data.levelNames[col] != NULL) Rprintf(", %s", data.levelNames[col][x_i[col]]);
+        if (x_i[col] == data.nLev[col]) Rprintf(", NA"); else if (data.levelNames[col] != NULL) Rprintf(", %s", data.levelNames[col][x_i[col]]);
         else Rprintf(", %hu", x_i[col]);
       }
     }
@@ -1224,9 +1230,9 @@ extern "C" {
 #define DEF_FUNC(_N_, _F_, _A_) { _N_, reinterpret_cast<DL_FUNC>(&_F_), _A_ }
   
   static R_CallMethodDef R_callMethods[] = {
-    DEF_FUNC("localSuppression", localSuppression, 4),
-    DEF_FUNC("calcRisk", calcRisk, 2),
-    DEF_FUNC("getAtRiskSubset", getAtRiskSubset, 3),
+    DEF_FUNC("calcRisk", calcRisk, 3),
+    DEF_FUNC("getAtRiskSubset", getAtRiskSubset, 4),
+    DEF_FUNC("localSuppression", localSuppression, 5),
     { NULL, NULL, 0 }
   };
   

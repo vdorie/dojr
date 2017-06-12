@@ -28,7 +28,7 @@ test_that("computes risk correctly", {
                c(1, 1, 2, 2, 1))
   ## soft ordering
   expect_equal(calcRisk(testData, keyVars = c("gender", "age_group", "race"), divVar = "offense_level",
-                        risk.f = function(x) as.double(x["misdemeanor"] > 0L)),
+                        risk.f = function(x) as.double(x["misdemeanor"] > 0L), na.risk.within = TRUE),
                c(1, 1, 1, 1, 1))
   ## percent
   expect_equal(calcRisk(testData, keyVars = c("gender", "age_group", "race"), divVar = "offense_level",
@@ -59,19 +59,20 @@ test_that("returns the correct answer with NAs present", {
   ## if we just look at the first 3 rows, the NA can only be part of the white group
   expect_equal(calcRisk(testData[seq_len(3L),], keyVars = keyVars),
                rep_len(3, 3L))
-  expect_equal(calcRisk(testData[seq_len(3L),], keyVars = keyVars, divVar = divVar, risk.f = risk.f.p),
-               rep_len(1 / 3, 3L))
   expect_equal(calcRisk(testData[seq_len(3L),], keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                rep_len(2, 3L))
+  expect_equal(calcRisk(testData[seq_len(3L),], keyVars = keyVars, divVar = divVar, risk.f = risk.f.p, na.risk.within = TRUE),
+               rep_len(1 / 3, 3L))
+  
   
   ## if we look at all the data, the NA can be white or black
   expect_equal(calcRisk(testData, keyVars = keyVars),
-               c(3, 3, 2, 2))
+               c(3, 3, 4, 2))
   ## conversely, the minimum % misd goes to the first group, since it'll only be 1/3
-  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p),
-               c(rep_len(1 / 3, 3L), 1 / 2))
   expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                rep_len(2, 4L))
+  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p, na.risk.within = TRUE),
+               c(1 / 3, 1 / 3, 1 / 3, 1 / 2))
   
   testData <- as.data.frame(matrix(c(
       "male",   "10 to 17", "white", "felony",
@@ -85,10 +86,10 @@ test_that("returns the correct answer with NAs present", {
   ## all are NA, should match the size of the NA group
   expect_equal(calcRisk(testData, keyVars = keyVars),
                rep_len(4, 4L))
-  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p),
-               rep_len(1 / 4, 4L))
   expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                rep_len(2, 4L))
+  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p, na.risk.within = TRUE),
+               rep_len(1 / 4, 4L))
   
   testData <- as.data.frame(matrix(c(
       "male",   "10 to 17", "white", "felony",
@@ -103,10 +104,10 @@ test_that("returns the correct answer with NAs present", {
   ## NA are again lumped together with another obs
   expect_equal(calcRisk(testData, keyVars = keyVars),
                c(rep_len(4, 4L), 1))
-  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p),
-               c(rep_len(1 / 4, 4L), 1))
   expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                c(rep_len(2, 4L), 1))
+  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p, na.risk.within = TRUE),
+               c(rep_len(1 / 4, 4L), 1))
   
   testData <- as.data.frame(matrix(c(
       "male",   "10 to 17", "white", "felony",
@@ -120,15 +121,15 @@ test_that("returns the correct answer with NAs present", {
   testData$age_group[seq_len(4L)] <- NA
   testData$gender[1L] <- NA
   
-  ## first row matches all rows, but min riks is 2 due to row 6
+  ## first row matches all rows, risk is 6
   ## 2 through 5 match 1 through 5, risk is 5
   expect_equal(calcRisk(testData, keyVars = keyVars),
-               c(2, rep_len(5, 4L), 2))
+               c(6, rep_len(5, 4L), 2))
   ## same as above, but min for first row is now supplied by rows 1 through 5
-  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p),
-               c(rep_len(1 / 5, 5L), 0.5))
   expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.l),
                rep_len(2, 6L))
+  expect_equal(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = risk.f.p, na.risk.within = TRUE),
+               c(rep_len(1 / 5, 5L), 0.5))
   
   # These tables can be difficult to parse, so consider just the first row. It matches
   # anything in the first two columns and white/NA in the last, that includes:
@@ -167,11 +168,9 @@ test_that("returns the correct answer with NAs present", {
     dimnames = list(NULL, c("gender", "age_group", "race"))))
 
   levels(testData$gender) <- c("male", "female")
-  cbind(testData, risk = calcRisk(testData))
-
   
   expect_equal(calcRisk(testData, keyVars = keyVars)[seq_len(2L)],
-               c(7, 8))
+               c(11, 10))
   
   ## marginal counts for missing columns (again)
   testData <- data.frame(matrix(c(
@@ -192,5 +191,25 @@ test_that("returns the correct answer with NAs present", {
   levels(testData$race) <- c("white", "Hispanic")
   
   expect_equal(calcRisk(testData), rep_len(10, nrow(testData)))
+  
+  if (FALSE) testData <- data.frame(matrix(c(
+      NA,       "10 to 17", NA,
+      "male",   NA,         NA,
+      "male",   NA,        "other",
+      NA,       NA,        "white",
+      "male",   NA,        "Hispanic",
+      NA,       NA,        "white",
+      NA,       NA,        "white",
+      NA,      "10 to 17", NA,
+      NA,       NA,        "white",
+      "male",   NA,        "black",
+      "male",   "10 to 17", NA,
+      "male",   NA,         NA,
+      NA,       NA,         NA,
+      NA,       "10 to 17", "white",
+      NA,       NA,         NA,
+      "female", "18 to 19", "black"),
+    ncol = 3L, byrow = TRUE,
+    dimnames = list(NULL, c("gender", "age_group", "race"))))
 })
 

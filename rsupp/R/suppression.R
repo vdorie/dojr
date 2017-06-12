@@ -27,7 +27,7 @@ getRunVariables <- function(vars, keyVars, strataVars, divVar)
   namedList(nonStrataVars, runVars)
 }
 
-calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL)
+calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE)
 {
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)
@@ -40,15 +40,15 @@ calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL,
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
   if (is.null(strataVars)) {
-    .Call(C_calcRisk, x.run, risk.f)
+    .Call(C_calcRisk, x.run, risk.f, na.risk.within)
   } else {
     x.run <- data.table(x.run)
-    x.run[,list(risk = .Call(C_calcRisk, data.frame(.SD), risk.f)),
+    x.run[,list(risk = .Call(C_calcRisk, data.frame(.SD), risk.f, na.risk.within)),
           by = strataVars, .SDcols = nonStrataVars]$risk
   }
 }
 
-getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, risk.k = 5)
+getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, na.risk.within = FALSE, risk.k = 5)
 {
   risk.k <- coerceOrError(risk.k[1L], "double")
   
@@ -61,7 +61,7 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NU
     
   if (!is.null(risk.f) && is.function(risk.f)) risk.f <- list(risk.f, new.env(parent = baseenv()))
   
-  res <- .Call(C_getAtRiskSubset, x.run, risk.f, risk.k)
+  res <- .Call(C_getAtRiskSubset, x.run, risk.f, na.risk.within, risk.k)
   
   if (any(colnames(x) %not_in% colnames(x.run))) {
     extraCols <- colnames(x)[colnames(x) %not_in% colnames(x.run)]
@@ -76,17 +76,17 @@ rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
   namedList(alpha, gamma, n.burn, n.samp, n.chain, rowSwap.prob, colSwap.prob, na.prob)
 
 localSuppression <-
-  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, risk.k = 5,
-           keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
+  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
+           risk.k = 5, keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 {
   par$risk.k  <- coerceOrError(risk.k[1L], "double")
   par$alpha   <- coerceOrError(par$alpha[1L], "double")
   par$gamma   <- coerceOrError(par$gamma[1L], "double")
+  par$n.burn  <- coerceOrError(par$n.burn[1L], "integer")
+  par$n.samp  <- coerceOrError(par$n.samp[1L], "integer")
   par$rowSwap.prob <- coerceOrError(par$rowSwap.prob[1L], "double")
   par$colSwap.prob <- coerceOrError(par$colSwap.prob[1L], "double")
   par$na.prob      <- coerceOrError(par$na.prob[1L], "double")
-  par$n.burn  <- coerceOrError(par$n.burn[1L], "integer")
-  par$n.samp  <- coerceOrError(par$n.samp[1L], "integer")
   par$verbose <- coerceOrError(verbose[1L], "integer")
   
   skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
@@ -130,7 +130,7 @@ localSuppression <-
   if (all(is.na(x.run[,keyVars]))) {
     return(list(x = x, obj = NA_real_, n = NA_real_))
   }
-  risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f)
+  risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f, na.risk.within)
   if (par$risk.k > 0 && min(risk) >= par$risk.k) {
     x[,"risk"] <- risk
     return(list(x = x, obj = NA_real_, n = NA_real_))
@@ -140,7 +140,7 @@ localSuppression <-
   res <- list(x = NULL, obj = -Inf)
   for (i in seq_len(n.chain)) {
     if (is.null(strataVars)) {
-      res.i <- .Call(C_localSuppression, x.run, risk.f, par, skip.rinit)
+      res.i <- .Call(C_localSuppression, x.run, risk.f, na.risk.within, par, skip.rinit)
     } else {
       ## mess here is to use data.table to get an efficient subset and update of the data frame within each stratum
       totalObjective <- 0
@@ -156,7 +156,7 @@ localSuppression <-
           if (par$risk.k > 0 && min(risk) >= par$risk.k) {
             .SD
           } else {
-            tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, par, skip.rinit), error = function(e) e)
+            tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, na.risk.within, par, skip.rinit), error = function(e) e)
             if (is(tryResult, "error")) {
               cat("caught error: ", toString(tryResult), "\n")
               browser()

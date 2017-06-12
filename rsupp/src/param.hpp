@@ -28,6 +28,7 @@ namespace rsupp {
     std::size_t numKeyCols;
     std::size_t keyStartCol;
     
+    Param();
     Param(const Data& data, RiskFunction* divRiskFunction, double threshold, uint8_t verbose);
     virtual ~Param();
   };

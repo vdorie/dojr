@@ -11,6 +11,10 @@
 
 namespace rsupp {
   bool* getSuppressValues(const Data& fullData, RiskFunction& calculateRisk);
+  Param::Param() :
+    threshold(-1.0), riskType(RTYPE_INVALID), suppressValues(NULL), verbose(false),
+    numKeyCols(INVALID_EXTENT), keyStartCol(INVALID_EXTENT)
+  { }
   
   Param::Param(const Data& data, RiskFunction* divRiskFunction, double _threshold, uint8_t _verbose) : 
     threshold(_threshold), riskType(RTYPE_INVALID), suppressValues(NULL), verbose(_verbose),
@@ -40,7 +44,8 @@ namespace rsupp {
   }
   
   MCMCParam::MCMCParam(const Data& data, RiskFunction* divRiskFunction, SEXP paramExpr) :
-    Param(data, divRiskFunction, -1.0, 0), alpha(-1.0), beta(-1.0), gamma(-1.0),
+    Param(), 
+    alpha(-1.0), beta(-1.0), gamma(-1.0),
     theta(NULL), theta_inv(NULL),
     rowSwapProb(-1.0), colSwapProb(-1.0), naProb(-1.0),
     nBurn(INVALID_EXTENT), nSamp(INVALID_EXTENT)
@@ -49,6 +54,9 @@ namespace rsupp {
     
     SEXP paramNames = rc_getNames(paramExpr);
     if (paramNames == R_NilValue) throw "params argument must have names";
+    
+    keyStartCol = riskType != (divRiskFunction == NULL ? 1 : 0);
+    numKeyCols = data.nCol - keyStartCol;
     
     double* theta = NULL;
     for (size_t i = 0; i < rc_getLength(paramExpr); ++i) {
@@ -138,6 +146,18 @@ namespace rsupp {
       beta = (alpha - 1.0) / threshold;
     } else {
       beta = alpha / threshold - alpha;
+    }
+    
+    if (divRiskFunction == NULL) {
+      riskType = rsupp::RTYPE_COUNT;
+    } else if (threshold >= 1.0) {
+      riskType = rsupp::RTYPE_DIVERSITY;
+    } else {
+      riskType = rsupp::RTYPE_PERCENT;
+      
+      suppressValues = getSuppressValues(data, *divRiskFunction);
+      if (suppressValues == NULL)
+        throw "could not find values to suppress for threshold < 1.0";
     }
     
     this->theta = new double[numKeyCols];

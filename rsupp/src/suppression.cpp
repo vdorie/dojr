@@ -214,7 +214,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, 
   
   MCMCParam* paramPtr = NULL;
   try {
-    paramPtr = new MCMCParam(origData, riskFunctionExpr != R_NilValue ? calculateRiskPtr : NULL, paramExpr);
+    paramPtr = new MCMCParam(origData, riskFunctionExpr == R_NilValue ? NULL : calculateRiskPtr, paramExpr);
   } catch (const char* error) {
     delete calculateRiskPtr;
     origData.Data::~Data();

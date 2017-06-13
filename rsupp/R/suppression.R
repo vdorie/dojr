@@ -89,6 +89,7 @@ localSuppression <-
   par$na.prob      <- coerceOrError(par$na.prob[1L], "double")
   par$verbose <- coerceOrError(verbose[1L], "integer")
   
+  na.risk.within <- coerceOrError(na.risk.within[1L], "logical")
   skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
   
   n.chain <- coerceOrError(par$n.chain, "integer")

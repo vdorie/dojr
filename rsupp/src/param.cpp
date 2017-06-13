@@ -55,7 +55,7 @@ namespace rsupp {
     SEXP paramNames = rc_getNames(paramExpr);
     if (paramNames == R_NilValue) throw "params argument must have names";
     
-    keyStartCol = riskType != (divRiskFunction == NULL ? 1 : 0);
+    keyStartCol = divRiskFunction != NULL ? 1 : 0;
     numKeyCols = data.nCol - keyStartCol;
     
     double* theta = NULL;

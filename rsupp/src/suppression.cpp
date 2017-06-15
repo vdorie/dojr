@@ -398,7 +398,7 @@ namespace {
     return result;
   }
   
-  inline bool getRowAtRisk(const Data& data, const Param& param, size_t row, double risk) {
+  inline bool rowIsAtRisk(const Data& data, const Param& param, size_t row, double risk) {
     return risk < param.threshold &&
       (param.suppressValues == NULL ? true :
         data.xt[row * data.nCol] != data.nLev[0] &&
@@ -417,7 +417,7 @@ namespace {
     
     bool* rowAtRisk = new bool[data.nRow];
     for (size_t row = 0; row < data.nRow; ++row) {
-      rowAtRisk[row] = getRowAtRisk(data, param, row, risk[row]);
+      rowAtRisk[row] = rowIsAtRisk(data, param, row, risk[row]);
     }
    
     
@@ -518,7 +518,7 @@ namespace {
     bool* originallyAtRisk = new bool[data.nRow];
     
     for (size_t row = 0; row < data.nRow; ++row)
-      originallyAtRisk[row] = getRowAtRisk(data, param, row, risk[row]);
+      originallyAtRisk[row] = rowIsAtRisk(data, param, row, risk[row]);
     
     size_t numSuppressions = 0;
     size_t numFailures = 0;
@@ -535,11 +535,11 @@ namespace {
       // randomly pick a row at risk and a column from that row
       size_t index = rng_drawFromDiscreteDistribution(probs_t, numProbs);
       if (index == RNG_DISCRETE_DRAW_FAILURE) {
-        Rprintf("failure at iter %lu\n", iter);
+        Rprintf("failure at iter %lu, minRisk: %.2f\n", iter, state.minRisk);
         for (size_t row = 0; row < data.nRow; ++row) {
           Rprintf("  ");
           Rprintf("%s, ", originallyAtRisk[row] ? "TRUE" : "FALSE");
-          Rprintf("%s, ", getRowAtRisk(data, param, row, risk[row]) ? "TRUE" : "FALSE");
+          Rprintf("%s, ", rowIsAtRisk(data, param, row, risk[row]) ? "TRUE" : "FALSE");
           Rprintf("%.2f, ", risk[row]);
           for (size_t col = 0; col < data.nCol; ++col) {
             if (state.xt[col + row * data.nCol] == data.nLev[col]) Rprintf("NA");
@@ -635,7 +635,7 @@ namespace {
     
     double total = 0.0;
     for (size_t row = 0; row < data.nRow; ++row) {
-      if (getRowAtRisk(data, param, row, risk[row]) == false) {
+      if (rowIsAtRisk(data, param, row, risk[row]) == false) {
         for (size_t col = 0; col < param.numKeyCols; ++col)
           probs_t[col + row * param.numKeyCols] = 0.0;
         continue;

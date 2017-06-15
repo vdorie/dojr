@@ -192,24 +192,22 @@ test_that("returns the correct answer with NAs present", {
   
   expect_equal(calcRisk(testData), rep_len(10, nrow(testData)))
   
-  if (FALSE) testData <- data.frame(matrix(c(
-      NA,       "10 to 17", NA,
-      "male",   NA,         NA,
-      "male",   NA,        "other",
-      NA,       NA,        "white",
-      "male",   NA,        "Hispanic",
-      NA,       NA,        "white",
-      NA,       NA,        "white",
-      NA,      "10 to 17", NA,
-      NA,       NA,        "white",
-      "male",   NA,        "black",
-      "male",   "10 to 17", NA,
-      "male",   NA,         NA,
-      NA,       NA,         NA,
-      NA,       "10 to 17", "white",
-      NA,       NA,         NA,
-      "female", "18 to 19", "black"),
-    ncol = 3L, byrow = TRUE,
-    dimnames = list(NULL, c("gender", "age_group", "race"))))
+  testData <- data.frame(matrix(c(
+    "misdemeanor", "male", NA, "black", 
+    "misdemeanor", NA, "40 to 69", "other", 
+    "juvenile", "female", NA, "other", 
+    "misdemeanor", "male", NA, "black", 
+    "misdemeanor", "female", "40 to 69", NA, 
+    "misdemeanor", NA, "70 and over", "white", 
+    "juvenile", "male", NA, "Asian or Pac Isl", 
+    "misdemeanor", NA, "20 to 29", NA, 
+    "juvenile", "female", "10 to 17", NA, 
+    "felony", NA, NA, NA),
+  byrow = TRUE, ncol = 4L,
+  dimnames = list(NULL, c("offense_level", "gender", "age_group", "race"))))
+  
+  pFunc <- function(x) sum(x[c("misdemeanor", "juvenile")]) / sum(x)
+
+  expect_equal(tail(calcRisk(testData, keyVars = keyVars, divVar = divVar, risk.f = pFunc, na.risk.within = TRUE), 1L), 1.0)
 })
 

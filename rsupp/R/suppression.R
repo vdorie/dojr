@@ -153,7 +153,7 @@ localSuppression <-
         if (all(is.na(x.dt.j[,keyVars]))) {
           x.dt.j
         } else {
-          risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f)
+          risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f, na.risk.within)
           if (par$risk.k > 0 && min(risk) >= par$risk.k) {
             .SD
           } else {

@@ -136,11 +136,12 @@ namespace rsupp {
       double* risks = new double[data.nCol];
       
       for (size_t row = 0; row < data.nRow; ++row) {
-        bool anyNA = false;
+        bool anyNA = false, allNA = true;
         for (size_t col = 1; col < data.nCol; ++col) {
           if (xt[col] == data.nLev[col]) {
             anyNA = true;
-            break;
+          } else {
+            allNA = false;
           }
         }
         
@@ -151,6 +152,14 @@ namespace rsupp {
           xt += data.nCol;
           
           if (risk != NULL) risk[row] = risk_i;
+          
+          continue;
+        }
+        
+        if (allNA) {
+          xt += data.nCol;
+          
+          if (risk != NULL) risk[row] = 1.0;
           
           continue;
         }
@@ -178,6 +187,7 @@ namespace rsupp {
       delete [] risks;
       delete [] x_i;
     }
+    
     return minRisk;
   }
   

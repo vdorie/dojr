@@ -239,7 +239,7 @@ SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, 
   }
   
   if (param.threshold < 1.0 && param.verbose > 0 && param.suppressValues != NULL) {
-    Rprintf("created percent risk function, supresssing values:\n");
+    Rprintf("created percent risk function, supresssing observations with values:\n");
     for (size_t i = 0; i < origData.nLev[0]; ++i)
       if (param.suppressValues[i])
         Rprintf("  %s\n", origData.levelNames[0][i]);
@@ -564,7 +564,7 @@ namespace {
       size_t dataCol_atRisk = col_atRisk + param.keyStartCol;
       
       if (param.verbose > 1) {
-        Rprintf("  r: " SIZE_T_FMT ", c: " SIZE_T_FMT " ", row_atRisk + 1, dataCol_atRisk + 1);
+        Rprintf("  (" SIZE_T_FMT ", " SIZE_T_FMT ") ", row_atRisk + 1, dataCol_atRisk + 1);
         printObs(data, state.xt + row_atRisk * data.nCol);
         Rprintf(" [%.2f]", risk[row_atRisk]);
       }
@@ -581,24 +581,27 @@ namespace {
       size_t row_toNa = rng_drawFromDiscreteDistribution(probs_t, data.nRow);
       
       if (param.verbose > 1) {
-        Rprintf(" - r: " SIZE_T_FMT " ", row_toNa + 1);
+        Rprintf(" - (" SIZE_T_FMT ") ", row_toNa + 1);
         printObs(data, state.xt + row_toNa * data.nCol);
         Rprintf("\n");
       }
       
-      // na both out
-      state.decrementFreqTable(data, state.xt + row_atRisk * data.nCol);
+      // if percent diversity, na out the one we targeted
+      // if not, na both out
+      if (param.riskType != rsupp::RTYPE_PERCENT) {
+        state.decrementFreqTable(data, state.xt + row_atRisk * data.nCol);
+        state.xt[dataCol_atRisk + row_atRisk * data.nCol] = data.nLev[dataCol_atRisk];
+        state.incrementFreqTable(data, state.xt + row_atRisk * data.nCol);
+      }
+        
       state.decrementFreqTable(data, state.xt + row_toNa   * data.nCol);
-      
-      state.xt[dataCol_atRisk + row_atRisk * data.nCol] = data.nLev[dataCol_atRisk];
       state.xt[dataCol_atRisk + row_toNa   * data.nCol] = data.nLev[dataCol_atRisk];
-      
-      state.incrementFreqTable(data, state.xt + row_atRisk * data.nCol);
       state.incrementFreqTable(data, state.xt + row_toNa   * data.nCol);
       
       state.minRisk = calculateRisk(data, state, risk);
       
       ++numSuppressions;
+      
     } while (state.minRisk < param.threshold && iter < MAX_RANDOM_INIT_ITERATIONS);
     
     bool result = iter != MAX_RANDOM_INIT_ITERATIONS || numFailures != MAX_RANDOM_INIT_ITERATIONS;
@@ -859,7 +862,7 @@ namespace {
       }
                   
       if (-Rf_rexp(1.0) < ratio) {
-        if (param.verbose > 1) Rprintf(" - accepted, min risk: " SIZE_T_FMT "\n", prop.minRisk);
+        if (param.verbose > 1) Rprintf(" - accepted, min risk: %.2f\n", prop.minRisk);
         curr.copyFrom(data, prop);
         
         if ((i >= param.nBurn && curr.objective > result->objective && curr.minRisk >= param.threshold)) {
@@ -887,7 +890,7 @@ namespace {
       if (result->objective == -HUGE_VAL)
         Rprintf("  no solution found\n");
       else
-        Rprintf("  min risk at end: " SIZE_T_FMT "\n", result->minRisk);
+        Rprintf("  min risk at end: %.2f\n", result->minRisk);
     }
     
     delete [] scratch.cellProbs_t;

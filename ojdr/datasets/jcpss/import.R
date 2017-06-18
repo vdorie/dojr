@@ -1,0 +1,58 @@
+rawFile <- file.path("datasets", "jcpss", "raw", "jcpss_OJ.csv")
+
+colNames <- readLines(rawFile, n = 1L)
+colNames <- strsplit(colNames, ",")[[1L]]
+colNames <- sub("\"(.*)\"", "\\1", colNames)
+
+colClasses <- rep_len("factor", length(colNames))
+colClasses[colNames %in% c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <- "integer"
+colClasses[colNames %in% c("", "ACTION.DATE")] <- "character"
+
+jcpss <- read.csv(rawFile, colClasses = colClasses)
+jcpss <- jcpss[,-1L] # remove row names
+
+rm(rawFile, colNames, colClasses)
+
+colnames(jcpss) <- tolower(colnames(jcpss))
+colnames(jcpss) <- gsub("\\.", "_", colnames(jcpss))
+
+## prunes any blanks
+for (i in seq_along(jcpss)) {
+  if (is.factor(jcpss[[i]])) {
+    jcpss[[i]][jcpss[[i]] == ""] <- NA
+    jcpss[[i]] <- droplevels(jcpss[[i]])
+  }
+}
+
+## remap mispellings
+commonDataPath <- file.path("..", "common", "data")
+source(file.path(commonSrcPath, "util.R"))
+
+jcpss$action_type <-
+  remapFactor(jcpss$action_type,
+  list("1", "2"),
+  c("Referral", "Court"))
+
+jcpss$referral_source <- remapFactor(jcpss$referral_source,
+   c("Lae Enforcement Agency", "Law Enforcement", "Law Enforcement Agency"),
+  "Law Enforcement Agency")
+
+jcpss$detention <- remapFactor(jcpss$detention,
+  c("Detained - Secure Facility", "Detained-Secure Facility"),
+  "Detained - Secure Facility")
+
+jcpss$offense_level <- remapFactor(jcpss$offense_level,
+  c("Misdemeanor", "MIsdemeanor"),
+  "Misdemeanor")
+
+informalProbationCategories <- c("Informal Probation (654.2 WI)", "Informal Probation (654.2WI)", "Informal Probation(654.2WI)")
+nonwardProbationCategories  <- c("Non-Ward Probation (725a WI)", "Non_Ward Probation (725a WI)", "Non-Ward Probation (725(a) WI)",
+                                 "Non-Ward Probation (725a WI0", "Non-Ward Probation")
+deferredEntryCategories     <- c("Deferred Entry of Judgement", "Deferred Entry of Judgment")
+remandedCategorires         <- c("Remanded to Adult Court", "Remand to Adult Court")
+jcpss$disposition <- remapFactor(jcpss$disposition,
+  list(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires),
+  c("Informal Probation (654.2 WI)", "Non-Ward Probation (725a WI)", "Deferred Entry of Judgement", "Remanded to Adult Court"))
+rm(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires)
+
+save(jcpss, file = file.path("datasets", "jcpss", "jcpss_clean.Rdata"))

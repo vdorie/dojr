@@ -23,15 +23,16 @@ for (i in seq_along(jcpss)) {
     jcpss[[i]] <- droplevels(jcpss[[i]])
   }
 }
+rm(i)
 
 ## remap mispellings
-commonDataPath <- file.path("..", "common", "data")
+commonSrcPath <- file.path("..", "common", "src")
 source(file.path(commonSrcPath, "util.R"))
 
 jcpss$action_type <-
   remapFactor(jcpss$action_type,
-  list("1", "2"),
-  c("Referral", "Court"))
+  list("1", "2", "Petiton"),
+  c("Referral", "Court", "Petition"))
 
 jcpss$referral_source <- remapFactor(jcpss$referral_source,
    c("Lae Enforcement Agency", "Law Enforcement", "Law Enforcement Agency"),
@@ -50,9 +51,12 @@ nonwardProbationCategories  <- c("Non-Ward Probation (725a WI)", "Non_Ward Proba
                                  "Non-Ward Probation (725a WI0", "Non-Ward Probation")
 deferredEntryCategories     <- c("Deferred Entry of Judgement", "Deferred Entry of Judgment")
 remandedCategorires         <- c("Remanded to Adult Court", "Remand to Adult Court")
+electronicWardshipCategories <- c("Wardship (Secure County Facility - with Elect. Monitoring)",
+                                  "Wardship (Secure County Facility - Includes Electronic Monitoring)")
 jcpss$disposition <- remapFactor(jcpss$disposition,
-  list(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires),
-  c("Informal Probation (654.2 WI)", "Non-Ward Probation (725a WI)", "Deferred Entry of Judgement", "Remanded to Adult Court"))
-rm(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires)
+  list(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires, electronicWardshipCategories),
+  c("Informal Probation (654.2 WI)", "Non-Ward Probation (725a WI)", "Deferred Entry of Judgement", "Remanded to Adult Court",
+    "Wardship (Secure County Facility - with Elect. Monitoring)"))
+rm(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires, electronicWardshipCategories)
 
 save(jcpss, file = file.path("datasets", "jcpss", "jcpss_clean.Rdata"))

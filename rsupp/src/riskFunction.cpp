@@ -16,15 +16,12 @@
 using std::size_t;
 
 namespace rsupp {
-  extern bool printShit;
-  
   double KRiskFunction::operator()(const Data& data, const State& state, double* risk)
   {
     double minK = static_cast<double>(data.nRow);
     
     const unsigned char* xt = state.xt;
     for (size_t row = 0; row < data.nRow; ++row) {
-      printShit = row == 0;
       double k_i = state.getKFromTable(data, xt);
             
       if (k_i < minK) minK = k_i;
@@ -64,57 +61,8 @@ namespace rsupp {
   }
   
   extern void printObs(const Data& data, const unsigned char* x_i);
-}
-/*
-namespace {
-  double calculateRiskForCompletion(const rsupp::Data& data, rsupp::State& state, rsupp::DivRiskFunction& calculateRisk,
-                                    unsigned char* x_i, size_t currCol, size_t numNAsFilled)
-  {
-    double risk;
-    if (currCol == data.nCol - 1) {
-      if (x_i[currCol] != data.nLev[currCol]) {
-        //state.incrementFreqTable(data, x_i);
-        // risk = state.getDivFromTable(data, x_i, calculateRisk);
-        // state.decrementFreqTable(data, x_i);
-        addCountsToCount
-        bool hasCompleteCase = false;
-        double result = state.getCountsFromTable(data, x_i, calculateRisk, &hasCompleteCase);
-        if (
-      } else {
-        risk = HUGE_VAL;
-        for (unsigned char i = 0; i < data.nLev[currCol]; ++i) {
-          x_i[currCol] = i;
-                    
-          state.incrementFreqTable(data, x_i);
-          double risk_i = state.getDivFromTable(data, x_i, calculateRisk);
-          state.decrementFreqTable(data, x_i);
-         
-          risk = risk_i < risk ? risk_i : risk;
-        }
-        x_i[currCol] = data.nLev[currCol];
-      }
-    } else {
-      if (x_i[currCol] != data.nLev[currCol]) {
-        risk = calculateRiskForCompletion(data, state, calculateRisk, x_i, currCol + 1, numNAsFilled);
-      } else {
-        risk = HUGE_VAL;
-        for (unsigned char i = 0; i < data.nLev[currCol]; ++i) {
-          x_i[currCol] = i;
-          double risk_i = calculateRiskForCompletion(data, state, calculateRisk, x_i, currCol + 1, numNAsFilled + 1);
-          
-          risk = risk_i < risk ? risk_i : risk;
-        }
-        x_i[currCol] = data.nLev[currCol];
-      }
-    }
-    
-    return risk;
-  }
-} */
+  // extern bool printDebugCase;
 
-namespace rsupp {
-  extern void printObs(const Data& data, const unsigned char* x_i);
-  
   double DivRiskFunction::operator()(const Data& data, const State& state, double* risk)
   {
     const unsigned char* xt = state.xt;
@@ -164,15 +112,18 @@ namespace rsupp {
           continue;
         }
         
+        // printDebugCase = row == 0;
         // go through possible completions of the obs and calc risks for each
         std::memcpy(x_i, xt, data.nCol * sizeof(unsigned char));
         for (size_t i = 0; i < data.nCol; ++i) risks[i] = HUGE_VAL;
         temp.calculateRiskForCompletion(data, *this, x_i, 1, risks);
         
-        /*Rprintf("at end for obs "); printObs(data, x_i);
-        Rprintf("\n  risks: %.2f", risks[0]);
-        for (size_t i = 1; i < data.nCol; ++i) Rprintf(" %.2f", risks[i]);
-        Rprintf("\n"); */
+        /* if (printDebugCase) {
+          Rprintf("at end for obs "); printObs(data, x_i);
+          Rprintf("\n  risks: %.2f", risks[0]);
+          for (size_t i = 1; i < data.nCol; ++i) Rprintf(" %.2f", risks[i]);
+          Rprintf("\n");
+        } */
         
         double risk_i = risks[0];
         for (size_t i = 1; i < data.nCol; ++i) if (risks[i] < HUGE_VAL) risk_i = risks[i];

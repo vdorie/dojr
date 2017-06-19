@@ -5,13 +5,20 @@ colNames <- strsplit(colNames, ",")[[1L]]
 colNames <- sub("\"(.*)\"", "\\1", colNames)
 
 colClasses <- rep_len("factor", length(colNames))
-colClasses[colNames %in% c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <- "integer"
-colClasses[colNames %in% c("", "ACTION.DATE")] <- "character"
+## these have changed in the 2003-2016 file
+#colClasses[colNames %in% c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <- "integer"
+#colClasses[colNames %in% c("", "ACTION.DATE")] <- "character"
+colClasses[colNames %in% c("", "ACTION.DATE", "REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <-
+  "character"
 
 jcpss <- read.csv(rawFile, colClasses = colClasses)
 jcpss <- jcpss[,-1L] # remove row names
 
 rm(rawFile, colNames, colClasses)
+
+for (colName in c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR"))
+  jcpss[[colName]] <- as.integer(jcpss[[colName]])
+rm(colName)
 
 colnames(jcpss) <- tolower(colnames(jcpss))
 colnames(jcpss) <- gsub("\\.", "_", colnames(jcpss))

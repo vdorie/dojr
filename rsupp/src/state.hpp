@@ -45,19 +45,14 @@ namespace rsupp {
     //   if no complete cases are found, report the maximum of all with which it could be entagled
     double getKFromTable(const Data& data, const unsigned char* x_i) const;
     double getDivFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const;
-    //double* getDivsFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk) const;
-    
+    void calculateRiskForCompletion(const Data& data, DivRiskFunction& calculateRisk,
+                                    unsigned char* x_i, size_t currCol, double* risks);
     // recursive functions
     double getKFromTable(const Data& data, const unsigned char* x_i,
                          std::size_t currCol, std::size_t offset, std::size_t stride) const;
     void getCountsFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
                             std::size_t currCol, std::size_t offset, std::size_t stride, std::size_t* counts) const;
-    /* void getCountsFromTable(const Data& data, const unsigned char* x_i, DivRiskFunction& calculateRisk,
-                           std::size_t currCol, std::size_t offset, std::size_t stride, std::size_t** counts,
-                           std::size_t numMatches) const; */ 
-    void calculateRiskForCompletion(const Data& data, DivRiskFunction& calculateRisk,
-                                    unsigned char* x_i, size_t currCol, double* risks);
-                                          
+   
     
     void print(const Data& data, const MCMCParam& param);
   };

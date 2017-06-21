@@ -32,6 +32,11 @@ for (i in seq_along(jcpss)) {
 }
 rm(i)
 
+action_date <- as.Date(jcpss$action_date, "%Y-%m-%d")
+action_date[is.na(action_date)] <- as.Date(jcpss$action_date[is.na(action_date)], "%m/%d/%Y 0:00")
+jcpss$action_date <- action_date
+rm(action_date)
+
 ## remap mispellings
 commonSrcPath <- file.path("..", "common", "src")
 source(file.path(commonSrcPath, "util.R"))

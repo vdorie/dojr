@@ -599,6 +599,14 @@ namespace {
       state.incrementFreqTable(data, state.xt + row_toNa   * data.nCol);
       
       state.minRisk = calculateRisk(data, state, risk);
+      if (param.riskType == rsupp::RTYPE_PERCENT) {
+        double actualMinRisk = HUGE_VAL;
+        for (size_t row = 0; row < data.nRow; ++row) {
+          if (!param.suppressValues[state.xt[row * data.nCol]] && risk[row] < actualMinRisk)
+            actualMinRisk = risk[row];
+        }
+        state.minRisk = actualMinRisk;
+      }
       
       ++numSuppressions;
       

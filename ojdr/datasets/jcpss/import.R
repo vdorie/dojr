@@ -1,27 +1,27 @@
 rawFile <- file.path("datasets", "jcpss", "raw", "jcpss_OJ.csv")
 
-colNames <- readLines(rawFile, n = 1L)
-colNames <- strsplit(colNames, ",")[[1L]]
-colNames <- sub("\"(.*)\"", "\\1", colNames)
+#colNames <- readLines(rawFile, n = 1L)
+#colNames <- strsplit(colNames, ",")[[1L]]
+#colNames <- sub("\"(.*)\"", "\\1", colNames)
 
-colClasses <- rep_len("factor", length(colNames))
-## these have changed in the 2003-2016 file
-#colClasses[colNames %in% c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <- "integer"
-#colClasses[colNames %in% c("", "ACTION.DATE")] <- "character"
-colClasses[colNames %in% c("", "ACTION.DATE", "REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR")] <-
-  "character"
+jcpss <- read.csv(rawFile, colClasses = "factor")
 
-jcpss <- read.csv(rawFile, colClasses = colClasses)
-jcpss <- jcpss[,-1L] # remove row names
+rm(rawFile)
 
-rm(rawFile, colNames, colClasses)
+jcpss <- jcpss[-150477,] # remove aberrant row
 
-for (colName in c("REFERRAL.COUNTY.CODE", "AGE.AT.REFERRAL", "REPORT_YEAR"))
-  jcpss[[colName]] <- as.integer(jcpss[[colName]])
+## remove excess whitespace from columns
+for (i in seq_along(jcpss)) {
+  jcpss[[i]] <- droplevels(jcpss[[i]])
+  levels(jcpss[[i]]) <- trimws(levels(jcpss[[i]]))
+}
+
+for (colName in c("REPORT_YEAR", "REFERRAL_COUNTY_CODE", "AGE_AT_REFERRAL"))
+  jcpss[[colName]] <- as.integer(levels(jcpss[[colName]]))[jcpss[[colName]]]
 rm(colName)
 
-colnames(jcpss) <- tolower(colnames(jcpss))
-colnames(jcpss) <- gsub("\\.", "_", colnames(jcpss))
+jcpss$ACTION_DATE <- as.Date(levels(jcpss$ACTION_DATE), "%m/%d/%Y")[jcpss$ACTION_DATE]
+
 
 ## prunes any blanks
 for (i in seq_along(jcpss)) {
@@ -32,43 +32,46 @@ for (i in seq_along(jcpss)) {
 }
 rm(i)
 
-action_date <- as.Date(jcpss$action_date, "%Y-%m-%d")
-action_date[is.na(action_date)] <- as.Date(jcpss$action_date[is.na(action_date)], "%m/%d/%Y 0:00")
-jcpss$action_date <- action_date
-rm(action_date)
+dispositionMap <- as.data.frame(matrix(c(
+    "10", "Dismissed",
+    "12", "Transferred",
+    "13", "Remanded to Adult Court",
+    "14", "Deported",
+    "15", "Traffic Court",
+    "16", "Direct File - Adult Court",
+    "20", "Informal Probation (654 WI)",
+    "21", "Informal Probation (654.2 WI)",
+    "30", "Non-Ward Probation (725(a) WI)",
+    "40", "Wardship (Own/Relative's Home)",
+    "41", "Wardship (Non-secure County Facility)",
+    "42", "Wardship (Secure County Facility - Includes Electronic Monitoring)",
+    "43", "Wardship (Other Public Facility)",
+    "44", "Wardship (Private Facility)",
+    "49", "Wardship (Other)",
+    "50", "Wardship (CYA)",
+    "60", "Diversion",
+    "61", "Deferred Entry of Judgment"),
+  byrow = TRUE, ncol = 2L,
+  dimnames = list(NULL, c("code", "name"))), stringsAsFactors = FALSE)
+
+levels(jcpss$DISPOSITION) <- dispositionMap$name[match(levels(jcpss$DISPOSITION), dispositionMap$code)]
+
+colnames(jcpss) <- tolower(colnames(jcpss))
+colnames(jcpss) <- gsub("\\.", "_", colnames(jcpss))
 
 ## remap mispellings
 commonSrcPath <- file.path("..", "common", "src")
 source(file.path(commonSrcPath, "util.R"))
 
-jcpss$action_type <-
-  remapFactor(jcpss$action_type,
-  list("1", "2", "Petiton"),
-  c("Referral", "Court", "Petition"))
-
 jcpss$referral_source <- remapFactor(jcpss$referral_source,
-   c("Lae Enforcement Agency", "Law Enforcement", "Law Enforcement Agency"),
+   c("Lae Enforcement Agency", "Law Enforcement Agency"),
   "Law Enforcement Agency")
 
 jcpss$detention <- remapFactor(jcpss$detention,
   c("Detained - Secure Facility", "Detained-Secure Facility"),
   "Detained - Secure Facility")
 
-jcpss$offense_level <- remapFactor(jcpss$offense_level,
-  c("Misdemeanor", "MIsdemeanor"),
-  "Misdemeanor")
-
-informalProbationCategories <- c("Informal Probation (654.2 WI)", "Informal Probation (654.2WI)", "Informal Probation(654.2WI)")
-nonwardProbationCategories  <- c("Non-Ward Probation (725a WI)", "Non_Ward Probation (725a WI)", "Non-Ward Probation (725(a) WI)",
-                                 "Non-Ward Probation (725a WI0", "Non-Ward Probation")
-deferredEntryCategories     <- c("Deferred Entry of Judgement", "Deferred Entry of Judgment")
-remandedCategorires         <- c("Remanded to Adult Court", "Remand to Adult Court")
-electronicWardshipCategories <- c("Wardship (Secure County Facility - with Elect. Monitoring)",
-                                  "Wardship (Secure County Facility - Includes Electronic Monitoring)")
-jcpss$disposition <- remapFactor(jcpss$disposition,
-  list(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires, electronicWardshipCategories),
-  c("Informal Probation (654.2 WI)", "Non-Ward Probation (725a WI)", "Deferred Entry of Judgement", "Remanded to Adult Court",
-    "Wardship (Secure County Facility - with Elect. Monitoring)"))
-rm(informalProbationCategories, nonwardProbationCategories, deferredEntryCategories, remandedCategorires, electronicWardshipCategories)
+## rename a few columns
+colnames(jcpss)[colnames(jcpss) %in% "fitness_hearing_out_desc"] <- "fitness_hearing_result"
 
 save(jcpss, file = file.path("datasets", "jcpss", "jcpss_clean.Rdata"))

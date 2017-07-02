@@ -73,5 +73,6 @@ jcpss$detention <- remapFactor(jcpss$detention,
 
 ## rename a few columns
 colnames(jcpss)[colnames(jcpss) %in% "fitness_hearing_out_desc"] <- "fitness_hearing_result"
+colnames(jcpss)[colnames(jcpss) %in% "county_desc"] <- "referral_county_name"
 
 save(jcpss, file = file.path("datasets", "jcpss", "jcpss_clean.Rdata"))

@@ -71,7 +71,7 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NU
   res
 }
 
-anonymize <- function(x, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+anonymizeWorker <- function(x, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
 {
   keyVars       <- varTypes$keyVars
   strataVars    <- varTypes$strataVars
@@ -207,13 +207,13 @@ localSuppression <-
     cluster <- parallel::makeCluster(n.threads)
     verbose <- FALSE
     parallel::clusterExport(cluster, c("x.run", "vars", "risk.f", "na.risk.within", "par", "skip.rinit", "verbose"), envir = environment())
-    parallel::clusterExport(cluster, "anonymize", asNamespace("rsupp"))
+    parallel::clusterExport(cluster, "anonymizeWorker", asNamespace("rsupp"))
     parallel::clusterEvalQ(cluster, require(rsupp))
     
     seeds <- as.integer(runif(n.chains) * .Machine$integer.max)
     tryResult <- tryCatch(results <- parallel::parLapply(cluster, seeds, function(seed) {
       set.seed(seed)
-      anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose = FALSE)
+      anonymizeWorker(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose = FALSE)
     }), error = function(e) e)
     
     parallel::stopCluster(cluster)
@@ -224,9 +224,9 @@ localSuppression <-
       stop(tryResult)
     
   } else {
-    result <- anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+    result <- anonymizeWorker(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
     if (n.chains > 2L) for (i in seq.int(2L, n.chains)) {
-      result.i <- anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+      result.i <- anonymizeWorker(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
       if (is.null(result$x) || result.i$obj > result$obj)
         result <- result.i
     }

@@ -135,9 +135,11 @@ rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samples = 1000L,
 #  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
 #           risk.k = 5, keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 localSuppression <-
-  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
+  function(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
            risk.k = 5, n.threads = parallel::detectCores(), n.chains = max(8L, n.threads), keyVars.w = NULL, verbose = FALSE)
 {
+  if (missing(keyVars)) keyVars <- colnames(x)
+  
   ## force random walk to be off
   par <- rsupp.par(n.chains = n.chains, n.samples = 0L, n.burn = 0)
   ##

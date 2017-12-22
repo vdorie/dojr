@@ -9,12 +9,25 @@ namedList <- function(...) {
 
 "%not_in%" <- function(x, table) match(x, table, nomatch = 0L) <= 0L
 
+evalx.recurse <- function(x, e) {
+  if (length(e) == 0L || typeof(e) == "symbol") return(e)
+  
+  for (i in seq_along(e)) {
+    if (!is.language(e[[i]])) next
+    
+    e[[i]] <- if (e[[i]] == "x") x else evalx.recurse(x, e[[i]])
+  }
+  
+  e
+}
+
+## evaluates the expression 'e' by after first replacing all instances of 'x' with the expression x
 evalx <- function(x, e) {
   mc <- match.call()
   callingEnv <- parent.frame()
-  evalEnv <- new.env(parent = callingEnv)
-  evalEnv$x <- x
-  eval(mc$e, evalEnv)
+  
+  e <- evalx.recurse(mc$x, mc$e)
+  eval(e, callingEnv)
 }
 
 coerceOrError <- function(x, type)
@@ -29,3 +42,4 @@ coerceOrError <- function(x, type)
   
   result
 }
+

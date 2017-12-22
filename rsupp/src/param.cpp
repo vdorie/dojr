@@ -111,20 +111,21 @@ namespace rsupp {
         if (INTEGER(param_i)[0] < 0) throw "nBurn parameter must be a non-negative integer";
         
         nBurn = static_cast<size_t>(INTEGER(param_i)[0]);
-      } else if (std::strcmp(param_name_i, "n.samp") == 0) {
-        if (!Rf_isInteger(param_i)) throw "nSamp parameter must be integer type";
-        if (rc_getLength(param_i) != 1) throw "nSamp parameter must be of length 1";
-        if (INTEGER(param_i)[0] < 0) throw "nSamp parameter must be a non-negative integer";
+      } else if (std::strcmp(param_name_i, "n.samples") == 0) {
+        if (!Rf_isInteger(param_i)) throw "nSamples parameter must be integer type";
+        if (rc_getLength(param_i) != 1) throw "nSamples parameter must be of length 1";
+        if (INTEGER(param_i)[0] < 0) throw "nSamples parameter must be a non-negative integer";
         
         nSamp = static_cast<size_t>(INTEGER(param_i)[0]);
       } else if (std::strcmp(param_name_i, "verbose") == 0) {
         if (!Rf_isInteger(param_i)) throw "verbose parameter must be integer type";
         if (rc_getLength(param_i) != 1) throw "verbose parameter must be of length 1";
-        if (INTEGER(param_i) < 0) throw "verbose parameter must be a non-negative integer";
+        if (INTEGER(param_i)[0] < 0) throw "verbose parameter must be a non-negative integer";
         
         verbose = static_cast<uint8_t>(INTEGER(param_i)[0]);
       } else {
-        throw "unrecognized parameter";
+        throw param_name_i;
+//        throw "unrecognized parameter";
       }
     }
     

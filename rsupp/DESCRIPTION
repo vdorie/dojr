@@ -8,7 +8,8 @@ Imports:
   methods,
   stats
 Suggests:
-  testthat
+  testthat,
+  parallel
 Description: Locally suppresses categorical variable data frames using randomization.
 License: GPL (>= 2)
 NeedsCompilation: yes

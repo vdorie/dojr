@@ -71,35 +71,99 @@ getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NU
   res
 }
 
-rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samp = 1000L,
-                      n.chain = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
-  namedList(alpha, gamma, n.burn, n.samp, n.chain, rowSwap.prob, colSwap.prob, na.prob)
+anonymize <- function(x, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+{
+  keyVars       <- varTypes$keyVars
+  strataVars    <- varTypes$strataVars
+  nonStrataVars <- varTypes$nonStrataVars
+  divVar        <- varTypes$divVar
+  
+  quoteInNamespace <- function(name, character.only = FALSE) {
+    result <- quote(a + b)
+    result[[1L]] <- as.symbol(":::")
+    result[[2L]] <- as.symbol("rsupp")
+    
+    result[[3L]] <- if (character.only) name else match.call()[[2]]
+    result
+  }
+  
+  C_localSuppression <- eval(quoteInNamespace(C_localSuppression))
+  calcRisk <- eval(quoteInNamespace(calcRisk))
+  
+  if (is.null(strataVars)) {
+    result <- .Call(C_localSuppression, x, risk.f, na.risk.within, par, skip.rinit)
+  } else {
+    ## mess here is to use data.table to get an efficient subset and update of the data frame within each stratum
+    totalObjective <- 0
+    x.dt <- data.table(x)
+    x.dt[,paste(nonStrataVars) := {
+      gc(FALSE)
+      # if (verbose > 0) cat("suppressing subset '", paste(sapply(.BY, as.character), collapse = "/"), "':\n", sep = "")
+      x.dt.j <- as.data.frame(.SD)
+      if (all(is.na(x.dt.j[,keyVars]))) {
+        x.dt.j
+      } else {
+        risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f, na.risk.within)
+        if (par$risk.k > 0 && min(risk) >= par$risk.k) {
+          .SD
+        } else {
+          tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, na.risk.within, par, skip.rinit), error = function(e) e)
+          if (is(tryResult, "error"))
+            stop("caught error: ", toString(tryResult), "\n")
+          
+          callingEnv <- parent.env(environment())
+          if (!is.na(res.j$obj) && is.finite(res.j$obj))
+            callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj
+          res.j$x[,nonStrataVars]
+        }
+      }
+    },by = strataVars, .SDcols = nonStrataVars]
+    x.dt <- as.data.frame(x.dt)        ## unfortunately, we can't return a data frame above, at least not with integer and double columns
+    ## so stratified risk needs to be recalculated
+    x.dt$risk <- calcRisk(x.dt, keyVars, strataVars, divVar, risk.f)
+    result <- list(x = x.dt, obj = totalObjective)
+  }
+  
+  result
+}
 
+rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samples = 1000L,
+                      n.chains = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
+  namedList(alpha, gamma, n.burn, n.samples, n.chains, rowSwap.prob, colSwap.prob, na.prob)
+
+#localSuppression <-
+#  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
+#           risk.k = 5, keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
 localSuppression <-
   function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
-           risk.k = 5, keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
+           risk.k = 5, n.threads = parallel::detectCores(), n.chains = max(8L, n.threads), keyVars.w = NULL, verbose = FALSE)
 {
+  ## force random walk to be off
+  par <- rsupp.par(n.chains = n.chains, n.samples = 0L, n.burn = 0)
+  ##
   par$risk.k  <- coerceOrError(risk.k[1L], "double")
   par$alpha   <- coerceOrError(par$alpha[1L], "double")
   par$gamma   <- coerceOrError(par$gamma[1L], "double")
   par$n.burn  <- coerceOrError(par$n.burn[1L], "integer")
-  par$n.samp  <- coerceOrError(par$n.samp[1L], "integer")
+  par$n.samples <- coerceOrError(par$n.samples[1L], "integer")
   par$rowSwap.prob <- coerceOrError(par$rowSwap.prob[1L], "double")
   par$colSwap.prob <- coerceOrError(par$colSwap.prob[1L], "double")
   par$na.prob      <- coerceOrError(par$na.prob[1L], "double")
   par$verbose <- coerceOrError(verbose[1L], "integer")
   
   na.risk.within <- coerceOrError(na.risk.within[1L], "logical")
-  skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
+  #skip.rinit <- coerceOrError(skip.rinit[1L], "logical")
+  skip.rinit <- FALSE
   
-  n.chain <- coerceOrError(par$n.chain, "integer")
-  par$n.chain <- NULL
-  if (n.chain <= 0L) stop("n.chain must be a positive integer")
+  n.chains <- coerceOrError(par$n.chains, "integer")
+  par$n.chains <- NULL
+  if (n.chains <= 0L) stop("n.chains must be a positive integer")
+  if (n.chains == 1L) n.threads <- 1L ## used to avoid references to parallel
   
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)
   
-  nonStrataVars <- NULL; runVars <- NULL # R CMD check warnings
+  nonStrataVars <- runVars <- NULL # R CMD check warnings
   massign[nonStrataVars, runVars] <- getRunVariables(vars, keyVars, strataVars, divVar)
   
   x.run <- x[,match(runVars, vars)]
@@ -136,112 +200,44 @@ localSuppression <-
     x[,"risk"] <- risk
     return(list(x = x, obj = NA_real_, n = NA_real_))
   }
+  
+  varTypes <- namedList(keyVars, strataVars, nonStrataVars, divVar)
 
+  if (n.threads > 1L && n.chains > 1L) {
+    cluster <- parallel::makeCluster(n.threads)
+    verbose <- FALSE
+    parallel::clusterExport(cluster, c("x.run", "vars", "risk.f", "na.risk.within", "par", "skip.rinit", "verbose"), envir = environment())
+    parallel::clusterExport(cluster, "anonymize", asNamespace("rsupp"))
+    parallel::clusterEvalQ(cluster, require(rsupp))
     
-  res <- list(x = NULL, obj = -Inf)
-  for (i in seq_len(n.chain)) {
-    if (is.null(strataVars)) {
-      res.i <- .Call(C_localSuppression, x.run, risk.f, na.risk.within, par, skip.rinit)
-    } else {
-      ## mess here is to use data.table to get an efficient subset and update of the data frame within each stratum
-      totalObjective <- 0
-      x.dt <- data.table(x.run)
-      x.dt[,paste(nonStrataVars) := {
-        gc(FALSE)
-        if (verbose > 0) cat("suppressing subset '", paste(sapply(.BY, as.character), collapse = "/"), "':\n", sep = "")
-        x.dt.j <- as.data.frame(.SD)
-        if (all(is.na(x.dt.j[,keyVars]))) {
-          x.dt.j
-        } else {
-          risk <- calcRisk(x.dt.j, keyVars, NULL, divVar, risk.f, na.risk.within)
-          if (par$risk.k > 0 && min(risk) >= par$risk.k) {
-            .SD
-          } else {
-            tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, na.risk.within, par, skip.rinit), error = function(e) e)
-            if (is(tryResult, "error")) {
-              cat("caught error: ", toString(tryResult), "\n")
-              browser()
-            }
-            
-            callingEnv <- parent.env(environment())
-            if (!is.na(res.j$obj) && is.finite(res.j$obj))
-              callingEnv$totalObjective <- callingEnv$totalObjective + res.j$obj
-            res.j$x[,nonStrataVars]
-          }
-        }
-      },by = strataVars, .SDcols = nonStrataVars]
-      x.dt <- as.data.frame(x.dt)
-      ## unfortunately, we can't return a data frame above, at least not with integer and double columns
-      ## so stratified risk needs to be recalculated
-      x.dt$risk <- calcRisk(x.dt, keyVars, strataVars, divVar, risk.f)
-      res.i <- list(x = x.dt, obj = totalObjective)
-    }
+    seeds <- as.integer(runif(n.chains) * .Machine$integer.max)
+    tryResult <- tryCatch(results <- parallel::parLapply(cluster, seeds, function(seed) {
+      set.seed(seed)
+      anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose = FALSE)
+    }), error = function(e) e)
     
-    if (res.i$obj > res$obj) {
-      res$x <- res.i$x
-      res$obj <- res.i$obj
-    } else if (is.null(res$x)) {
-      res$x <- res.i$x
+    parallel::stopCluster(cluster)
+    
+    if (!is(tryResult, "error"))
+      result <- results[[which.max(sapply(results, function(result.i) result.i$obj))[1L]]]
+    else
+      stop(tryResult)
+    
+  } else {
+    result <- anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+    if (n.chains > 2L) for (i in seq.int(2L, n.chains)) {
+      result.i <- anonymize(x.run, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+      if (is.null(result$x) || result.i$obj > result$obj)
+        result <- result.i
     }
   }
-  
+      
   if (any(vars %not_in% runVars)) {
     extraCols <- vars[vars %not_in% runVars]
-    res$x[,extraCols] <- x[,extraCols] 
+    result$x[,extraCols] <- x[,extraCols] 
   }
-  res$x <- res$x[,c(vars, "risk")]
+  result$x <- result$x[,c(vars, "risk")]
   
-  res
+  result
 }
 
-## alpha - controls how strongly concentrated the penalty term for k is around k itself
-## high gives more concentration (and thus permits fewer iterations from being above/below)
-
-## gamma - relative tension between the k term and NA term; 1 is full k term, 0 is full NA
-
-## theta - cost of NAing each variable in df
-if (FALSE) kAnon <- function(x, k = 5L, alpha = 15, gamma = 0.8, theta = rep_len(1, ncol(x)),
-                  n.burn = 200L, n.samp = 1000L, verbose = FALSE,
-                  n.chain = 8L)
-{
-  k <- as.integer(k[1L])
-  alpha <- as.double(alpha[1L])
-  gamma <- as.double(gamma[1L])
-  theta <- as.double(theta)
-  n.burn <- as.integer(n.burn[1L])
-  n.samp <- as.integer(n.samp[1L])
-  verbose <- as.logical(verbose[1L])
-  
-  if (nrow(x) < k) {
-    for (i in seq_along(x)) x[[i]] <- NA_integer_
-    return(list(x = x, obj = NA_real_, n = NA_real_))
-  } 
-  
-  minK <- min(.Call(C_calcK, x))
-  if (minK >= k) return(list(x = x, obj = NA_real_, n = NA_real_))
-  
-  res <- .Call(C_anonymize, x, k, alpha, gamma, theta, n.burn, n.samp, verbose)
-  
-  for (i in seq_len(n.chain)) {
-    res.i <- .Call(C_anonymize, x, k, alpha, gamma, theta, n.burn, n.samp, verbose)
-    
-    if (res.i$obj > res$obj) res <- res.i
-  }
-  
-  if (res$obj < -1e6 && nrow(x) <= 1.5 * k) {
-    for (i in seq_along(x)) x[[i]] <- NA_integer_
-    return(list(x = x, obj = NA_real_, n = NA_real_))
-  }
-  
-  i <- 1L
-  while (res$obj < -1e6 && i <= 4L) {
-    n.burn <- n.burn * 2L
-    n.samp <- n.samp * 2L
-    
-    res <- .Call(C_anonymize, x, k, alpha, gamma, theta, n.burn, n.samp, verbose)
-    i <- i + 1L
-  }
-    
-  if (res$obj < -1e6) browser()
-  res
-}

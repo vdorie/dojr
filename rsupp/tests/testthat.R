@@ -1,3 +1,4 @@
+Sys.unsetenv("R_TESTS")
 if (require(testthat, quietly = TRUE)) {
   require(rsupp)
   test_check("rsupp")

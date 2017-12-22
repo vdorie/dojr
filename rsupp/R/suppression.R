@@ -243,6 +243,7 @@ localSuppression <-
   
   result$na.tot <- sum(x.new.na)
   result$na.row <- sum(apply(x.new.na, 1L, any))
+  result$na.col <- apply(x.new.na, 2L, sum)
   
   result
 }

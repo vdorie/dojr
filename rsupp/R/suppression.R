@@ -193,12 +193,12 @@ localSuppression <-
   
   ## check for trivial conditions first
   if (all(is.na(x.run[,keyVars]))) {
-    return(list(x = x, obj = NA_real_, n = NA_real_))
+    return(list(x = x, obj = NA_real_, na.row = 0, na.tot = 0))
   }
   risk <- calcRisk(x.run, keyVars, strataVars, divVar, risk.f, na.risk.within)
   if (par$risk.k > 0 && min(risk) >= par$risk.k) {
     x[,"risk"] <- risk
-    return(list(x = x, obj = NA_real_, n = NA_real_))
+    return(list(x = x, obj = NA_real_, na.row = 0, na.tot = 0))
   }
   
   varTypes <- namedList(keyVars, strataVars, nonStrataVars, divVar)
@@ -237,6 +237,12 @@ localSuppression <-
     result$x[,extraCols] <- x[,extraCols] 
   }
   result$x <- result$x[,c(vars, "risk")]
+  
+  result$n <- NULL
+  x.new.na <- is.na(result$x[,keyVars]) & !is.na(x.run[,keyVars])
+  
+  result$na.tot <- sum(x.new.na)
+  result$na.row <- sum(apply(x.new.na, 1L, any))
   
   result
 }

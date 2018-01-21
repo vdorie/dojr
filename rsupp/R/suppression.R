@@ -27,7 +27,7 @@ getRunVariables <- function(vars, keyVars, strataVars, divVar)
   namedList(nonStrataVars, runVars)
 }
 
-calcRisk <- function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE)
+calcRisk <- function(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE)
 {
   if (!is.data.frame(x)) x <- as.data.frame(x)
   vars <- colnames(x)

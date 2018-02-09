@@ -78,7 +78,7 @@ calcRisk(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.wi
 
 
 \usage{
-localSuppression(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
+suppressR(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
            risk.k = 5, n.threads = parallel::detectCores(), n.chains = max(8L, n.threads), keyVars.w = NULL, verbose = FALSE)
 
 }

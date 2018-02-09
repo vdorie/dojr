@@ -193,7 +193,7 @@ SEXP getAtRiskSubset(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, S
   return xNew;
 }
 
-SEXP localSuppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
+SEXP suppression(SEXP xExpr, SEXP riskFunctionExpr, SEXP naRiskWithinExpr, SEXP paramExpr, SEXP skipRandomInitExpr)
 {
   if (!Rf_isLogical(naRiskWithinExpr)) Rf_error("naRiskWithin parameter must be logical type");
   if (!Rf_isLogical(skipRandomInitExpr)) Rf_error("skipRandomInit parameter must be logical type");
@@ -1243,7 +1243,7 @@ extern "C" {
   static R_CallMethodDef R_callMethods[] = {
     DEF_FUNC("calcRisk", calcRisk, 3),
     DEF_FUNC("getAtRiskSubset", getAtRiskSubset, 4),
-    DEF_FUNC("localSuppression", localSuppression, 5),
+    DEF_FUNC("suppression", suppression, 5),
     { NULL, NULL, 0 }
   };
   

@@ -48,7 +48,7 @@ calcRisk <- function(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL
   }
 }
 
-getAtRiskSubset <- function(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, na.risk.within = FALSE, risk.k = 5)
+getAtRiskSubset <- function(x, keyVars, divVar = NULL, risk.f = NULL, na.risk.within = FALSE, risk.k = 5)
 {
   risk.k <- coerceOrError(risk.k[1L], "double")
   
@@ -87,11 +87,11 @@ anonymizeWorker <- function(x, varTypes, risk.f, na.risk.within, par, skip.rinit
     result
   }
   
-  C_localSuppression <- eval(quoteInNamespace(C_localSuppression))
+  C_suppression <- eval(quoteInNamespace(C_suppression))
   calcRisk <- eval(quoteInNamespace(calcRisk))
   
   if (is.null(strataVars)) {
-    result <- .Call(C_localSuppression, x, risk.f, na.risk.within, par, skip.rinit)
+    result <- .Call(C_suppression, x, risk.f, na.risk.within, par, skip.rinit)
   } else {
     ## mess here is to use data.table to get an efficient subset and update of the data frame within each stratum
     totalObjective <- 0
@@ -107,7 +107,7 @@ anonymizeWorker <- function(x, varTypes, risk.f, na.risk.within, par, skip.rinit
         if (par$risk.k > 0 && min(risk) >= par$risk.k) {
           .SD
         } else {
-          tryResult <- tryCatch(res.j <- .Call(C_localSuppression, x.dt.j, risk.f, na.risk.within, par, skip.rinit), error = function(e) e)
+          tryResult <- tryCatch(res.j <- .Call(C_suppression, x.dt.j, risk.f, na.risk.within, par, skip.rinit), error = function(e) e)
           if (is(tryResult, "error"))
             stop("caught error: ", toString(tryResult), "\n")
           
@@ -131,10 +131,7 @@ rsupp.par <- function(alpha = 15, gamma = 0.8, n.burn = 200L, n.samples = 1000L,
                       n.chains = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
   namedList(alpha, gamma, n.burn, n.samples, n.chains, rowSwap.prob, colSwap.prob, na.prob)
 
-#localSuppression <-
-#  function(x, keyVars = colnames(x), strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
-#           risk.k = 5, keyVars.w = NULL, par = rsupp.par(), verbose = FALSE, skip.rinit = FALSE)
-localSuppression <-
+suppressR <-
   function(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
            risk.k = 5, n.threads = parallel::detectCores(), n.chains = max(8L, n.threads), keyVars.w = NULL, verbose = FALSE)
 {

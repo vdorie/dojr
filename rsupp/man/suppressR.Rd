@@ -1,28 +1,23 @@
-\name{AnonymizeR}
-\alias{AnonymizeR}
-\alias{plot.AnonymizeR}
-\title{Data Anonymization for R}
+\name{suppressR}
+\alias{suppressR}
+\alias{getAtRiskSubset}
+\alias{calcRisk}
+\title{suppressR: Efficient, Random Suppression for Data De-identification}
 \description{
-AnonymizeR is a privacy tool that enables users to enforce privacy standards through minimal random data suppression. 
-
-\itemize{
-  \item 
-}
+suppressR is a privacy tool that enables users to enforce privacy standards through minimal random data suppression.
 }
 
 \usage{
-anonymizeR.par (alpha = 15, gamma = 0.8, n.burn = 200L, n.samples = 1000L,
-                      n.chains = 8L, rowSwap.prob = 0.45, colSwap.prob = 0.25, na.prob = 0.95)
+suppressR(x, keyVars, strataVars = NULL, divVar = NULL,
+          risk.f = NULL, na.risk.within = FALSE, risk.k = 5,
+          n.threads = parallel::detectCores(), n.chains = max(8L, n.threads),
+          keyVars.w = NULL, verbose = FALSE)
 
-}
-\arguments{
-   \item{ }{
-     
-   }
-}
+calcRisk(x, keyVars, strataVars = NULL, divVar = NULL,
+         risk.f = NULL, na.risk.within = FALSE)
 
-\usage{
-anonymizeWorker(x, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
+getAtRiskSubset(x, keyVars, divVar = NULL,
+                risk.f = NULL, na.risk.within = FALSE, risk.k = 5)
 
 }
 \arguments{
@@ -43,11 +38,6 @@ anonymizeWorker(x, varTypes, risk.f, na.risk.within, par, skip.rinit, verbose)
    \item{verbose}{
     Set to TRUE to see more detailed progress during the anonymization process. 
     }
-}
-
-\usage{
-calcRisk(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE)
-
 }
 \arguments{
    \item{x}{
@@ -74,16 +64,7 @@ calcRisk(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.wi
     Should NAs be treated as a specific attribute value? For example, if anonymizing age ranges, should suppressed values of NA be considered alongside "young","middle-aged", and "elderly"? Especially applies when trying to prevent inferences about individual attributes based on group characteristics. 
 
    }
-   }
-
-
-\usage{
-suppressR(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.within = FALSE,
-           risk.k = 5, n.threads = parallel::detectCores(), n.chains = max(8L, n.threads), keyVars.w = NULL, verbose = FALSE)
-
-}
-\arguments{
-   \item{x}{
+    \item{x}{
      Data frame containing the observations with sensitive values. Rows should correspond to observations and columns to variables.
    }
 
@@ -132,12 +113,6 @@ suppressR(x, keyVars, strataVars = NULL, divVar = NULL, risk.f = NULL, na.risk.w
     Set to TRUE to see more detailed progress during the anonymization process. 
 
    }
-
-
-\usage{
-getAtRiskSubset(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, na.risk.within = FALSE, risk.k = 5)
-
-}
 \arguments{
    \item{x}{
      Data frame containing the observations with sensitive values. Rows should correspond to observations and columns to variables.
@@ -168,12 +143,6 @@ getAtRiskSubset(x, keyVars = colnames(x), divVar = NULL, risk.f = NULL, na.risk.
     If using the default method of k-anonymity, sets the value of k. 
     
    }
-}
-
-\usage{
-getRunVariables(vars, keyVars, strataVars, divVar)
-
-}
 \arguments{
    \item{vars}{
      All variables in the data frame.
@@ -193,9 +162,6 @@ getRunVariables(vars, keyVars, strataVars, divVar)
 
 }
 
-
-
-
 \details{
 anonymizeR provides flexible functions that allow users to define risk measures, thresholds for those measures, and to enforce them through random suppression of data values. anonymizeR has commonly used risk measures, such as k-anonymity and l-diversity, but also allows users to define custom risk measures to be passed to the random suppression function. Users can specify the order in which anonymizeR ought to try suppressing variable values (e.g., age before race). After suppressing data to meet or exceed privacy standards, anonymizeR evaluates whether any data values can be restored while maintaining those standards. Because anonymizeR makes use of randomness based on the order of the data and a random seed, the results of anonymizeR are difficult for an attacker to reverse engineer, even with knowledge of the privacy standards and thresholds used. 
 
@@ -203,12 +169,10 @@ Open data efforts often require posting of some version of original, not synthet
 anonymizeR is meant to perform a last essential last step in data privacy protection. It allows for the enforcement of common and user-defined privacy standards through minimal suppression of data values. Mostly written in C, anonymizeR allows for enforcement of data privacy standards on data sets containing hundreds of millions of observations. 
 
 
-  \subsection{}{
-
-  }
 }
 \value{
   \code{localSuppression} returns a data frame. 
+}
 
 \references{
 
@@ -234,3 +198,4 @@ Eric Giannella: \email{eric.giannella@gmail.com}.
 \keyword{privacy}
 \keyword{random}
 \keyword{suppression}
+
